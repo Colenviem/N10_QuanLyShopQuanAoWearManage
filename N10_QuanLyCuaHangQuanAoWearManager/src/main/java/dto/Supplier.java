@@ -30,4 +30,15 @@ public class Supplier {
 
     @OneToMany(mappedBy = "supplier")
     private Set<PurchaseOrder> purchaseOrders;
+
+    @Override
+    public String toString() {
+        return "Supplier{" +
+                "  id = " + id + '\n' +
+                "  supplierName = " + supplierName + '\n' +
+                "  address = " + address + '\n' +
+                "  phone = " + phone + '\n' +
+                "  status = " + status + '\n' +
+                '}';
+    }
 }

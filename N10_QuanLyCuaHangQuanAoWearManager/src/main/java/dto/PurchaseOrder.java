@@ -46,4 +46,14 @@ public class PurchaseOrder {
                     .sum();
         }
     }
+
+    @Override
+    public String toString() {
+        return "PurchaseOrder{" +
+                "  id='" + id + '\n' +
+                "  orderDate=" + orderDate + '\n' +
+                "  totalAmount=" + totalAmount + '\n' +
+                "  status=" + status + '\n' +
+                '}';
+    }
 }

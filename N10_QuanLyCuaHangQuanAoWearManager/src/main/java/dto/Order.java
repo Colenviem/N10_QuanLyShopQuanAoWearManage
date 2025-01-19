@@ -49,4 +49,14 @@ public class Order {
             System.out.println("OrderDetails is null");
         }
     }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "  id = " + id + '\n' +
+                "  totalAmount = " + totalAmount + '\n' +
+                "  orderDate = " + orderDate + '\n' +
+                "  status = " + status + '\n' +
+                '}';
+    }
 }

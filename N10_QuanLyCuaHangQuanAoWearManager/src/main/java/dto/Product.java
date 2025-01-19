@@ -78,4 +78,20 @@ public class Product {
             this.stockQuantity += quantityPurchased;
         }
     }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "  id='" + id + '\n' +
+                "  productName = " + productName + '\n' +
+                "  description = " + description + '\n' +
+                "  price = " + price + '\n' +
+                "  discount = " + discount + '\n' +
+                "  stockQuantity = " + stockQuantity + '\n' +
+                "  color = " + color + '\n' +
+                "  status = " + status + '\n' +
+                "  imageUrl = " + imageUrl + '\n' +
+                "  size = " + size + '\n' +
+                '}';
+    }
 }

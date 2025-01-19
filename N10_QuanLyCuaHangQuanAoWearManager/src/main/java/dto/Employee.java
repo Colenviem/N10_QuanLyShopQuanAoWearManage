@@ -49,4 +49,16 @@ public class Employee {
 
     @OneToMany(mappedBy = "employee")
     private Set<PurchaseOrder> purchaseOrders;
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "  id = " + id + '\n' +
+                "  fullName = " + fullName + '\n' +
+                "  phone='" + phone + '\n' +
+                "  salary=" + salary + '\n' +
+                "  hireDate=" + hireDate +
+                "  status=" + status +
+                '}';
+    }
 }

@@ -21,4 +21,13 @@ public class Category {
     private String description;
     @OneToMany(mappedBy = "category")
     private Set<Product> products;
+
+    @Override
+    public String toString() {
+        return "Category{" +
+                "  id = " + id + '\n' +
+                "  name = " + name + '\n' +
+                "  description = " + description + '\n' +
+                '}';
+    }
 }

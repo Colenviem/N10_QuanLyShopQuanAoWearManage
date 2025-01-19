@@ -33,4 +33,15 @@ public class Account {
 
     @OneToOne(mappedBy = "account")
     private Customer customer;
+
+    @Override
+    public String toString() {
+        return "Account{\n" +
+                "  id = " + id + '\n' +
+                "  username = " + username + '\n' +
+                "  password = " + password + '\n' +
+                "  status = " + status + '\n' +
+                "  createdDate = " + createdDate + '\n' +
+                '}';
+    }
 }

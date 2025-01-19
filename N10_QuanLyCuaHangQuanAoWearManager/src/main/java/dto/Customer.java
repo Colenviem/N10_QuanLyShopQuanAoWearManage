@@ -37,4 +37,14 @@ public class Customer {
                         .mapToInt(order -> (int) (order.getTotalAmount() * 0.01))
                         .sum();
     }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "  id = " + id + '\n' +
+                "  name = " + name + '\n' +
+                "  phone = " + phone + '\n' +
+                "  point = " + point +
+                '}';
+    }
 }

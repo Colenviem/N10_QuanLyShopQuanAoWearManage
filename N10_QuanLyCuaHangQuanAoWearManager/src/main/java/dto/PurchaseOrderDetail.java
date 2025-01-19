@@ -33,4 +33,14 @@ public class PurchaseOrderDetail {
     private void calculateSubTotal() {
         this.subTotal = this.quantity * this.purchasePrice;
     }
+
+    @Override
+    public String toString() {
+        return "PurchaseOrderDetail{" +
+                "id='" + id + '\n' +
+                ", quantity=" + quantity + '\n' +
+                ", purchasePrice=" + purchasePrice + '\n' +
+                ", subTotal=" + subTotal + '\n' +
+                '}';
+    }
 }

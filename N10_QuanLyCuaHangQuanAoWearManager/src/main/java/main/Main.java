@@ -1,9 +1,15 @@
 package main;
 
+import dao.AccountDao;
+import dao.OrderDetailDao;
 import dao.StoreDao;
 import data.DataGenerator;
+import dto.Account;
+import dto.OrderDetail;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Persistence;
+
+import java.time.LocalDate;
 
 public class Main {
     public static void main(String[] args) {
@@ -13,13 +19,22 @@ public class Main {
 
         //Test các chức năng CRUD
         EntityManager em = Persistence.createEntityManagerFactory("mariadb").createEntityManager();
-        StoreDao storeDao = new StoreDao(em);
-        storeDao.getAllStores().forEach(s -> System.out.println(s.getId()));
 
-        if(storeDao.deleteStore("1")){
-            System.out.println("Xóa thành công");
+        AccountDao account = new AccountDao(em);
+        Account acc = account.getAccountById("ACC11267118");
+        System.out.println("Tài khoản có mã ACC11267118");
+        System.out.println(acc);
+        System.out.println("Cập nhật tài khoản có mã ACC11267118");
+        acc.setId("ACC11267118");
+        acc.setUsername("admin");
+        acc.setPassword("admin");
+        acc.setStatus(true);
+        acc.setCreatedDate(LocalDate.now());
+        if(account.updateAccount(acc)) {
+            System.out.println("Cập nhật thành công");
+            System.out.println(acc);
         }else{
-            System.out.println("Xóa thất bại");
+            System.out.println("Cập nhật thất bại");
         }
     }
 }

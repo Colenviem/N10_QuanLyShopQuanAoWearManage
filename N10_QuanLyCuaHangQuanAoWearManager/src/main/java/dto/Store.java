@@ -30,4 +30,15 @@ public class Store {
 
     @OneToMany(mappedBy = "store")
     private Set<Employee> employees;
+
+    @Override
+    public String toString() {
+        return "Store{" +
+                "  id = " + id + '\n' +
+                "  name = " + name + '\n' +
+                "  address = " + address + '\n' +
+                "  phone = " + phone + '\n' +
+                "  status = " + status + '\n' +
+                '}';
+    }
 }
