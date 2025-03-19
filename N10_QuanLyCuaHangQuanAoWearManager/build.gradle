@@ -35,6 +35,24 @@ dependencies {
 
   testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
+
+    implementation files('Libraries/TimingFramework-0.55.jar')
+    implementation files('Libraries/gson-2.9.0.jar')
+    implementation files('Libraries/java-geo-chart.jar')
+    implementation files('Libraries/miglayout-4.0.jar')
+    implementation files('Libraries/flatlaf-3.4.1.jar')
+    implementation files('Libraries/flatlaf-extras-3.4.1.jar')
+    implementation files('Libraries/flatlaf-fonts-roboto-2.137.jar')
+    implementation files('Libraries/jsvg-1.4.0.jar')
+    implementation files('Libraries/miglayout-core.jar')
+    implementation files('Libraries/miglayout-swing.jar')
+    implementation files('Libraries/swing-toast-notifications-1.0.2.jar')
+    implementation files('Libraries/filters-2.0.235.jar')
+    implementation files('Libraries/flatlaf-intellij-themes-3.2.5.jar')
+    implementation files('Libraries/jcalendar-1.4.jar')
+    implementation files('Libraries/sqljdbc42.jar')
+    implementation files('Libraries/swing-worker-1.1.jar')
+    implementation files('Libraries/swingx-1.6.1.jar')
 }
 
 test {
