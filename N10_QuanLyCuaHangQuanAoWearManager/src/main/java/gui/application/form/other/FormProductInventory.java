@@ -1,9 +1,7 @@
 package gui.application.form.other;
 
-import com.formdev.flatlaf.FlatClientProperties;
 import gui.event.EventItem;
 import com.raven.model.ModelItem;
-import gui.application.form.MainPanel;
 import gui.component.Item;
 import gui.swing.ScrollBar;
 import java.awt.Component;
@@ -85,16 +83,16 @@ public class FormProductInventory extends javax.swing.JPanel {
 
         int ID = 1;
         for (int i = 0; i < 2; i++) {
-            this.addItem(new ModelItem(ID++, "4DFWD PULSE", "This product is excluded from all promotional discounts and offers.", 100, "Adidas", new ImageIcon(getClass().getResource("/gui/icon/png/img1.png"))));
-            this.addItem(new ModelItem(ID++, "FORUM MID", "This product is excluded from all promotional discounts and offers.", 120, "Adidas", new ImageIcon(getClass().getResource("/gui/icon/png/img2.png"))));
-            this.addItem(new ModelItem(ID++, "SUPERSTAR", "NMD City Stock 2", 150, "Adidas", new ImageIcon(getClass().getResource("/gui/icon/png/img3.png"))));
-            this.addItem(new ModelItem(ID++, "Adidas", "NMD City Stock 2", 160, "Adidas", new ImageIcon(getClass().getResource("/gui/icon/png/img4.png"))));
-            this.addItem(new ModelItem(ID++, "Ultraboost", "Comfortable running shoes", 180, "Adidas", new ImageIcon(getClass().getResource("/gui/icon/png/img1.png"))));
-            this.addItem(new ModelItem(ID++, "Stan Smith", "Classic tennis shoes", 140, "Adidas", new ImageIcon(getClass().getResource("/gui/icon/png/img1.png"))));
-            this.addItem(new ModelItem(ID++, "Yeezy Boost 350", "Limited edition sneakers", 250, "Adidas", new ImageIcon(getClass().getResource("/gui/icon/png/img5.png"))));
-            this.addItem(new ModelItem(ID++, "Gazelle", "Retro-style sneakers", 130, "Adidas", new ImageIcon(getClass().getResource("/gui/icon/png/img1.png"))));
-            this.addItem(new ModelItem(ID++, "Samba OG", "Timeless soccer-inspired shoes", 110, "Adidas", new ImageIcon(getClass().getResource("/gui/icon/png/img1.png"))));
-            this.addItem(new ModelItem(ID++, "Predator Edge", "High-performance football boots", 200, "Adidas", new ImageIcon(getClass().getResource("/gui/icon/png/img1.png"))));
+            this.addItem(new ModelItem(ID++, "4DFWD PULSE", "This product is excluded from all promotional discounts and offers.", 100, "Adidas", new ImageIcon(getClass().getClassLoader().getResource("images/png/img1.png"))));
+            this.addItem(new ModelItem(ID++, "FORUM MID", "This product is excluded from all promotional discounts and offers.", 120, "Adidas", new ImageIcon(getClass().getClassLoader().getResource("images/png/img2.png"))));
+            this.addItem(new ModelItem(ID++, "SUPERSTAR", "NMD City Stock 2", 150, "Adidas", new ImageIcon(getClass().getClassLoader().getResource("images/png/img3.png"))));
+            this.addItem(new ModelItem(ID++, "Adidas", "NMD City Stock 2", 160, "Adidas", new ImageIcon(getClass().getClassLoader().getResource("images/png/img4.png"))));
+            this.addItem(new ModelItem(ID++, "Ultraboost", "Comfortable running shoes", 180, "Adidas", new ImageIcon(getClass().getClassLoader().getResource("images/png/img1.png"))));
+            this.addItem(new ModelItem(ID++, "Stan Smith", "Classic tennis shoes", 140, "Adidas", new ImageIcon(getClass().getClassLoader().getResource("images/png/img1.png"))));
+            this.addItem(new ModelItem(ID++, "Yeezy Boost 350", "Limited edition sneakers", 250, "Adidas", new ImageIcon(getClass().getClassLoader().getResource("images/png/img5.png"))));
+            this.addItem(new ModelItem(ID++, "Gazelle", "Retro-style sneakers", 130, "Adidas", new ImageIcon(getClass().getClassLoader().getResource("images/png/img1.png"))));
+            this.addItem(new ModelItem(ID++, "Samba OG", "Timeless soccer-inspired shoes", 110, "Adidas", new ImageIcon(getClass().getClassLoader().getResource("images/png/img1.png"))));
+            this.addItem(new ModelItem(ID++, "Predator Edge", "High-performance football boots", 200, "Adidas", new ImageIcon(getClass().getClassLoader().getResource("images/png/img1.png"))));
         }
 
     }

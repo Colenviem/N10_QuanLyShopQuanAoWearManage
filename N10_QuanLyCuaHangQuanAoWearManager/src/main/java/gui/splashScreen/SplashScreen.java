@@ -1,7 +1,7 @@
 package gui.splashScreen;
 
-import java.awt.Color;
-import javax.swing.JDialog;
+import java.net.URL;
+import javax.swing.*;
 
 public class SplashScreen extends javax.swing.JDialog {
      public SplashScreen(java.awt.Frame parent, boolean modal) {
@@ -29,7 +29,8 @@ public class SplashScreen extends javax.swing.JDialog {
             }
         });
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icon/png/splash.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/png/splash.png")));
+
 
         lbStatus.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         lbStatus.setForeground(new java.awt.Color(250, 250, 250));

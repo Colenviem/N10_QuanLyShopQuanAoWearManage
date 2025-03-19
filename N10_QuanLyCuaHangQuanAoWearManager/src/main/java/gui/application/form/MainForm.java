@@ -70,7 +70,7 @@ public class MainForm extends JLayeredPane {
             menuButton = new JButton();
         }
         String icon = (getComponentOrientation().isLeftToRight()) ? "menu_left.svg" : "menu_right.svg";
-        menuButton.setIcon(new FlatSVGIcon("gui/icon/svg/" + icon, 0.8f));
+        menuButton.setIcon(new FlatSVGIcon("images/svg/" + icon, 0.8f));
     }
 
     private void initMenuEvent() {
@@ -128,7 +128,7 @@ public class MainForm extends JLayeredPane {
         } else {
             icon = (full) ? "menu_right.svg" : "menu_left.svg";
         }
-        menuButton.setIcon(new FlatSVGIcon("gui/icon/svg/" + icon, 0.8f));
+        menuButton.setIcon(new FlatSVGIcon("images/svg/" + icon, 0.8f));
         menu.setMenuFull(full);
         revalidate();
     }

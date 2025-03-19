@@ -16,9 +16,7 @@ import gui.button.ButtonCustom;
 import gui.button.NavButtonCustom;
 import gui.combobox.ComboBoxSuggestion;
 import gui.table.TableProductCellRender;
-import gui.table.TableQtyCellRender;
 import gui.table.TableRemoveCellRender;
-import gui.event.EventCellInputChange;
 import gui.textfield.TextPay;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -32,27 +30,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.sql.SQLException;
 import java.text.DecimalFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 public class FormSales extends JPanel implements ActionListener, MouseListener {
@@ -80,7 +66,7 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
         setOpaque(false);
         setPreferredSize(new Dimension(1500, 750));
         setBorder(new EmptyBorder(10, 10, 10, 10));
-        btnSearch = new ButtonCustom("", "imgs\\img\\search.png");
+        btnSearch = new ButtonCustom("", "images/png/search.png");
         btnSearch.setPreferredSize(new Dimension(40, 40));
         txtQuay.setEditable(false);
         txtQuay.setFocusable(false);
@@ -107,7 +93,7 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
         tableOrder.ScrollPaneTable(jScrollPane);
         cmdTT.setBorder(BorderFactory.createMatteBorder(2, 0, 0, 0, new Color(206, 212, 216)));
 
-        btnAddItem = new NavButtonCustom("Thêm sản phẩm", "/gui/icon/png/add.png");
+        btnAddItem = new NavButtonCustom("Thêm sản phẩm", "images/png/add.png");
 
         pnlHD.setBorder(new EmptyBorder(0, 0, 0, 5));
         jPanel14.setBorder(new EmptyBorder(40, 0, 100, 0));

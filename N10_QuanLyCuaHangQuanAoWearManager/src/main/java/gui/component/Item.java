@@ -74,7 +74,7 @@ public class Item extends javax.swing.JPanel {
         lbDescription.setForeground(new java.awt.Color(133, 133, 133));
         lbDescription.setText("Item Name");
 
-        pic.setImage(new javax.swing.ImageIcon(getClass().getResource("/gui/icon/png/img1.png"))); // NOI18N
+        pic.setImage(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/png/img1.png"))); // NOI18N
 
         lbPrice.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         lbPrice.setForeground(new java.awt.Color(71, 71, 71));

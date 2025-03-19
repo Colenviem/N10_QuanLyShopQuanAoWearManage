@@ -1,0 +1,27 @@
+<component name="libraryTable">
+  <library name="ant-1.10.8">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/N10_QuanLyCuaHangQuanAoWearManager/Libraries/gson-2.9.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/N10_QuanLyCuaHangQuanAoWearManager/Libraries/stax2-api-4.2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/N10_QuanLyCuaHangQuanAoWearManager/Libraries/sqljdbc42.jar!/" />
+      <root url="jar://$PROJECT_DIR$/N10_QuanLyCuaHangQuanAoWearManager/Libraries/jfreechart-1.5.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/N10_QuanLyCuaHangQuanAoWearManager/Libraries/java-geo-chart.jar!/" />
+      <root url="jar://$PROJECT_DIR$/N10_QuanLyCuaHangQuanAoWearManager/Libraries/jcalendar-1.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/N10_QuanLyCuaHangQuanAoWearManager/Libraries/miglayout-4.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/N10_QuanLyCuaHangQuanAoWearManager/Libraries/flatlaf-fonts-roboto-2.137.jar!/" />
+      <root url="jar://$PROJECT_DIR$/N10_QuanLyCuaHangQuanAoWearManager/Libraries/junit-3.7.jar!/" />
+      <root url="jar://$PROJECT_DIR$/N10_QuanLyCuaHangQuanAoWearManager/Libraries/flatlaf-extras-3.4.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/N10_QuanLyCuaHangQuanAoWearManager/Libraries/jsvg-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/N10_QuanLyCuaHangQuanAoWearManager/Libraries/flatlaf-intellij-themes-3.2.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/N10_QuanLyCuaHangQuanAoWearManager/Libraries/swing-worker-1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/N10_QuanLyCuaHangQuanAoWearManager/Libraries/openpdf-1.3.30.jaspersoft.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/N10_QuanLyCuaHangQuanAoWearManager/Libraries/flatlaf-3.4.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/N10_QuanLyCuaHangQuanAoWearManager/Libraries/swingx-1.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/N10_QuanLyCuaHangQuanAoWearManager/Libraries/thumbnailator-0.4.8.jar!/" />
+      <root url="jar://$PROJECT_DIR$/N10_QuanLyCuaHangQuanAoWearManager/Libraries/TimingFramework-0.55.jar!/" />
+      <root url="jar://$PROJECT_DIR$/N10_QuanLyCuaHangQuanAoWearManager/Libraries/woodstox-core-6.4.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

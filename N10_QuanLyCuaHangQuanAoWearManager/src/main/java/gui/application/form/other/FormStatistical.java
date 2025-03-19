@@ -1,6 +1,5 @@
 package gui.application.form.other;
 
-import com.formdev.flatlaf.FlatClientProperties;
 import gui.chart.ModelChartLine;
 import gui.chart.ModelChartPie;
 import gui.model.ModelStaff;
@@ -37,7 +36,7 @@ public class FormStatistical extends javax.swing.JPanel {
             } else {
                 status = "Cancel";
             }
-            model.addRow(new ModelStaff(new ImageIcon(getClass().getResource("/gui/icon/png/staff" + i + ".png")), "Mr Hoang Anh", "Male", "anh321@gmail.com", status).toDataTable());
+            model.addRow(new ModelStaff(new ImageIcon(getClass().getClassLoader().getResource("images/png/staff" + i + ".png")), "Mr Hoang Anh", "Male", "anh321@gmail.com", status).toDataTable());
         }
         table.fixTable(jScrollPane1);
         table.setRowHeight(150);

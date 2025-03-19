@@ -1,7 +1,6 @@
 package gui.menu.action;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import com.formdev.flatlaf.ui.FlatUIUtils;
 import com.formdev.flatlaf.util.UIScale;
 import java.awt.Component;
 import java.awt.Container;
@@ -79,7 +78,7 @@ public class Menu extends JPanel {
                 + "background:$Menu.background;"
                 + "arc:10");
         header = new JLabel(headerName);
-        header.setIcon(new ImageIcon(getClass().getResource("/gui/icon/png/logo.png")));
+        header.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/png/logo.png")));
         header.putClientProperty(FlatClientProperties.STYLE, ""
                 + "font:$Menu.header.font;"
                 + "foreground:$Menu.foreground");

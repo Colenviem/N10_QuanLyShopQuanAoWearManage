@@ -12,8 +12,7 @@ import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 public class Navbar extends JPanel {
@@ -90,17 +89,16 @@ public class Navbar extends JPanel {
 
         pnlBtnLeft = new JPanel(new FlowLayout(FlowLayout.LEFT));
         pnlBtnLeft.setOpaque(false);
-
-        btnAdd = new NavButtonCustom("Thêm", "/gui/icon/png/add.png");
-        btnEdit = new NavButtonCustom("SỬA", "/gui/icon/png/edit.png");
-        btnImport = new NavButtonCustom("THÊM EXCEL", "/gui/icon/png/excel.png");
-        btnExport = new NavButtonCustom("XUẤT EXCEL", "/gui/icon/png/excel.png");
+        btnAdd = new NavButtonCustom("Thêm", "images/png/add.png");
+        btnEdit = new NavButtonCustom("SỬA", "images/png/edit.png");
+        btnImport = new NavButtonCustom("THÊM EXCEL", "images/png/excel.png");
+        btnExport = new NavButtonCustom("XUẤT EXCEL", "images/png/excel.png");
         defaultComboBox = new DefaultComboBoxModel<>();
         comboBox = new ComboBoxSuggestion<>(defaultComboBox);
         comboBox.setPreferredSize(new Dimension(200, 40));
         txtSearch = new TextFieldCustom("Nhập nội dung tìm kiếm...");
         txtSearch.setPreferredSize(new Dimension(200, 40));
-        btnSearch = new ButtonCustom("Tìm kiếm", "/gui/icon/png/search.png");
+        btnSearch = new ButtonCustom("Tìm kiếm", "images/png/search.png");
 
         pnlBtnLeft.add(btnAdd);
         pnlBtnLeft.add(btnEdit);

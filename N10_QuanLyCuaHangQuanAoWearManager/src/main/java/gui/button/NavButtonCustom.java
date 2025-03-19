@@ -22,7 +22,7 @@ public class NavButtonCustom extends JButton {
         setContentAreaFilled(false); 
         setFocusPainted(false); 
         setText(text);
-        setIcon(new ImageIcon(getClass().getResource(path)));
+        setIcon(new ImageIcon(getClass().getClassLoader().getResource(path)));
         setVerticalTextPosition(SwingConstants.BOTTOM);
         setHorizontalTextPosition(SwingConstants.CENTER); 
         setForeground(new Color(20, 125, 71));

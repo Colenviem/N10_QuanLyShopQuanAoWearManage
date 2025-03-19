@@ -2,7 +2,7 @@ package gui.application.form;
 
 import gui.application.Application;
 import java.awt.Color;
-import javax.swing.UIManager;
+
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
@@ -109,7 +109,7 @@ public class LoginForm extends javax.swing.JFrame {
         txtUser.setBackground(new java.awt.Color(242, 242, 242));
         txtUser.setLabelText("User");
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gui/icon/png/splash.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getClassLoader().getResource("images/png/splash.png")));
 
         javax.swing.GroupLayout panelLoginLayout = new javax.swing.GroupLayout(panelLogin);
         panelLogin.setLayout(panelLoginLayout);

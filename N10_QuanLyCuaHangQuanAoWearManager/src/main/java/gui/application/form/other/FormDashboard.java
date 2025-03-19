@@ -1,18 +1,13 @@
 package gui.application.form.other;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import gui.chart.ModelChartPie;
 import gui.model.ModelStaff;
 import gui.model.Model_Card;
-import gui.swing.ScrollBar;
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Random;
 import javax.swing.ImageIcon;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import raven.toast.Notifications;
 
 /**
  *
@@ -22,11 +17,11 @@ public class FormDashboard extends javax.swing.JPanel {
 
     public FormDashboard() {
         initComponents();
-        lb.putClientProperty(FlatClientProperties.STYLE, ""
-                + "font:$h1.font");
-        card1.setData(new Model_Card(new ImageIcon(getClass().getResource("/gui/menu/icon/1.svg")), "Stock Total", "$200000", "Increased by 60%"));
-        card2.setData(new Model_Card(new ImageIcon(getClass().getResource("/gui/menu/icon/2.svg")), "Total Profit", "$15000", "Increased by 25%"));
-        card3.setData(new Model_Card(new ImageIcon(getClass().getResource("/gui/menu/icon/3.svg")), "Unique Visitors", "$300000", "Increased by 70%"));
+//        lb.putClientProperty(FlatClientProperties.STYLE, ""
+//                + "font:$h1.font");
+        card1.setData(new Model_Card(new ImageIcon(getClass().getClassLoader().getResource("images/icon/1.svg")), "Stock Total", "$200000", "Increased by 60%"));
+        card2.setData(new Model_Card(new ImageIcon(getClass().getClassLoader().getResource("images/icon/2.svg")), "Total Profit", "$15000", "Increased by 25%"));
+        card3.setData(new Model_Card(new ImageIcon(getClass().getClassLoader().getResource("images/icon/3.svg")), "Unique Visitors", "$300000", "Increased by 70%"));
         initData();
     }
 
@@ -43,7 +38,7 @@ public class FormDashboard extends javax.swing.JPanel {
             } else {
                 status = "Cancel";
             }
-            model.addRow(new ModelStaff(new ImageIcon(getClass().getResource("/gui/icon/png/staff" + i + ".png")), "Mr Hoang Anh", "Male", "anh321@gmail.com", status).toDataTable());
+            model.addRow(new ModelStaff(new ImageIcon(getClass().getClassLoader().getResource("images/png/staff" + i + ".png")), "Mr Hoang Anh", "Male", "anh321@gmail.com", status).toDataTable());
         }
         table.fixTable(jScrollPane1);
         table.setRowHeight(150);
