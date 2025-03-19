@@ -16,10 +16,6 @@ import gui.application.form.MainForm;
 import gui.splashScreen.SplashScreen;
 import raven.toast.Notifications;
 
-/**
- *
- * @author Raven
- */
 public class Application extends javax.swing.JFrame {
 
     private static Application app;
