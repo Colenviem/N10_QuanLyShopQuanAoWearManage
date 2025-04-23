@@ -1,28 +1,37 @@
 package dao;
 
-import dto.PurchaseOrderDetail;
+import dto.Category;
 import jakarta.persistence.EntityManager;
-import lombok.AllArgsConstructor;
+import util.JPAUtil;
 
 import java.util.List;
 
-@AllArgsConstructor
-public class PurchaseOrderDetailDao {
+public class CategoryDAO {
     private EntityManager em;
 
-    public List<PurchaseOrderDetail> getAllPurchaseOrderDetails() {
-        return em.createQuery("SELECT pod FROM PurchaseOrderDetail pod", PurchaseOrderDetail.class)
+    public CategoryDAO(){
+        em = JPAUtil.getEntityManager();
+    }
+
+    public List<Category> getAllCategories() {
+        return em.createQuery("SELECT c FROM Category c", Category.class)
                 .getResultList();
     }
 
-    public PurchaseOrderDetail getPurchaseOrderDetailById(String id) {
-        return em.find(PurchaseOrderDetail.class, id);
+    public List<Category> getCategoryByName(String name) {
+        return em.createQuery("SELECT c FROM Category c WHERE c.name = :name", Category.class)
+                .setParameter("name", name)
+                .getResultList();
     }
 
-    public boolean savePurchaseOrderDetail(PurchaseOrderDetail purchaseOrderDetail) {
+    public Category getCategoryById(String id) {
+        return em.find(Category.class, id);
+    }
+
+    public boolean addCategory(Category category) {
         try {
             em.getTransaction().begin();
-            em.persist(purchaseOrderDetail);
+            em.persist(category);
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {
@@ -32,10 +41,10 @@ public class PurchaseOrderDetailDao {
         }
     }
 
-    public boolean updatePurchaseOrderDetail(PurchaseOrderDetail purchaseOrderDetail) {
+    public boolean updateCategory(Category category) {
         try {
             em.getTransaction().begin();
-            em.merge(purchaseOrderDetail);
+            em.merge(category);
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {
@@ -45,14 +54,14 @@ public class PurchaseOrderDetailDao {
         }
     }
 
-    public boolean deletePurchaseOrderDetail(String id) {
+    public boolean deleteCategory(String id) {
         try {
-            PurchaseOrderDetail purchaseOrderDetail = em.find(PurchaseOrderDetail.class, id);
-            if (purchaseOrderDetail == null) {
+            Category category = em.find(Category.class, id);
+            if (category == null) {
                 return false;
             }
             em.getTransaction().begin();
-            em.remove(purchaseOrderDetail);
+            em.remove(category);
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {

@@ -1,34 +1,37 @@
 package dao;
 
-import dto.Order;
+import dto.Store;
 import jakarta.persistence.EntityManager;
-import lombok.AllArgsConstructor;
+import util.JPAUtil;
 
 import java.util.List;
 
-@AllArgsConstructor
-public class OrderDao {
+public class StoreDAO {
     private EntityManager em;
 
-    public List<Order> getAllOrders() {
-        return em.createQuery("SELECT o FROM Order o", Order.class)
+    public StoreDAO(){
+        em = JPAUtil.getEntityManager();
+    }
+
+    public List<Store> getAllStores() {
+        return em.createQuery("SELECT s FROM Store s", Store.class)
                 .getResultList();
     }
 
-    public List<Order> getOrderByOrderDate(String orderDate) {
-        return em.createQuery("SELECT o FROM Order o WHERE o.orderDate = :orderDate", Order.class)
-                .setParameter("orderDate", orderDate)
+    public List<Store> getStoreByStoreName(String storeName) {
+        return em.createQuery("SELECT s FROM Store s WHERE s.name = :storeName", Store.class)
+                .setParameter("storeName", storeName)
                 .getResultList();
     }
 
-    public Order getOrderById(String id) {
-        return em.find(Order.class, id);
+    public Store getStoreById(int id) {
+        return em.find(Store.class, id);
     }
 
-    public boolean saveOrder(Order order) {
+    public boolean addStore(Store store) {
         try {
             em.getTransaction().begin();
-            em.persist(order);
+            em.persist(store);
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {
@@ -38,10 +41,10 @@ public class OrderDao {
         }
     }
 
-    public boolean updateOrder(Order order) {
+    public boolean updateStore(Store store) {
         try {
             em.getTransaction().begin();
-            em.merge(order);
+            em.merge(store);
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {
@@ -51,14 +54,14 @@ public class OrderDao {
         }
     }
 
-    public boolean deleteOrder(String id) {
+    public boolean deleteStore(String id) {
         try {
-            Order order = em.find(Order.class, id);
-            if (order == null) {
+            Store store = em.find(Store.class, id);
+            if (store == null) {
                 return false;
             }
             em.getTransaction().begin();
-            em.remove(order);
+            em.remove(store);
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {

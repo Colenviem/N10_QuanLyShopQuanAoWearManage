@@ -862,7 +862,6 @@ public class FormPromotion extends JPanel implements ActionListener,MouseListene
 //                } else {
 //                    try {
 //                        // Tìm khách hàng theo mã
-//                        TimSP(txtTimMaSanPham.getText());
 //                    } catch (Exception ex) {
 //                        ex.printStackTrace(); // In ra lỗi nếu có
 //

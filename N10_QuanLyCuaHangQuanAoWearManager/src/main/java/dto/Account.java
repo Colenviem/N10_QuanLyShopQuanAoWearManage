@@ -1,20 +1,24 @@
 package dto;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "accounts")
-public class Account {
+public class Account implements Serializable {
     @Id
     @Column(name = "account_id")
     @EqualsAndHashCode.Include
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @Column(columnDefinition = "VARCHAR(200)", nullable = true)
     private String username;
@@ -28,20 +32,11 @@ public class Account {
     @Column(columnDefinition = "DATE")
     private LocalDate createdDate;
 
+    @ToString.Exclude
     @OneToOne(mappedBy = "account")
     private Employee employee;
 
+    @ToString.Exclude
     @OneToOne(mappedBy = "account")
     private Customer customer;
-
-    @Override
-    public String toString() {
-        return "Account{\n" +
-                "  id = " + id + '\n' +
-                "  username = " + username + '\n' +
-                "  password = " + password + '\n' +
-                "  status = " + status + '\n' +
-                "  createdDate = " + createdDate + '\n' +
-                '}';
-    }
 }

@@ -1,33 +1,32 @@
 package dto;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
+import java.io.Serializable;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "categories")
-public class Category {
+public class Category implements Serializable {
     @Id
     @EqualsAndHashCode.Include
     @Column(name = "category_id")
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
     @Column(columnDefinition = "VARCHAR(200)", nullable = true)
     private String name;
+
     @Column(columnDefinition = "VARCHAR(200)", nullable = true)
     private String description;
+
+    @ToString.Exclude
     @OneToMany(mappedBy = "category")
     private Set<Product> products;
-
-    @Override
-    public String toString() {
-        return "Category{" +
-                "  id = " + id + '\n' +
-                "  name = " + name + '\n' +
-                "  description = " + description + '\n' +
-                '}';
-    }
 }

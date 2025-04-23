@@ -1,21 +1,25 @@
 package dto;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "orders")
-public class Order {
+public class Order implements Serializable {
     @Id
     @EqualsAndHashCode.Include
     @Column(name = "order_id")
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     private double totalAmount;// isDerived totalAmount = SUM(subTotal)
 
@@ -26,14 +30,17 @@ public class Order {
     @Column(nullable = false)
     private Status status;
 
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderDetail> orderDetails;
 
@@ -42,21 +49,11 @@ public class Order {
     private void calculateTotalAmount() {
         if(this.orderDetails != null){
             this.totalAmount = this.orderDetails.stream()
-                    .filter(orderDetail -> orderDetail.getOrder().getId().equals(this.id))
+                    .filter(orderDetail -> orderDetail.getOrder().getId() == this.id)
                     .mapToDouble(OrderDetail::getSubTotal)
                     .sum();
         }else{
             System.out.println("OrderDetails is null");
         }
-    }
-
-    @Override
-    public String toString() {
-        return "Order{" +
-                "  id = " + id + '\n' +
-                "  totalAmount = " + totalAmount + '\n' +
-                "  orderDate = " + orderDate + '\n' +
-                "  status = " + status + '\n' +
-                '}';
     }
 }

@@ -1,7 +1,7 @@
 package dto;
 
 public enum Role {
-    STORE_MANAGER("Store Manager"), Manager("Manager"), EMPLOYEE("Employee");
+    STORE_MANAGER("Store Manager"), MANAGER("Manager"), EMPLOYEE("Employee");
 
     private String role;
 

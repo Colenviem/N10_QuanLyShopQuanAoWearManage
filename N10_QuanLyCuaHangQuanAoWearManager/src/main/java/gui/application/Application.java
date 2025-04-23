@@ -17,7 +17,6 @@ import gui.splashScreen.SplashScreen;
 import raven.toast.Notifications;
 
 public class Application extends javax.swing.JFrame {
-
     private static Application app;
     private final MainForm mainForm;
     private final LoginForm loginForm;
@@ -94,10 +93,5 @@ public class Application extends javax.swing.JFrame {
             SwingUtilities.updateComponentTreeUI(app.loginForm); // Cập nhật UI cho LoginForm
             app.loginForm.setVisible(true);
         });
-
     }
-
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    // End of variables declaration//GEN-END:variables
 }

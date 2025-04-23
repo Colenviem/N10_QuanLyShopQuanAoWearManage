@@ -1,18 +1,23 @@
 package dto;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
-@Data
+import java.io.Serializable;
+
+@Setter
+@Getter
+@NoArgsConstructor
+@ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "order_details")
-public class OrderDetail {
+public class OrderDetail implements Serializable {
     @Id
     @EqualsAndHashCode.Include
     @Column(name = "order_detail_id")
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     private int quantity;
 
@@ -20,10 +25,12 @@ public class OrderDetail {
 
     private double subTotal;// isDerived subTotal = quantity * price
 
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
 
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
@@ -32,15 +39,5 @@ public class OrderDetail {
     @PreUpdate
     private void calculateSubTotal() {
         this.subTotal = this.quantity * this.price;
-    }
-
-    @Override
-    public String toString() {
-        return "OrderDetail{" +
-                "  id = " + id + '\n' +
-                "  quantity = " + quantity + '\n' +
-                "  price = " + price + '\n' +
-                "  subTotal = " + subTotal + '\n' +
-                '}';
     }
 }

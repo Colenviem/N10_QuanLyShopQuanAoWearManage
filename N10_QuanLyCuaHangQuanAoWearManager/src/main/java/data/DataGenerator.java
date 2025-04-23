@@ -5,6 +5,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
 import net.datafaker.Faker;
+import util.JPAUtil;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,8 +20,6 @@ public class DataGenerator {
 
     public Account generateAccount() {
         Account account = new Account();
-        String formattedId = String.format("ACC%08d", faker.number().numberBetween(1, 99999999));
-        account.setId(formattedId);
         account.setUsername(faker.internet().username());
         account.setPassword(faker.internet().password());
         account.setStatus(random.nextBoolean());
@@ -35,8 +34,6 @@ public class DataGenerator {
 
     public Store generateStore() {
         Store store = new Store();
-        String formattedId = String.format("STR%08d", faker.number().numberBetween(1, 99999999));
-        store.setId(formattedId);
         store.setName(faker.company().name());
         store.setAddress(faker.address().fullAddress());
         store.setPhone(faker.phoneNumber().cellPhone());
@@ -46,8 +43,6 @@ public class DataGenerator {
 
     public Supplier generateSupplier() {
         Supplier supplier = new Supplier();
-        String formattedId = String.format("SUP%08d", faker.number().numberBetween(1, 99999999));
-        supplier.setId(formattedId);
         supplier.setSupplierName(faker.company().name());
         supplier.setAddress(faker.address().fullAddress());
         supplier.setPhone(faker.phoneNumber().cellPhone());
@@ -57,8 +52,6 @@ public class DataGenerator {
 
     public Category generateCategory() {
         Category category = new Category();
-        String formattedId = String.format("CAT%08d", faker.number().numberBetween(1, 99999999));
-        category.setId(formattedId);
         category.setName(faker.commerce().brand());
         category.setDescription(faker.lorem().sentence());
         return category;
@@ -66,8 +59,6 @@ public class DataGenerator {
 
     public Employee generateEmployee() {
         Employee employee = new Employee();
-        String formattedId = String.format("EMP%08d", faker.number().numberBetween(1, 99999999));
-        employee.setId(formattedId);
         employee.setFullName(faker.name().fullName());
         employee.setPhone(faker.phoneNumber().cellPhone());
         employee.setSalary(faker.number().numberBetween(1000000, 10000000));
@@ -81,8 +72,6 @@ public class DataGenerator {
 
     public Customer generateCustomer() {
         Customer customer = new Customer();
-        String formattedId = String.format("CUS%08d", faker.number().numberBetween(1, 99999999));
-        customer.setId(formattedId);
         customer.setName(faker.name().fullName());
         customer.setPhone(faker.phoneNumber().cellPhone());
         customer.setAccount(generateAccount());
@@ -94,8 +83,6 @@ public class DataGenerator {
 
     public Product generateProduct() {
         Product product = new Product();
-        String formattedId = String.format("PRO%08d", faker.number().numberBetween(1, 99999999));
-        product.setId(formattedId);
         product.setProductName(faker.commerce().productName());
         product.setDescription(faker.lorem().sentence());
         product.setDiscount(faker.number().randomDouble(2, 0, 1));
@@ -115,8 +102,6 @@ public class DataGenerator {
 
     public PurchaseOrder generatePurchaseOrder() {
         PurchaseOrder purchaseOrder = new PurchaseOrder();
-        String formattedId = String.format("PO%08d", faker.number().numberBetween(1, 99999999));
-        purchaseOrder.setId(formattedId);
         purchaseOrder.setOrderDate(LocalDate.now());
         purchaseOrder.setStatus(random.nextBoolean());
         purchaseOrder.setEmployee(generateEmployee());
@@ -129,8 +114,6 @@ public class DataGenerator {
 
     public PurchaseOrderDetail generatePurchaseOrderDetail() {
         PurchaseOrderDetail purchaseOrderDetail = new PurchaseOrderDetail();
-        String formattedId = String.format("POD%08d", faker.number().numberBetween(1, 99999999));
-        purchaseOrderDetail.setId(formattedId);
         purchaseOrderDetail.setQuantity(faker.number().numberBetween(1, 100));
         purchaseOrderDetail.setPurchasePrice(faker.number().randomDouble(2, 1000, 1000000));
         Product product = generateProduct();
@@ -144,8 +127,6 @@ public class DataGenerator {
 
     public Order generateOrder() {
         Order order = new Order();
-        String formattedId = String.format("ORD%08d", faker.number().numberBetween(1, 99999999));
-        order.setId(formattedId);
         order.setOrderDate(LocalDate.now());
         order.setStatus(faker.options().option(Status.class));
         Customer customer = generateCustomer();
@@ -160,8 +141,6 @@ public class DataGenerator {
 
     public OrderDetail generateOrderDetail() {
         OrderDetail orderDetail = new OrderDetail();
-        String formattedId = String.format("OD%08d", faker.number().numberBetween(1, 99999999));
-        orderDetail.setId(formattedId);
         orderDetail.setQuantity(faker.number().numberBetween(1, 100));
         orderDetail.setPrice(faker.number().randomDouble(2, 1000, 1000000));
         Product product = generateProduct();
@@ -174,8 +153,7 @@ public class DataGenerator {
     }
 
     public void generateAndPrintSampleData(){
-        EntityManager em = Persistence.createEntityManagerFactory("mariadb")
-                .createEntityManager();
+        EntityManager em = JPAUtil.getEntityManager();
         EntityTransaction tr = em.getTransaction();
         for (int i = 0; i < 20; i++) {
             PurchaseOrderDetail purchaseOrderDetail = generatePurchaseOrderDetail();

@@ -1,9 +1,11 @@
 package gui.application.form.other;
 
+import bus.CustomerBUS;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 //import connectDB.ConnectDB;
 //import dao.KhachHang_DAO;
 //import entity.KhachHang;
+import dto.Customer;
 import gui.button.ButtonCustom;
 import gui.button.NavButtonCustom;
 import gui.combobox.ComboBoxSuggestion;
@@ -25,6 +27,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,86 +53,22 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 public class FormCustomer extends JPanel implements ActionListener, MouseListener {
-
     private Navbar navbar;
-//    private KhachHang_DAO kh_dao;
     private DefaultTableModel tableModel;
-    private  NavButtonCustom btnAdd;
-    private  NavButtonCustom btnEdit;
+    private ButtonCustom searchButton;
+    private NavButtonCustom btnAdd;
+    private NavButtonCustom btnEdit;
     private NavButtonCustom btnImport;
     private NavButtonCustom btnExport;
+    private CustomerBUS customerBUS;
 
     public FormCustomer() {
-
         try {
-//            ConnectDB.getInstance().connect();
-//            kh_dao = new KhachHang_DAO();
             initComponents();
             init();
-//            DocDuLieuDatabaseVaoTable(); // Đẩy dữ liệu lên bảng khi khởi tạo
         } catch (Exception e) {
             e.printStackTrace();
         }
-        ButtonCustom searchButton = navbar.getBtnSearch();
-        btnImport = navbar.getBtnImport();
-        btnExport = navbar.getBtnExport();
-        btnAdd= navbar.getBtnAdd();
-        btnEdit=navbar.getBtnEdit();
-        
-        
-//        btnEdit.addActionListener(e -> editKH());
-        KeyStroke keySua = KeyStroke.getKeyStroke("control S");
-        btnEdit.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keySua, "SaveAction");
-        btnEdit.getActionMap().put("SaveAction", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-//                editKH();
-            }
-        });
-        
-//        btnImport.addActionListener(e -> importExecl());
-        KeyStroke keyThemExecl = KeyStroke.getKeyStroke("F1");
-        btnImport.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyThemExecl, "ImportAction");
-        btnImport.getActionMap().put("ImportAction", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                importExecl();
-            }
-        });
-        
-        KeyStroke keyXuatExecl = KeyStroke.getKeyStroke("F2");
-        btnExport.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyXuatExecl, "ExportAction");
-        btnExport.getActionMap().put("ExportAction", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                exportExecl();
-            }
-        });
-        
-        KeyStroke keyTim = KeyStroke.getKeyStroke("ENTER");
-        searchButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyTim, "SearchAction");
-        searchButton.getActionMap().put("SearchAction", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-//                searchKhachHang();
-            }
-        });
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        btnImport.addActionListener(this);
-        btnExport.addActionListener(this);
-        searchButton.addActionListener(this);
-        tableCustomer.addMouseListener(this);
-        btnAdd.addActionListener(this);
-        btnEdit.addActionListener(this);
     }
 
     @SuppressWarnings("unchecked")
@@ -222,7 +161,7 @@ public class FormCustomer extends JPanel implements ActionListener, MouseListene
         tableCustomer.setBorder(null);
         tableCustomer.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null}
+
             },
             new String [] {
                 "Mã khách hàng", "Tên khách hàng", "Số điện thoại ", "Điểm tích lũy"
@@ -251,7 +190,7 @@ public class FormCustomer extends JPanel implements ActionListener, MouseListene
         add(pnlContainer, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
-    public static void main(String[] args) {
+    public static void main(String[] args)  {
         JFrame frame = new JFrame();
         frame.setSize(1400, 800);
         FormCustomer card = new FormCustomer();
@@ -280,8 +219,7 @@ public class FormCustomer extends JPanel implements ActionListener, MouseListene
     private gui.textfield.TextPay txtTenKH;
     // End of variables declaration//GEN-END:variables
 
-    private void init() {
-
+    private void init() throws Exception {
         String[] content = new String[]{"Mã khách hàng", "Tên khách hàng", "Số điện thoại"};
         navbar = new Navbar();
         navbar.setDefaultComboBox(new DefaultComboBoxModel<>(content));
@@ -307,96 +245,51 @@ public class FormCustomer extends JPanel implements ActionListener, MouseListene
         pnlTxtCon.setBorder(new EmptyBorder(0, 0, 20, 0));
 
         tableCustomer.ScrollPaneTable(scrollPane);
-//        tableCustomer.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         setBackground(new Color(246, 250, 255));
-    }
 
-//    public void DocDuLieuDatabaseVaoTable() throws Exception {
-//        kh_dao = new KhachHang_DAO();
-//        ArrayList<entity.KhachHang> list = kh_dao.getAllTBKhachHangThangNay();
-//        tableModel = (DefaultTableModel) tableCustomer.getModel();
-//        tableModel.setRowCount(0);
-//        for (entity.KhachHang kh : list) {
-//            tableModel.addRow(new Object[]{
-//                kh.getMaKH(), kh.getTenKH(), kh.getSoDienThoai(), kh.getDiemTichLuy()
-//            });
-//        }
-//    }
-//
-//    public void DocDuLieuDatabaseVaoTableFull() throws Exception {
-//        kh_dao = new KhachHang_DAO();
-//        ArrayList<entity.KhachHang> list = kh_dao.getAllTBKhachHang();
-//        DefaultTableModel model = (DefaultTableModel) tableCustomer.getModel();
-//        model.setRowCount(0);
-//        for (entity.KhachHang kh : list) {
-//            model.addRow(new Object[]{
-//                kh.getMaKH(), kh.getTenKH(), kh.getSoDienThoai(), kh.getDiemTichLuy()
-//            });
-//        }
-//    }
+        searchButton = navbar.getBtnSearch();
+        btnImport = navbar.getBtnImport();
+        btnExport = navbar.getBtnExport();
+        btnAdd = navbar.getBtnAdd();
+        btnEdit =navbar.getBtnEdit();
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        // Không khởi tạo lại navbar
-        ButtonCustom searchButton = navbar.getBtnSearch();
-        ComboBoxSuggestion<String> comboBox = navbar.getComboBox();
-        String selectedValue = (String) comboBox.getSelectedItem();
-        DefaultTableModel model = (DefaultTableModel) tableCustomer.getModel();
-        NavButtonCustom btnImport = navbar.getBtnImport();
-        NavButtonCustom btnExport = navbar.getBtnExport();
-        Object o = e.getSource();
-        if (o.equals(searchButton)) {
-//            searchKhachHang();
+        try {
+            DocDuLieuDatabaseVaoTable();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        if (o.equals(btnImport)) {
-            importExecl();
-        } else if (o.equals(btnExport)) {
-            exportExecl();
-        }else
-            if(o.equals(btnEdit)){
-//                editKH();
-            }
+
+        btnImport.addActionListener(this);
+        btnExport.addActionListener(this);
+        searchButton.addActionListener(this);
+        tableCustomer.addMouseListener(this);
+        btnAdd.addActionListener(this);
+        btnEdit.addActionListener(this);
     }
-    private void clearText(){
-        txtMaKH.setText("");
-        txtTenKH.setText("");
-        txtSDT.setText("");
-        txtDiemTL.setText("");
-        
-    }
-    
-    private boolean ValidInput(){
-            String tenKH= txtTenKH.getText();
-            String sdt= txtSDT.getText();
-            if(!tenKH.matches("^[A-ZÀ-ỹ][a-zà-ỹ]*(?: [A-ZÀ-ỹ][a-zà-ỹ]*)*$")){
-                JOptionPane.showMessageDialog(this, "Tên khách hàng không hợp lệ! Phải có ít nhất hai từ, mỗi từ viết hoa chữ cái đầu và không chứa ký tự đặc biệt.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
-                txtTenKH.requestFocus();
-                txtTenKH.selectAll();
-            return false;
-            }else
-                if (!sdt.matches("^0[13579]\\d{8}$")) {
-                    JOptionPane.showMessageDialog(this, "Số điện thoại không hợp lệ! Phải bắt đầu bằng 0 và tiếp theo là 1, 3, 5, 7 hoặc 9, tổng cộng 10 chữ số.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
-                    txtSDT.requestFocus();
-                    txtSDT.selectAll();
-                    return false;
-    }
-            return true;
-    }
-    private void createJOptionPane(String infor, String message) {
-        JOptionPane.showMessageDialog(this, "Không tìm thấy " + infor + " " + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
+
+    public void DocDuLieuDatabaseVaoTable() throws Exception {
+        customerBUS = new CustomerBUS();
+        tableModel = (DefaultTableModel) tableCustomer.getModel();
+        customerBUS.getAllCustomers()
+                .stream()
+                .forEach(customer -> tableModel.addRow(new Object[]{
+                        customer.getId(),
+                        customer.getName(),
+                        customer.getPhone(),
+                        customer.getPoint()
+                }));
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        DefaultTableModel model = (DefaultTableModel) tableCustomer.getModel();
         int row = tableCustomer.getSelectedRow();
-        if (row != -1) {
+        if(row != -1) {
+            DefaultTableModel model = (DefaultTableModel) tableCustomer.getModel();
             txtMaKH.setText(model.getValueAt(row, 0).toString());
             txtTenKH.setText(model.getValueAt(row, 1).toString());
             txtSDT.setText(model.getValueAt(row, 2).toString());
             txtDiemTL.setText(model.getValueAt(row, 3).toString());
         }
-
     }
 
     @Override
@@ -418,84 +311,134 @@ public class FormCustomer extends JPanel implements ActionListener, MouseListene
     public void mouseExited(MouseEvent e) {
 
     }
-//    public void searchKhachHang(){
-//            ComboBoxSuggestion<String> comboBox = navbar.getComboBox();
-//            String txtSearch = navbar.getTxtSearch().getText();
-//            String txtComboSearch = (String) comboBox.getSelectedItem();
-////            KhachHang_DAO khachHang_DAO_Search = new KhachHang_DAO();
-////            List<KhachHang> khList = new ArrayList<>();
-//            tableModel.setRowCount(0);
-//            if (!txtSearch.equals("Nhập nội dung tìm kiếm...")) {
-//
-//                switch (txtComboSearch) {
-//                    case "Mã khách hàng": {
-//                        try {
-//                            khList = khachHang_DAO_Search.getKHTheoMaKhachHang(txtSearch);
-//                            System.out.println(txtSearch);
-//                        } catch (Exception ex) {
-//                            java.util.logging.Logger.getLogger(FormCustomer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//                        }
-//                    }
-//                    break;
-//
-//                    case "Số điện thoại": {
-//                        try {
-//                            khList = khachHang_DAO_Search.getKHTheoSDT(txtSearch);
-//                            System.out.println(txtSearch);
-//                        } catch (Exception ex) {
-//                            java.util.logging.Logger.getLogger(FormCustomer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//                        }
-//                    }
-//                    break;
-//
-//                    case "Tên khách hàng": {
-//                        try {
-//                            khList = khachHang_DAO_Search.getKHTheoTenKhachHang(txtSearch);
-//                            System.out.println(txtSearch);
-//                        } catch (Exception ex) {
-//                            java.util.logging.Logger.getLogger(FormCustomer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//                        }
-//                    }
-//                    break;
-//
-//                }
-//                if (!khList.isEmpty()) {
-//                    khList.forEach(kh -> tableModel.addRow(createRowData(kh)));
-//                    chonDong();
-//                } else {
-//                    try {
-////                        DocDuLieuDatabaseVaoTableFull();
-//                        createJOptionPane(txtComboSearch.toLowerCase(), txtSearch);
-//                        SwingUtilities.invokeLater(() -> {
-//                            tableModel.fireTableDataChanged();
-//                            tableCustomer.revalidate(); // Cập nhật JTable
-//                            tableCustomer.repaint(); // Vẽ lại JTable
-//                            JScrollPane scrollPane = (JScrollPane) tableCustomer.getParent().getParent(); // Lấy JScrollPane
-//                            scrollPane.revalidate(); // Cập nhật JScrollPane
-//                            scrollPane.repaint(); // Vẽ lại JScrollPane
-//                        });
-//                        chonDong();
-//                    } catch (Exception ex) {
-//                        java.util.logging.Logger.getLogger(FormCustomer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//                    }
-//                }
-//            } else {
-//                try {
-//                    DocDuLieuDatabaseVaoTableFull();
-//                    chonDong();
-//                    SwingUtilities.invokeLater(() -> {
-//                        tableModel.fireTableDataChanged();
-//                        tableCustomer.revalidate(); // Cập nhật JTable
-//                        tableCustomer.repaint(); // Vẽ lại JTable
-//                        JScrollPane scrollPane = (JScrollPane) tableCustomer.getParent().getParent(); // Lấy JScrollPane
-//                        scrollPane.revalidate(); // Cập nhật JScrollPane
-//                        scrollPane.repaint(); // Vẽ lại JScrollPane
-//                    });
-//                } catch (Exception ex) {
-//                    java.util.logging.Logger.getLogger(FormCustomer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//                }
-//            }
-//    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Object o = e.getSource();
+        if (o.equals(searchButton)) {
+            searchKhachHang();
+        }
+        if (o.equals(btnImport)) {
+            importExecl();
+        } else if (o.equals(btnExport)) {
+            exportExecl();
+        }else if(o.equals(btnEdit)){
+            editKH();
+        }
+    }
+
+    private void searchKhachHang() {
+        ComboBoxSuggestion<String> comboBox = navbar.getComboBox();
+        String searchText = comboBox.getSelectedItem().toString();
+        String searchValue = navbar.getTxtSearch().getText();
+        System.out.println(searchValue);
+        if (searchValue.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập thông tin tìm kiếm!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try {
+            customerBUS = new CustomerBUS();
+            if (searchText.equals("Mã khách hàng")) {
+                if (searchValue.matches("\\d+")) {
+                    int id = Integer.parseInt(searchValue);
+                    Customer customer = customerBUS.getCustomerById(id);
+                    if (customer != null) {
+                        tableModel.setRowCount(0);
+                        tableModel.addRow(new Object[]{
+                                customer.getId(),
+                                customer.getName(),
+                                customer.getPhone(),
+                                customer.getPoint()
+                        });
+                    }
+                }
+            } else if (searchText.equals("Tên khách hàng")) {
+                List<Customer> customers = customerBUS.getCustomerByName(searchValue);
+                if (customers != null && !customers.isEmpty()) {
+                    tableModel.setRowCount(0);
+                    customers.stream()
+                            .forEach((customer -> tableModel.addRow(new Object[]{
+                                    customer.getId(),
+                                    customer.getName(),
+                                    customer.getPhone(),
+                                    customer.getPoint()
+                            })));
+                }
+            } else if (searchText.equals("Số điện thoại")) {
+                List<Customer> customers = customerBUS.getCustomerByPhone(searchValue);
+                if (customers != null && !customers.isEmpty()) {
+                    tableModel.setRowCount(0);
+                    customers.stream()
+                            .forEach((customer -> tableModel.addRow(new Object[]{
+                                    customer.getId(),
+                                    customer.getName(),
+                                    customer.getPhone(),
+                                    customer.getPoint()
+                            })));
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy thông tin khách hàng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void editKH() {
+        try {
+            customerBUS = new CustomerBUS();
+
+            if (!ValidInput()) {
+                return;
+            }
+
+            int id = Integer.parseInt(txtMaKH.getText());
+            String name = txtTenKH.getText();
+            String phone = txtSDT.getText();
+            Customer customer = customerBUS.getCustomerById(id);
+            customer.setName(name);
+            customer.setPhone(phone);
+            if(customerBUS.updateCustomer(customer)){
+                JOptionPane.showMessageDialog(this, "Cập nhật khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                tableModel.setRowCount(0);
+                DocDuLieuDatabaseVaoTable();
+                clearText();
+            }else {
+                JOptionPane.showMessageDialog(this, "Cập nhật khách hàng thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void clearText(){
+        txtMaKH.setText("");
+        txtTenKH.setText("");
+        txtSDT.setText("");
+        txtDiemTL.setText("");
+    }
+
+    private boolean ValidInput(){
+        String tenKH= txtTenKH.getText();
+        String sdt= txtSDT.getText();
+        if(!tenKH.matches("^[A-ZÀ-ỹ][a-zà-ỹ]*(?: [A-ZÀ-ỹ][a-zà-ỹ]*)*$")){
+            JOptionPane.showMessageDialog(this, "Tên khách hàng không hợp lệ! Phải có ít nhất hai từ, mỗi từ viết hoa chữ cái đầu và không chứa ký tự đặc biệt.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            txtTenKH.requestFocus();
+            txtTenKH.selectAll();
+            return false;
+        }else if (!sdt.matches("^0[13579]\\d{8}$")) {
+            JOptionPane.showMessageDialog(this, "Số điện thoại không hợp lệ! Phải bắt đầu bằng 0 và tiếp theo là 1, 3, 5, 7 hoặc 9, tổng cộng 10 chữ số.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            txtSDT.requestFocus();
+            txtSDT.selectAll();
+            return false;
+        }
+        return true;
+    }
+
+    private void createJOptionPane(String infor, String message) {
+        JOptionPane.showMessageDialog(this, "Không tìm thấy " + infor + " " + message, "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
     
     public void importExecl(){
             DefaultTableModel model = (DefaultTableModel) tableCustomer.getModel();
@@ -570,52 +513,7 @@ public class FormCustomer extends JPanel implements ActionListener, MouseListene
                 }
             }
     }
-//    
-//    public void editKH(){
-//        
-//                if(ValidInput()){
-//                    String maKH= txtMaKH.getText();
-//                    String tenKH= txtTenKH.getText();
-//                    String sdt= txtSDT.getText();
-//                    int diemTichLuy= Integer.parseInt(txtDiemTL.getText());
-//                    entity.KhachHang kh1= new entity.KhachHang(maKH, tenKH, sdt, diemTichLuy);
-//                    try {
-//                        if(kh_dao.update(kh1)){
-//                            try{
-//                                try {
-//                                DocDuLieuDatabaseVaoTableFull();
-////                                createJOptionPane(txtComboSearch.toLowerCase(), txtSearch);
-//                                SwingUtilities.invokeLater(() -> {
-//                                tableModel.fireTableDataChanged();
-//                                tableCustomer.revalidate(); // Cập nhật JTable
-//                                tableCustomer.repaint(); // Vẽ lại JTable
-//                                JScrollPane scrollPane = (JScrollPane) tableCustomer.getParent().getParent(); // Lấy JScrollPane
-//                                scrollPane.revalidate(); // Cập nhật JScrollPane
-//                                scrollPane.repaint(); // Vẽ lại JScrollPane
-//                        });
-//                    } catch (Exception ex) {
-//                        java.util.logging.Logger.getLogger(FormCustomer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//                    }
-//                            }catch(Exception ex){
-//                                ex.printStackTrace();
-//                            }
-//                            chonDong();
-//                            JOptionPane.showMessageDialog(this, "Sửa thông tin khách hàng thành công");
-//                        }
-//                    } catch (Exception ex) {
-//                        java.util.logging.Logger.getLogger(FormCustomer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//                    }
-//                }
-//    }
-//    
-//    private Object[] createRowData(KhachHang kh) {
-//        return new Object[]{
-//            kh.getMaKH(),
-//            kh.getTenKH(),
-//            kh.getSoDienThoai(),
-//            kh.getDiemTichLuy()
-//        };
-//    }
+
     public void chonDong(){
         tableCustomer.setRowSelectionInterval(0, 0);
         tableCustomer.scrollRectToVisible(tableCustomer.getCellRect(0, 0, true));

@@ -2,20 +2,24 @@ package dao;
 
 import dto.PurchaseOrder;
 import jakarta.persistence.EntityManager;
-import lombok.AllArgsConstructor;
+import util.JPAUtil;
 
+import java.time.LocalDate;
 import java.util.List;
 
-@AllArgsConstructor
-public class PurchaseOrderDao {
+public class PurchaseOrderDAO {
     private EntityManager em;
+
+    public PurchaseOrderDAO(){
+        em = JPAUtil.getEntityManager();
+    }
 
     public List<PurchaseOrder> getAllPurchaseOrders() {
         return em.createQuery("SELECT po FROM PurchaseOrder po", PurchaseOrder.class)
                 .getResultList();
     }
 
-    public List<PurchaseOrder> getPurchaseOrderByOrderDate(String orderDate) {
+    public List<PurchaseOrder> getPurchaseOrderByOrderDate(LocalDate orderDate) {
         return em.createQuery("SELECT po FROM PurchaseOrder po WHERE po.orderDate = :orderDate", PurchaseOrder.class)
                 .setParameter("orderDate", orderDate)
                 .getResultList();
@@ -27,11 +31,11 @@ public class PurchaseOrderDao {
                 .getResultList();
     }
 
-    public PurchaseOrder getPurchaseOrderById(String id) {
+    public PurchaseOrder getPurchaseOrderById(int id) {
         return em.find(PurchaseOrder.class, id);
     }
 
-    public boolean savePurchaseOrder(PurchaseOrder purchaseOrder) {
+    public boolean addPurchaseOrder(PurchaseOrder purchaseOrder) {
         try {
             em.getTransaction().begin();
             em.persist(purchaseOrder);

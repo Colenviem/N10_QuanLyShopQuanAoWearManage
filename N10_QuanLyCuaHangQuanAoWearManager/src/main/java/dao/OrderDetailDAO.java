@@ -2,24 +2,27 @@ package dao;
 
 import dto.OrderDetail;
 import jakarta.persistence.EntityManager;
-import lombok.AllArgsConstructor;
+import util.JPAUtil;
 
 import java.util.List;
 
-@AllArgsConstructor
-public class OrderDetailDao {
+public class OrderDetailDAO {
     private EntityManager em;
+
+    public OrderDetailDAO(){
+        em = JPAUtil.getEntityManager();
+    }
 
     public List<OrderDetail> getAllOrderDetails() {
         return em.createQuery("SELECT od FROM OrderDetail od", OrderDetail.class)
                 .getResultList();
     }
 
-    public OrderDetail getOrderDetailById(String id) {
+    public OrderDetail getOrderDetailById(int id) {
         return em.find(OrderDetail.class, id);
     }
 
-    public boolean saveOrderDetail(OrderDetail orderDetail) {
+    public boolean addOrderDetail(OrderDetail orderDetail) {
         try {
             em.getTransaction().begin();
             em.persist(orderDetail);

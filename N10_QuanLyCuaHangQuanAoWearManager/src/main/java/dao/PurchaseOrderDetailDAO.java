@@ -1,35 +1,31 @@
 package dao;
 
-import dto.Account;
+import dto.PurchaseOrderDetail;
 import jakarta.persistence.EntityManager;
-import lombok.AllArgsConstructor;
+import util.JPAUtil;
 
 import java.util.List;
 
-// Thuộc tính của Lombok, tự động sinh constructor có tham số cho tất cả các trường trong lớp.
-@AllArgsConstructor
-public class AccountDao {
+public class PurchaseOrderDetailDAO {
     private EntityManager em;
 
-    public List<Account> getAllAccounts() {
-        return em.createQuery("SELECT a FROM Account a", Account.class)
+    public PurchaseOrderDetailDAO(){
+        em = JPAUtil.getEntityManager();
+    }
+
+    public List<PurchaseOrderDetail> getAllPurchaseOrderDetails() {
+        return em.createQuery("SELECT pod FROM PurchaseOrderDetail pod", PurchaseOrderDetail.class)
                 .getResultList();
     }
 
-    public List<Account> getAccountByUsername(String username) {
-        return em.createQuery("SELECT a FROM Account a WHERE a.username = :username", Account.class)
-                .setParameter("username", username)
-                .getResultList();
+    public PurchaseOrderDetail getPurchaseOrderDetailById(int id) {
+        return em.find(PurchaseOrderDetail.class, id);
     }
 
-    public Account getAccountById(String id) {
-        return em.find(Account.class, id);
-    }
-
-    public boolean saveAccount(Account account) {
+    public boolean addPurchaseOrderDetail(PurchaseOrderDetail purchaseOrderDetail) {
         try {
             em.getTransaction().begin();
-            em.persist(account);
+            em.persist(purchaseOrderDetail);
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {
@@ -39,10 +35,10 @@ public class AccountDao {
         }
     }
 
-    public boolean updateAccount(Account account) {
+    public boolean updatePurchaseOrderDetail(PurchaseOrderDetail purchaseOrderDetail) {
         try {
             em.getTransaction().begin();
-            em.merge(account);
+            em.merge(purchaseOrderDetail);
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {
@@ -52,14 +48,14 @@ public class AccountDao {
         }
     }
 
-    public boolean deleteAccount(String id) {
+    public boolean deletePurchaseOrderDetail(String id) {
         try {
-            Account account = em.find(Account.class, id);
-            if (account == null) {
+            PurchaseOrderDetail purchaseOrderDetail = em.find(PurchaseOrderDetail.class, id);
+            if (purchaseOrderDetail == null) {
                 return false;
             }
             em.getTransaction().begin();
-            em.remove(account);
+            em.remove(purchaseOrderDetail);
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {

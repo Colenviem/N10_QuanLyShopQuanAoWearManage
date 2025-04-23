@@ -2,13 +2,16 @@ package dao;
 
 import dto.Supplier;
 import jakarta.persistence.EntityManager;
-import lombok.AllArgsConstructor;
+import util.JPAUtil;
 
 import java.util.List;
 
-@AllArgsConstructor
-public class SupplierDao {
+public class SupplierDAO {
     private EntityManager em;
+
+    public SupplierDAO(){
+        em = JPAUtil.getEntityManager();
+    }
 
     public List<Supplier> getAllSuppliers() {
         return em.createQuery("SELECT s FROM Supplier s", Supplier.class)
@@ -33,11 +36,11 @@ public class SupplierDao {
                 .getResultList();
     }
 
-    public Supplier getSupplierById(String id) {
+    public Supplier getSupplierById(int id) {
         return em.find(Supplier.class, id);
     }
 
-    public boolean saveSupplier(Supplier supplier) {
+    public boolean addSupplier(Supplier supplier) {
         try {
             em.getTransaction().begin();
             em.persist(supplier);

@@ -113,18 +113,7 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
         txtDTLMoi.setText("0");
         txtThanhTien = pay1.getTxtThanhTien();
         txtThanhTien.setText(txtTTHD.getText());
-//        setDataNV();
-//        String maHD = taoMaHoaDon();
-//        txtMaHD.setText(maHD);
-//        tabHoaDon.setTitleAt(0, maHD);
-
         tableOrder.getColumnModel().getColumn(0).setCellRenderer(new TableProductCellRender(tableOrder));
-//        tableOrder.getColumnModel().getColumn(5).setCellEditor(new TableQtyCellRender(new EventCellInputChange() {
-//            @Override
-//            public void inputChanged() {
-//                sumAmount();
-//            }
-//        }));
         tableOrder.getColumnModel().getColumn(7).setCellRenderer(new TableRemoveCellRender(tableOrder));
         tableModel = (DefaultTableModel) tableOrder.getModel();
         txtTenKH.setFocusable(false);
@@ -140,10 +129,9 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
                 }
             }
         });
-//Đki sự kiện
+        //Đki sự kiện
         btnSearch.addActionListener(this);
         btnSearch1.addActionListener(this);
-//        btnSaveTemp.addActionListener(this);
         tableOrder.addMouseListener(this);
         btnThanhToan.addActionListener(this);
         txtSDTMoi.addFocusListener(new FocusAdapter() {

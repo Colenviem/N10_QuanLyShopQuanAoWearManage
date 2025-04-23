@@ -1,22 +1,25 @@
 package dto;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import org.checkerframework.checker.units.qual.C;
+import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "employees")
-public class Employee {
+public class Employee implements Serializable {
     @Id
     @EqualsAndHashCode.Include
     @Column(name = "employee_id")
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @Column(columnDefinition = "VARCHAR(200)", nullable = true)
     private String fullName;
@@ -32,10 +35,12 @@ public class Employee {
     @Column(columnDefinition = "BIT")
     private boolean status;
 
+    @ToString.Exclude
     @OneToOne
     @JoinColumn(name = "account_id")
     private Account account;
 
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "store_id")
     private Store store;
@@ -44,21 +49,11 @@ public class Employee {
     @Column(nullable = false)
     private Role role;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "employee")
     private Set<Order> orders;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "employee")
     private Set<PurchaseOrder> purchaseOrders;
-
-    @Override
-    public String toString() {
-        return "Employee{" +
-                "  id = " + id + '\n' +
-                "  fullName = " + fullName + '\n' +
-                "  phone='" + phone + '\n' +
-                "  salary=" + salary + '\n' +
-                "  hireDate=" + hireDate +
-                "  status=" + status +
-                '}';
-    }
 }

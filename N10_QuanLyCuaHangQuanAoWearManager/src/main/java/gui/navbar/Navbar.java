@@ -99,6 +99,7 @@ public class Navbar extends JPanel {
         txtSearch = new TextFieldCustom("Nhập nội dung tìm kiếm...");
         txtSearch.setPreferredSize(new Dimension(200, 40));
         btnSearch = new ButtonCustom("Tìm kiếm", "images/png/search.png");
+        btnSearch.setPreferredSize(new Dimension(100, 40));
 
         pnlBtnLeft.add(btnAdd);
         pnlBtnLeft.add(btnEdit);
@@ -151,5 +152,9 @@ public class Navbar extends JPanel {
 
     public void removeAdd() {
         pnlBtnLeft.remove(btnAdd);
+    }
+
+    public void removeEdit() {
+        pnlBtnLeft.remove(btnEdit);
     }
 }

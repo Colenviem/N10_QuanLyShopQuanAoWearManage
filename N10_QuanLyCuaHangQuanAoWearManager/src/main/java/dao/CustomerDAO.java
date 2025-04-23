@@ -1,34 +1,43 @@
 package dao;
 
-import dto.Category;
+import dto.Customer;
 import jakarta.persistence.EntityManager;
-import lombok.AllArgsConstructor;
+import util.JPAUtil;
 
 import java.util.List;
 
-@AllArgsConstructor
-public class CategoryDao {
+public class CustomerDAO {
     private EntityManager em;
 
-    public List<Category>  getAllCategories() {
-        return em.createQuery("SELECT c FROM Category c", Category.class)
+    public CustomerDAO(){
+        em = JPAUtil.getEntityManager();
+    }
+
+    public List<Customer> getAllCustomers() {
+        return em.createQuery("SELECT c FROM Customer c", Customer.class)
                 .getResultList();
     }
 
-    public List<Category> getCategoryByName(String name) {
-        return em.createQuery("SELECT c FROM Category c WHERE c.name = :name", Category.class)
+    public List<Customer> getCustomerByName(String name) {
+        return em.createQuery("SELECT c FROM Customer c WHERE c.name = :name", Customer.class)
                 .setParameter("name", name)
                 .getResultList();
     }
 
-    public Category getCategoryById(String id) {
-        return em.find(Category.class, id);
+    public List<Customer> getCustomerByPhone(String phone) {
+        return em.createQuery("SELECT c FROM Customer c WHERE c.phone = :phone", Customer.class)
+                .setParameter("phone", phone)
+                .getResultList();
     }
 
-    public boolean saveCategory(Category category) {
+    public Customer getCustomerById(int id) {
+        return em.find(Customer.class, id);
+    }
+
+    public boolean addCustomer(Customer customer) {
         try {
             em.getTransaction().begin();
-            em.persist(category);
+            em.persist(customer);
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {
@@ -38,10 +47,10 @@ public class CategoryDao {
         }
     }
 
-    public boolean updateCategory(Category category) {
+    public boolean updateCustomer(Customer customer) {
         try {
             em.getTransaction().begin();
-            em.merge(category);
+            em.merge(customer);
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {
@@ -51,14 +60,14 @@ public class CategoryDao {
         }
     }
 
-    public boolean deleteCategory(String id) {
+    public boolean deleteCustomer(int id) {
         try {
-            Category category = em.find(Category.class, id);
-            if (category == null) {
+            Customer customer = em.find(Customer.class, id);
+            if (customer == null) {
                 return false;
             }
             em.getTransaction().begin();
-            em.remove(category);
+            em.remove(customer);
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {

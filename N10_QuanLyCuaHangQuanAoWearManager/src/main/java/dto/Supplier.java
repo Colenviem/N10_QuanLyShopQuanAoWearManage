@@ -1,20 +1,24 @@
 package dto;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
+import java.io.Serializable;
 import java.util.Set;
 
-@Data
+@Setter
+@Getter
+@NoArgsConstructor
+@ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "suppliers")
-public class Supplier {
+public class Supplier implements Serializable {
     @Id
     @EqualsAndHashCode.Include
     @Column(name = "supplier_id")
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @Column(columnDefinition = "VARCHAR(200)", nullable = true)
     private String supplierName;
@@ -26,19 +30,9 @@ public class Supplier {
     private String phone;
 
     @Column(columnDefinition = "BIT")
-    private Boolean status;
+    private boolean status;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "supplier")
     private Set<PurchaseOrder> purchaseOrders;
-
-    @Override
-    public String toString() {
-        return "Supplier{" +
-                "  id = " + id + '\n' +
-                "  supplierName = " + supplierName + '\n' +
-                "  address = " + address + '\n' +
-                "  phone = " + phone + '\n' +
-                "  status = " + status + '\n' +
-                '}';
-    }
 }

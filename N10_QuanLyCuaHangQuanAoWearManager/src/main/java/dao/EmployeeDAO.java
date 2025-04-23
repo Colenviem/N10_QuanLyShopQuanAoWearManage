@@ -2,13 +2,16 @@ package dao;
 
 import dto.Employee;
 import jakarta.persistence.EntityManager;
-import lombok.AllArgsConstructor;
+import util.JPAUtil;
 
 import java.util.List;
 
-@AllArgsConstructor
-public class EmployeeDao {
+public class EmployeeDAO {
     private EntityManager em;
+
+    public EmployeeDAO(){
+        em = JPAUtil.getEntityManager();
+    }
 
     public List<Employee> getAllEmployees() {
         return em.createQuery("SELECT e FROM Employee e", Employee.class)
@@ -39,11 +42,11 @@ public class EmployeeDao {
                 .getResultList();
     }
 
-    public Employee getEmployeeById(String id) {
+    public Employee getEmployeeById(int id) {
         return em.find(Employee.class, id);
     }
 
-    public boolean saveEmployee(Employee employee) {
+    public boolean addEmployee(Employee employee) {
         try {
             em.getTransaction().begin();
             em.persist(employee);
@@ -69,7 +72,7 @@ public class EmployeeDao {
         }
     }
 
-    public boolean deleteEmployee(String id) {
+    public boolean deleteEmployee(int id) {
         try {
             Employee employee = em.find(Employee.class, id);
             if (employee == null) {

@@ -2,13 +2,16 @@ package dao;
 
 import dto.Product;
 import jakarta.persistence.EntityManager;
-import lombok.AllArgsConstructor;
+import util.JPAUtil;
 
 import java.util.List;
 
-@AllArgsConstructor
-public class ProductDao {
+public class ProductDAO {
     private EntityManager em;
+
+    public ProductDAO(){
+        em = JPAUtil.getEntityManager();
+    }
 
     public List<Product> getProductByName(String name) {
         return em.createQuery("SELECT p FROM Product p WHERE p.productName = :name", Product.class)
@@ -39,11 +42,11 @@ public class ProductDao {
                 .getResultList();
     }
 
-    public Product getProductById(String id) {
+    public Product getProductById(int id) {
         return em.find(Product.class, id);
     }
 
-    public boolean saveProduct(Product product) {
+    public boolean addProduct(Product product) {
         try {
             em.getTransaction().begin();
             em.persist(product);
