@@ -3,6 +3,7 @@ package gui.component;
 import com.raven.model.ModelItem;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -10,7 +11,7 @@ import java.text.DecimalFormat;
 
 public class Item extends javax.swing.JPanel {
 
-   public ModelItem getData() {
+    public ModelItem getData() {
         return data;
     }
 
@@ -29,6 +30,11 @@ public class Item extends javax.swing.JPanel {
         initComponents();
         setOpaque(false);
         setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        Dimension preferredSize = new Dimension(280, 280); // Điều chỉnh chiều rộng và chiều cao theo ý muốn
+        setPreferredSize(preferredSize);
+        setMaximumSize(preferredSize);
+        setMinimumSize(preferredSize);
     }
 
     private ModelItem data;
@@ -56,6 +62,7 @@ public class Item extends javax.swing.JPanel {
         g2.dispose();
         super.paint(grphcs);
     }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

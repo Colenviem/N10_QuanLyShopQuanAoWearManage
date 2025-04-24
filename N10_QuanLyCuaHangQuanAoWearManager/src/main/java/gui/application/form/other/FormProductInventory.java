@@ -1,18 +1,21 @@
 package gui.application.form.other;
 
+import dao.ProductDAO;
+import dto.Product;
 import gui.event.EventItem;
 import com.raven.model.ModelItem;
 import gui.component.Item;
 import gui.swing.ScrollBar;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.text.DecimalFormat;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.*;
+
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
 import org.jdesktop.animation.timing.interpolation.PropertySetter;
@@ -27,6 +30,7 @@ public class FormProductInventory extends javax.swing.JPanel {
     private Animator animator;
     private ModelItem itemSelected;
     private Point animatePoint;
+            
 
     public FormProductInventory(EventItem event) {
         this.event = event;
@@ -48,6 +52,9 @@ public class FormProductInventory extends javax.swing.JPanel {
 
     public FormProductInventory() {
         initComponents();
+        panelItem.remove(item1);
+        panelItem.revalidate();
+        panelItem.repaint();
 
         this.event = new EventItem() {
             @Override
@@ -70,6 +77,52 @@ public class FormProductInventory extends javax.swing.JPanel {
                 }
             }
         };
+
+        btnSearch.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String keyword = txtSearch.getText().trim(); // Lấy từ khóa từ text field và loại bỏ khoảng trắng thừa
+                if (!keyword.isEmpty()) {
+                    try {
+                        TimKiemSanPham(keyword);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        // Xử lý lỗi nếu có
+                    }
+                } else {
+                    // Nếu không có từ khóa, bạn có thể hiển thị lại tất cả sản phẩm hoặc thông báo cho người dùng
+                    try {
+                        DocDuLieu(); // Hiển thị lại tất cả sản phẩm (nếu muốn)
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        txtSearch.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    String keyword = txtSearch.getText().trim();
+                    if (!keyword.isEmpty()) {
+                        try {
+                            TimKiemSanPham(keyword);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    } else {
+                        try {
+                            DocDuLieu();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+//        btnAddToCart.addActionListener((ActionListener) this);
+
         scroll.setVerticalScrollBar(new ScrollBar());
         //  Animator start form animatePoint to TagetPoint
         animator = PropertySetter.createAnimator(500, mainPanel, "imageLocation", animatePoint, mainPanel.getTargetLocation());
@@ -81,21 +134,55 @@ public class FormProductInventory extends javax.swing.JPanel {
             }
         });
 
-        int ID = 1;
-        for (int i = 0; i < 2; i++) {
-            this.addItem(new ModelItem(ID++, "4DFWD PULSE", "This product is excluded from all promotional discounts and offers.", 100, "Adidas", new ImageIcon(getClass().getClassLoader().getResource("images/png/img1.png"))));
-            this.addItem(new ModelItem(ID++, "FORUM MID", "This product is excluded from all promotional discounts and offers.", 120, "Adidas", new ImageIcon(getClass().getClassLoader().getResource("images/png/img2.png"))));
-            this.addItem(new ModelItem(ID++, "SUPERSTAR", "NMD City Stock 2", 150, "Adidas", new ImageIcon(getClass().getClassLoader().getResource("images/png/img3.png"))));
-            this.addItem(new ModelItem(ID++, "Adidas", "NMD City Stock 2", 160, "Adidas", new ImageIcon(getClass().getClassLoader().getResource("images/png/img4.png"))));
-            this.addItem(new ModelItem(ID++, "Ultraboost", "Comfortable running shoes", 180, "Adidas", new ImageIcon(getClass().getClassLoader().getResource("images/png/img1.png"))));
-            this.addItem(new ModelItem(ID++, "Stan Smith", "Classic tennis shoes", 140, "Adidas", new ImageIcon(getClass().getClassLoader().getResource("images/png/img1.png"))));
-            this.addItem(new ModelItem(ID++, "Yeezy Boost 350", "Limited edition sneakers", 250, "Adidas", new ImageIcon(getClass().getClassLoader().getResource("images/png/img5.png"))));
-            this.addItem(new ModelItem(ID++, "Gazelle", "Retro-style sneakers", 130, "Adidas", new ImageIcon(getClass().getClassLoader().getResource("images/png/img1.png"))));
-            this.addItem(new ModelItem(ID++, "Samba OG", "Timeless soccer-inspired shoes", 110, "Adidas", new ImageIcon(getClass().getClassLoader().getResource("images/png/img1.png"))));
-            this.addItem(new ModelItem(ID++, "Predator Edge", "High-performance football boots", 200, "Adidas", new ImageIcon(getClass().getClassLoader().getResource("images/png/img1.png"))));
+        try {
+            DocDuLieu();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
     }
+
+    private void DocDuLieu() throws Exception{
+        ProductDAO productDAO = new ProductDAO();
+        List<Product> products = productDAO.getAllProducts();
+
+        for (Product product : products) {
+            ImageIcon imageIcon = new ImageIcon(getClass().getClassLoader().getResource("images/png/product1.png"));
+
+            ModelItem modelItem = new ModelItem(
+                    product.getId(),
+                    product.getProductName(),
+                    product.getDescription(),
+                    (double) product.getPrice(),
+                    product.getColor(),
+                    imageIcon
+            );
+            addItem(modelItem);
+        }
+    }
+
+    private void TimKiemSanPham(String keyword) throws Exception {
+        panelItem.removeAll(); // Xóa các item hiện có trên panel
+        ProductDAO productDAO = new ProductDAO();
+        List<Product> allProducts = productDAO.getAllProducts(); // Lấy tất cả sản phẩm
+
+        for (Product product : allProducts) {
+            if (product.getProductName().toLowerCase().contains(keyword.toLowerCase())) {
+                ImageIcon imageIcon = new ImageIcon(getClass().getClassLoader().getResource("images/png/product1.png"));
+                ModelItem modelItem = new ModelItem(
+                        product.getId(),
+                        product.getProductName(),
+                        product.getDescription(),
+                        (double) product.getPrice(),
+                        product.getColor(),
+                        imageIcon
+                );
+                addItem(modelItem);
+            }
+        }
+        panelItem.revalidate();
+        panelItem.repaint();
+    }
+    
 
     public void addItem(ModelItem data) {
         Item item = new Item();
@@ -151,6 +238,8 @@ public class FormProductInventory extends javax.swing.JPanel {
         int top = 35;
         return new Point(x + itemX + left, y + itemY + top);
     }
+    
+    
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -165,9 +254,14 @@ public class FormProductInventory extends javax.swing.JPanel {
         jScrollPane2 = new javax.swing.JScrollPane();
         txtDescription = new javax.swing.JTextPane();
         jSeparator1 = new javax.swing.JSeparator();
+        btnAddToCart = new gui.login.Button();
         scroll = new javax.swing.JScrollPane();
         panelItem = new gui.swing.PanelItem();
         item1 = new gui.component.Item();
+        txtSearch = new gui.swing.MyTextField();
+        btnSearch = new gui.login.Button();
+
+        mainPanel.setBackground(new java.awt.Color(255, 255, 255));
 
         header.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -210,36 +304,51 @@ public class FormProductInventory extends javax.swing.JPanel {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(146, 146, 146)
-                .addComponent(lbName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(259, 259, 259)
+                .addComponent(lbName, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lbPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lbBrand, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE)
-                .addGap(32, 32, 32))
+                .addComponent(lbBrand, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(32, Short.MAX_VALUE))
         );
+
+        btnAddToCart.setBackground(new java.awt.Color(255, 0, 51));
+        btnAddToCart.setForeground(new java.awt.Color(255, 255, 255));
+        btnAddToCart.setText("Thêm vào giỏ hàng");
+        btnAddToCart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddToCartActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout headerLayout = new javax.swing.GroupLayout(header);
         header.setLayout(headerLayout);
         headerLayout.setHorizontalGroup(
             headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(headerLayout.createSequentialGroup()
-                .addGap(30, 30, 30)
-                .addGroup(headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(44, Short.MAX_VALUE))
+                .addGap(32, 32, 32)
+                .addGroup(headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(headerLayout.createSequentialGroup()
+                        .addGap(74, 74, 74)
+                        .addComponent(btnAddToCart, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
         headerLayout.setVerticalGroup(
             headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(headerLayout.createSequentialGroup()
-                .addGap(82, 82, 82)
+                .addContainerGap()
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(57, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnAddToCart, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         scroll.setBorder(null);
@@ -249,29 +358,55 @@ public class FormProductInventory extends javax.swing.JPanel {
 
         scroll.setViewportView(panelItem);
 
+        txtSearch.setPrefixIcon(new javax.swing.ImageIcon(getClass().getResource("/images/png/search.png"))); // NOI18N
+        txtSearch.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtSearchMouseClicked(evt);
+            }
+        });
+        txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtSearchKeyReleased(evt);
+            }
+        });
+
+        btnSearch.setBackground(new java.awt.Color(255, 0, 102));
+        btnSearch.setForeground(new java.awt.Color(255, 255, 255));
+        btnSearch.setText("Tìm kiếm");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 944, Short.MAX_VALUE)
-            .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(mainPanelLayout.createSequentialGroup()
-                    .addGap(3, 3, 3)
-                    .addComponent(header, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGap(0, 0, 0)
-                    .addComponent(scroll, javax.swing.GroupLayout.DEFAULT_SIZE, 561, Short.MAX_VALUE)
-                    .addGap(3, 3, 3)))
+            .addGroup(mainPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addComponent(txtSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addComponent(header, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(scroll, javax.swing.GroupLayout.DEFAULT_SIZE, 516, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 543, Short.MAX_VALUE)
-            .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(mainPanelLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(header, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(scroll))
-                    .addContainerGap()))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, 0)
+                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(header, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(scroll, javax.swing.GroupLayout.Alignment.TRAILING)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -282,11 +417,35 @@ public class FormProductInventory extends javax.swing.JPanel {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(mainPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnAddToCartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddToCartActionPerformed
+        if (itemSelected != null) {
+            // Thực hiện logic thêm sản phẩm vào giỏ hàng ở đây (nếu bạn có)
+
+            JOptionPane.showMessageDialog(this, "Đã thêm '" + itemSelected.getItemName() + "' vào giỏ hàng thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một sản phẩm trước khi thêm vào giỏ hàng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnAddToCartActionPerformed
+
+    private void txtSearchMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtSearchMouseClicked
+
+    }//GEN-LAST:event_txtSearchMouseClicked
+
+    private void txtSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchKeyReleased
+ 
+    }//GEN-LAST:event_txtSearchKeyReleased
+
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+
+    }//GEN-LAST:event_btnSearchActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private gui.login.Button btnAddToCart;
+    private gui.login.Button btnSearch;
     private javax.swing.JPanel header;
     private gui.component.Item item1;
     private javax.swing.JPanel jPanel1;
@@ -299,5 +458,6 @@ public class FormProductInventory extends javax.swing.JPanel {
     private gui.swing.PanelItem panelItem;
     private javax.swing.JScrollPane scroll;
     private javax.swing.JTextPane txtDescription;
+    private gui.swing.MyTextField txtSearch;
     // End of variables declaration//GEN-END:variables
 }

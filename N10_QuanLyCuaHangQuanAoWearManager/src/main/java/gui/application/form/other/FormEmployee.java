@@ -234,12 +234,12 @@ public class FormEmployee extends JPanel implements ActionListener, MouseListene
         if (tableEmployee.getColumnModel().getColumnCount() > 0) {
             tableEmployee.getColumnModel().getColumn(0).setPreferredWidth(100);
             tableEmployee.getColumnModel().getColumn(1).setPreferredWidth(150);
-            tableEmployee.getColumnModel().getColumn(2).setPreferredWidth(100);
-            tableEmployee.getColumnModel().getColumn(3).setPreferredWidth(200);
-            tableEmployee.getColumnModel().getColumn(4).setPreferredWidth(100);
-            tableEmployee.getColumnModel().getColumn(5).setPreferredWidth(100);
+            tableEmployee.getColumnModel().getColumn(2).setPreferredWidth(120);
+            tableEmployee.getColumnModel().getColumn(3).setPreferredWidth(220);
+            tableEmployee.getColumnModel().getColumn(4).setPreferredWidth(130);
+            tableEmployee.getColumnModel().getColumn(5).setPreferredWidth(120);
             tableEmployee.getColumnModel().getColumn(6).setPreferredWidth(100);
-            tableEmployee.getColumnModel().getColumn(7).setPreferredWidth(100);
+            tableEmployee.getColumnModel().getColumn(7).setPreferredWidth(200);
         }
 
         txtMaNV.setEnabled(false);

@@ -13,6 +13,8 @@ public class ProductDAO {
         em = JPAUtil.getEntityManager();
     }
 
+
+
     public List<Product> getProductByName(String name) {
         return em.createQuery("SELECT p FROM Product p WHERE p.productName = :name", Product.class)
                 .setParameter("name", name)
@@ -41,6 +43,7 @@ public class ProductDAO {
         return em.createQuery("SELECT p FROM Product p", Product.class)
                 .getResultList();
     }
+
 
     public Product getProductById(int id) {
         return em.find(Product.class, id);
