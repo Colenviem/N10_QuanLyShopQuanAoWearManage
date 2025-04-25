@@ -16,22 +16,11 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import gui.application.Application;
-import gui.application.form.other.FormDashboard;
-import gui.application.form.other.FormProductInventory;
-import gui.application.form.other.FormStatistical;
-import gui.application.form.other.FormBill;
-import gui.application.form.other.FormCustomer;
-import gui.application.form.other.FormEmployee;
-import gui.application.form.other.FormLookup;
-import gui.application.form.other.FormPromotion;
-import gui.application.form.other.FormSales;
+import gui.application.form.other.*;
 import gui.menu.action.Menu;
 import gui.menu.action.MenuAction;
 
-/**
- *
- * @author Raven
- */
+
 public class MainForm extends JLayeredPane {
 
     public MainForm() {
@@ -96,15 +85,18 @@ public class MainForm extends JLayeredPane {
                 }
             } else if (index == 4) {
                 Application.showForm(new FormEmployee());
-            } else if (index == 6) {
-                Application.showForm(new FormLookup());
             } else if (index == 5) {
                 if (subIndex == 1) {
                     Application.showForm(new FormPromotion());
                 } else {
                     action.cancel();
                 }
-            } else if (index == 7) {
+            } else if (index == 6) {
+                Application.showForm(new FormLookup());
+            }else if (index == 7) {
+                Application.showForm(new FormAccount());
+            }
+            else if (index == 8) {
                 if (subIndex == 1) {
                     Application.showForm(new FormStatistical());
                 } else if (subIndex == 2) {
@@ -112,7 +104,7 @@ public class MainForm extends JLayeredPane {
                 } else {
                     action.cancel();
                 }
-            } else if (index == 8) {
+            } else if (index == 9) {
                 Application.logout();
             } else {
                 action.cancel();

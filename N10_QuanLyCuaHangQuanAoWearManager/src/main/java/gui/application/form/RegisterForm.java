@@ -1,5 +1,7 @@
 package gui.application.form;
 
+import dao.AccountDAO;
+import dto.Account;
 import gui.application.Application;
 import java.awt.Color;
 import java.util.Timer;
@@ -243,28 +245,43 @@ public class RegisterForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void cmdSignUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdSignUpActionPerformed
-        String password = new String(txtPass.getPassword());
-        String confirmPassword = new String(txtPass1.getPassword());
+        String username = txtUser.getText().trim();
+        String password = new String(txtPass.getPassword()).trim();
+        String confirmPassword = new String(txtPass1.getPassword()).trim();
+
+        if (username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ tên người dùng và mật khẩu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         if (password.equals(confirmPassword) && cmdSignUp.isEnabled()) {
-            // Thực hiện logic đăng ký (nếu có) ở đây trước khi chuyển về LoginForm
-            System.out.println("Đăng ký thành công với mật khẩu: " + password);
+            // 1. Tạo đối tượng Account mới
+            Account newAccount = new Account();
+            newAccount.setUsername(username);
+            newAccount.setPassword(password); // Lưu ý: Cần mã hóa mật khẩu trước khi set
 
-            // Hiển thị thông báo thành công
-            JOptionPane.showMessageDialog(this, "Đăng ký thành công hệ thống sẽ chuyển về trang đăng nhập sau 3 giây!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+            // 2. Tạo instance của AccountDAO
+            AccountDAO accountDAO = new AccountDAO();
 
-            // Lên lịch chuyển về LoginForm sau 3 giây
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    // Chuyển về LoginForm
-                    RegisterForm.this.dispose(); // Đóng RegisterForm hiện tại
-                    new LoginForm().setVisible(true); // Tạo và hiển thị LoginForm mới
-                }
-            }, 3000); // 3000 milliseconds = 3 giây
+            // 3. Gọi phương thức addAccount()
+            if (accountDAO.addAccount(newAccount)) {
+                // 4. Xử lý kết quả thành công
+                System.out.println("Đăng ký thành công tài khoản: " + username);
+                JOptionPane.showMessageDialog(this, "Đăng ký thành công! Hệ thống sẽ chuyển về trang đăng nhập sau 3 giây.", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                // Lên lịch chuyển về LoginForm sau 3 giây
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        RegisterForm.this.dispose();
+                        new LoginForm().setVisible(true);
+                    }
+                }, 3000);
+            } else {
+                // 5. Xử lý kết quả thất bại
+                JOptionPane.showMessageDialog(this, "Đăng ký không thành công. Vui lòng thử lại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
         } else {
-            // Thông báo lỗi mật khẩu không khớp (đã được xử lý trong checkPasswordMatch)
             if (!cmdSignUp.isEnabled()) {
                 JOptionPane.showMessageDialog(this, "Vui lòng nhập mật khẩu khớp.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }

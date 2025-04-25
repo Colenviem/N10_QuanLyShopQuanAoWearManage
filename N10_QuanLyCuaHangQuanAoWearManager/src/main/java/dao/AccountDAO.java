@@ -20,6 +20,11 @@ public class AccountDAO {
                 .getResultList();
     }
 
+    public List<Account> getAllActiveAccounts() {
+        return em.createQuery("SELECT a FROM Account a WHERE a.status = true", Account.class)
+                .getResultList();
+    }
+
     public List<Account> getAccountByUsername(String username) {
         return em.createQuery("SELECT a FROM Account a WHERE a.username = :username", Account.class)
                 .setParameter("username", username)

@@ -59,6 +59,8 @@ public class FormDashboard extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new gui.swing.Table();
 
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(51, 51, 51));
         jLabel1.setText("Dashboard");
 
         javax.swing.GroupLayout lbLayout = new javax.swing.GroupLayout(lb);
@@ -73,7 +75,7 @@ public class FormDashboard extends javax.swing.JPanel {
         lbLayout.setVerticalGroup(
             lbLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lbLayout.createSequentialGroup()
-                .addContainerGap(7, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel1)
                 .addContainerGap())
         );

@@ -32,6 +32,7 @@ public class Menu extends JPanel {
         {"Employees"},
         {"Promotions", "Discount Codes", "Marketing Campaigns"},
         {"Lookup"},
+            {"Account"},
         {"Reports", "Sales Report", "Stock Report", "Customer Report"},
         {"Logout"}
     };
