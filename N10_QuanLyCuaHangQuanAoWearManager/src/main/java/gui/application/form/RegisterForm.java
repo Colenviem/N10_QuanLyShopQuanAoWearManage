@@ -2,18 +2,23 @@ package gui.application.form;
 
 import gui.application.Application;
 import java.awt.Color;
+import java.util.Timer;
+import java.util.TimerTask;
+import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
 
-public class LoginForm extends javax.swing.JFrame {
+public class RegisterForm extends javax.swing.JFrame {
 
     private Animator animatorLogin;
     private Animator animatorBody;
     private boolean signIn;
 
-    public LoginForm() {
+    public RegisterForm() {
         initComponents();
         this.setLocationRelativeTo(null);
         setResizable(false);
@@ -63,10 +68,43 @@ public class LoginForm extends javax.swing.JFrame {
                 }
             }
         };
+
+        txtPass1.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                checkPasswordMatch();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                checkPasswordMatch();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                checkPasswordMatch();
+            }
+        });
+
         animatorLogin = new Animator(1500, targetLogin);
         animatorBody = new Animator(500, targetBody);
         animatorLogin.setResolution(0);
         animatorBody.setResolution(0);
+    }
+
+    private void checkPasswordMatch() {
+        String password = new String(txtPass.getPassword());
+        String confirmPassword = new String(txtPass1.getPassword());
+
+        if (password.equals(confirmPassword)) {
+            txtPass1.setHelperText(""); // Xóa thông báo lỗi
+            txtPass1.setLineColor(new Color(102, 102, 102)); // Đặt lại màu viền
+            cmdSignUp.setEnabled(true); // Cho phép nút đăng ký
+        } else {
+            txtPass1.setHelperText("Mật khẩu không khớp");
+            txtPass1.setLineColor(Color.RED); // Đổi màu viền thành đỏ
+            cmdSignUp.setEnabled(false); // Vô hiệu hóa nút đăng ký
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -76,36 +114,33 @@ public class LoginForm extends javax.swing.JFrame {
         panelBody = new gui.login.PanelTransparent();
         background1 = new gui.login.Background();
         panelLogin = new javax.swing.JPanel();
-        cmdSignIn = new gui.login.Button();
         txtPass = new gui.login.PasswordField();
         txtUser = new gui.login.TextField();
         jLabel1 = new javax.swing.JLabel();
         cmdSignUp = new gui.login.Button();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        txtPass1 = new gui.login.PasswordField();
+        cmdBack = new gui.login.Button();
 
         javax.swing.GroupLayout panelBodyLayout = new javax.swing.GroupLayout(panelBody);
         panelBody.setLayout(panelBodyLayout);
         panelBodyLayout.setHorizontalGroup(
             panelBodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 723, Short.MAX_VALUE)
+            .addGap(0, 270, Short.MAX_VALUE)
         );
         panelBodyLayout.setVerticalGroup(
             panelBodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 375, Short.MAX_VALUE)
+            .addGap(0, 337, Short.MAX_VALUE)
         );
 
-        cmdSignIn.setBackground(new java.awt.Color(157, 153, 255));
-        cmdSignIn.setForeground(new java.awt.Color(245, 245, 245));
-        cmdSignIn.setText("LOGIN");
-        cmdSignIn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmdSignInActionPerformed(evt);
-            }
-        });
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         txtPass.setBackground(new java.awt.Color(242, 242, 242));
         txtPass.setLabelText("Password");
+        txtPass.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtPassActionPerformed(evt);
+            }
+        });
 
         txtUser.setBackground(new java.awt.Color(242, 242, 242));
         txtUser.setLabelText("User");
@@ -115,14 +150,25 @@ public class LoginForm extends javax.swing.JFrame {
         cmdSignUp.setBackground(new java.awt.Color(102, 255, 0));
         cmdSignUp.setForeground(new java.awt.Color(245, 245, 245));
         cmdSignUp.setText("REGISTER");
-        cmdSignUp.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                cmdSignUpMouseClicked(evt);
-            }
-        });
         cmdSignUp.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdSignUpActionPerformed(evt);
+            }
+        });
+
+        txtPass1.setBackground(new java.awt.Color(242, 242, 242));
+        txtPass1.setLabelText("Confirm password");
+
+        cmdBack.setForeground(new java.awt.Color(245, 245, 245));
+        cmdBack.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/png/back.png"))); // NOI18N
+        cmdBack.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                cmdBackMouseClicked(evt);
+            }
+        });
+        cmdBack.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdBackActionPerformed(evt);
             }
         });
 
@@ -131,35 +177,45 @@ public class LoginForm extends javax.swing.JFrame {
         panelLoginLayout.setHorizontalGroup(
             panelLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLoginLayout.createSequentialGroup()
-                .addGap(89, 89, 89)
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE)
-                .addGap(98, 98, 98)
+                .addGap(101, 101, 101)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 98, Short.MAX_VALUE)
                 .addGroup(panelLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtPass, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(panelLoginLayout.createSequentialGroup()
-                        .addComponent(cmdSignIn, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(42, 42, 42)
-                        .addComponent(cmdSignUp, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(txtUser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(txtPass, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                    .addComponent(txtUser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtPass1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(25, 25, 25))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLoginLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(cmdSignUp, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(113, 113, 113))
+            .addGroup(panelLoginLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(cmdBack, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelLoginLayout.setVerticalGroup(
             panelLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLoginLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(txtUser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtPass, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(panelLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cmdSignIn, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cmdSignUp, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(114, 114, 114))
             .addGroup(panelLoginLayout.createSequentialGroup()
-                .addGap(44, 44, 44)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(151, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(cmdBack, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(9, 9, 9)
+                .addGroup(panelLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelLoginLayout.createSequentialGroup()
+                        .addComponent(txtUser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtPass, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtPass1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(cmdSignUp, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(109, 109, 109))
+                    .addGroup(panelLoginLayout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
+
+        txtPass1.getAccessibleContext().setAccessibleName("");
 
         javax.swing.GroupLayout background1Layout = new javax.swing.GroupLayout(background1);
         background1.setLayout(background1Layout);
@@ -177,70 +233,61 @@ public class LoginForm extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(background1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(panelBody, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addContainerGap()))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(background1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(panelBody, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addContainerGap()))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void cmdSignInActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdSignInActionPerformed
-        if (!animatorLogin.isRunning()) {
-            signIn = true;
-            String user = txtUser.getText().trim();
-            String pass = String.valueOf(txtPass.getPassword());
-            boolean action = true;
-            if (user.equals("")) {
-                txtUser.setHelperText("Please input user name");
-                txtUser.grabFocus();
-                action = false;
-            }
-            if (pass.equals("")) {
-                txtPass.setHelperText("Please input password");
-                if (action) {
-                    txtPass.grabFocus();
+    private void cmdSignUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdSignUpActionPerformed
+        String password = new String(txtPass.getPassword());
+        String confirmPassword = new String(txtPass1.getPassword());
+
+        if (password.equals(confirmPassword) && cmdSignUp.isEnabled()) {
+            // Thực hiện logic đăng ký (nếu có) ở đây trước khi chuyển về LoginForm
+            System.out.println("Đăng ký thành công với mật khẩu: " + password);
+
+            // Hiển thị thông báo thành công
+            JOptionPane.showMessageDialog(this, "Đăng ký thành công hệ thống sẽ chuyển về trang đăng nhập sau 3 giây!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+
+            // Lên lịch chuyển về LoginForm sau 3 giây
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    // Chuyển về LoginForm
+                    RegisterForm.this.dispose(); // Đóng RegisterForm hiện tại
+                    new LoginForm().setVisible(true); // Tạo và hiển thị LoginForm mới
                 }
-                action = false;
-            }
-            if (action) {
-                // Giả lập kiểm tra tài khoản và mật khẩu (thay bằng kiểm tra thực tế nếu có)
-                if (user.equals("admin") && pass.equals("123")) {
-                    this.dispose(); // Đóng Form_Login
-                    Application.login();
-                } else {
-                    txtUser.setHelperText("Invalid username or password");
-                    txtPass.setHelperText("Invalid username or password");
-                }
+            }, 3000); // 3000 milliseconds = 3 giây
+        } else {
+            // Thông báo lỗi mật khẩu không khớp (đã được xử lý trong checkPasswordMatch)
+            if (!cmdSignUp.isEnabled()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập mật khẩu khớp.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         }
-    }//GEN-LAST:event_cmdSignInActionPerformed
-
-    private void cmdSignUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdSignUpActionPerformed
-        RegisterForm registerForm = new RegisterForm();
-        registerForm.setVisible(true);
-        this.dispose(); // Close the current login form
     }//GEN-LAST:event_cmdSignUpActionPerformed
 
-    private void cmdSignUpMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cmdSignUpMouseClicked
-       
-    }//GEN-LAST:event_cmdSignUpMouseClicked
+    private void txtPassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPassActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtPassActionPerformed
+
+    private void cmdBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdBackActionPerformed
+        this.dispose(); // Close the current RegisterForm
+        new LoginForm().setVisible(true); // Create and show a new LoginForm
+    }//GEN-LAST:event_cmdBackActionPerformed
+
+    private void cmdBackMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cmdBackMouseClicked
+
+    }//GEN-LAST:event_cmdBackMouseClicked
 
     private void enableLogin(boolean action) {
         txtUser.setEditable(action);
         txtPass.setEditable(action);
-        cmdSignIn.setEnabled(action);
+        cmdSignUp.setEnabled(action);
     }
 
     public void clearLogin() {
@@ -290,12 +337,13 @@ public class LoginForm extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private gui.login.Background background1;
-    private gui.login.Button cmdSignIn;
+    private gui.login.Button cmdBack;
     private gui.login.Button cmdSignUp;
     private javax.swing.JLabel jLabel1;
     private gui.login.PanelTransparent panelBody;
     private javax.swing.JPanel panelLogin;
     private gui.login.PasswordField txtPass;
+    private gui.login.PasswordField txtPass1;
     private gui.login.TextField txtUser;
     // End of variables declaration//GEN-END:variables
 }
