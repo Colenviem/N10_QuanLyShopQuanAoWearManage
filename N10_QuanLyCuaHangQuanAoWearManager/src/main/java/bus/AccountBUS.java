@@ -44,4 +44,9 @@ public class AccountBUS extends UnicastRemoteObject implements IAccountService {
     public List<Account> getAccountByUsername(String username) throws RemoteException {
         return accountDao.getAccountByUsername(username);
     }
+
+    @Override
+    public List<Account> getAllActiveAccounts() throws RemoteException {
+        return accountDao.getAllActiveAccounts();
+    }
 }

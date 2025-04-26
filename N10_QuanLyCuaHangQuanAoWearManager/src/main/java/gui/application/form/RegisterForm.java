@@ -1,9 +1,9 @@
 package gui.application.form;
 
-import dao.AccountDAO;
+import bus.AccountBUS;
 import dto.Account;
-import gui.application.Application;
 import java.awt.Color;
+import java.rmi.RemoteException;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.JOptionPane;
@@ -19,6 +19,7 @@ public class RegisterForm extends javax.swing.JFrame {
     private Animator animatorLogin;
     private Animator animatorBody;
     private boolean signIn;
+    private AccountBUS accountBUS;
 
     public RegisterForm() {
         initComponents();
@@ -261,25 +262,28 @@ public class RegisterForm extends javax.swing.JFrame {
             newAccount.setPassword(password); // Lưu ý: Cần mã hóa mật khẩu trước khi set
 
             // 2. Tạo instance của AccountDAO
-            AccountDAO accountDAO = new AccountDAO();
-
-            // 3. Gọi phương thức addAccount()
-            if (accountDAO.addAccount(newAccount)) {
-                // 4. Xử lý kết quả thành công
-                System.out.println("Đăng ký thành công tài khoản: " + username);
-                JOptionPane.showMessageDialog(this, "Đăng ký thành công! Hệ thống sẽ chuyển về trang đăng nhập sau 3 giây.", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-                // Lên lịch chuyển về LoginForm sau 3 giây
-                Timer timer = new Timer();
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        RegisterForm.this.dispose();
-                        new LoginForm().setVisible(true);
-                    }
-                }, 3000);
-            } else {
-                // 5. Xử lý kết quả thất bại
-                JOptionPane.showMessageDialog(this, "Đăng ký không thành công. Vui lòng thử lại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            try {
+                accountBUS = new AccountBUS();
+                // 3. Gọi phương thức addAccount()
+                if (accountBUS.addAccount(newAccount)) {
+                    // 4. Xử lý kết quả thành công
+                    System.out.println("Đăng ký thành công tài khoản: " + username);
+                    JOptionPane.showMessageDialog(this, "Đăng ký thành công! Hệ thống sẽ chuyển về trang đăng nhập sau 3 giây.", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                    // Lên lịch chuyển về LoginForm sau 3 giây
+                    Timer timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            RegisterForm.this.dispose();
+                            new LoginForm().setVisible(true);
+                        }
+                    }, 3000);
+                } else {
+                    // 5. Xử lý kết quả thất bại
+                    JOptionPane.showMessageDialog(this, "Đăng ký không thành công. Vui lòng thử lại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
             }
         } else {
             if (!cmdSignUp.isEnabled()) {

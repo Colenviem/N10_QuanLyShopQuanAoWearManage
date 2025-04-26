@@ -18,4 +18,6 @@ public interface IAccountService extends Remote {
     List<Account> getAccountsNotInEmployee() throws RemoteException;
 
     List<Account> getAccountByUsername(String username) throws RemoteException;
+
+    List<Account> getAllActiveAccounts() throws RemoteException;
 }
