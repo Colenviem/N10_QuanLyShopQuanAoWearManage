@@ -6,6 +6,7 @@ import interfaces.IStoreService;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.List;
 
 public class StoreBUS extends UnicastRemoteObject implements IStoreService {
@@ -17,12 +18,12 @@ public class StoreBUS extends UnicastRemoteObject implements IStoreService {
 
     @Override
     public List<Store> getAllStores() throws RemoteException {
-        return storeDAO.getAllStores();
+        return new ArrayList<>(storeDAO.getAllStores());
     }
 
     @Override
     public List<Store> getStoreByStoreName(String storeName) throws RemoteException {
-        return storeDAO.getStoreByStoreName(storeName);
+        return new ArrayList<>(storeDAO.getStoreByStoreName(storeName));
     }
 
     @Override

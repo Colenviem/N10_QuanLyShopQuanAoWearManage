@@ -6,6 +6,7 @@ import interfaces.IEmployeeService;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeBUS extends UnicastRemoteObject implements IEmployeeService {
@@ -17,27 +18,27 @@ public class EmployeeBUS extends UnicastRemoteObject implements IEmployeeService
 
     @Override
     public List<Employee> getAllEmployees() throws RemoteException {
-        return employeeDAO.getAllEmployees();
+        return new ArrayList<>(employeeDAO.getAllEmployees());
     }
 
     @Override
     public List<Employee> getEmployeeByName(String name) throws RemoteException {
-        return employeeDAO.getEmployeeByName(name);
+        return new ArrayList<>(employeeDAO.getEmployeeByName(name));
     }
 
     @Override
     public List<Employee> getEmployeeByPhone(String phone) throws RemoteException {
-        return employeeDAO.getEmployeeByPhone(phone);
+        return new ArrayList<>(employeeDAO.getEmployeeByPhone(phone));
     }
 
     @Override
     public List<Employee> getEmployeeBySalary(double salary) throws RemoteException {
-        return employeeDAO.getEmployeeBySalary(salary);
+        return new ArrayList<>(employeeDAO.getEmployeeBySalary(salary));
     }
 
     @Override
     public List<Employee> getEmployeeByStatus(boolean status) throws RemoteException {
-        return employeeDAO.getEmployeeByStatus(status);
+        return new ArrayList<>(employeeDAO.getEmployeeByStatus(status));
     }
 
     @Override
@@ -54,29 +55,29 @@ public class EmployeeBUS extends UnicastRemoteObject implements IEmployeeService
     public boolean updateEmployee(Employee employee) throws RemoteException {
         return employeeDAO.updateEmployee(employee);
     }
+
     @Override
     public List<Object[]> getEmployeeTotalSales() throws RemoteException {
-        return employeeDAO.getEmployeeTotalSales();
+        return new ArrayList<>(employeeDAO.getEmployeeTotalSales());
     }
 
     @Override
-    public List<Object[]> getEmployeeOrderCounts() throws RemoteException{
-        return employeeDAO.getEmployeeOrderCounts();
-    }
-    @Override
-    public List<Object[]> getEmployeeAverageOrderValue() throws RemoteException{
-        return employeeDAO.getEmployeeAverageOrderValue();
+    public List<Object[]> getEmployeeOrderCounts() throws RemoteException {
+        return new ArrayList<>(employeeDAO.getEmployeeOrderCounts());
     }
 
     @Override
-    public List<Object[]> getEmployeeProductSales() throws RemoteException{
-        return employeeDAO.getEmployeeProductSales();
+    public List<Object[]> getEmployeeAverageOrderValue() throws RemoteException {
+        return new ArrayList<>(employeeDAO.getEmployeeAverageOrderValue());
     }
 
     @Override
-    public List<Object[]> getEmployeeProductSalesAndCount() throws  RemoteException{
-        return employeeDAO.getEmployeeProductSalesAndCount();
+    public List<Object[]> getEmployeeProductSales() throws RemoteException {
+        return new ArrayList<>(employeeDAO.getEmployeeProductSales());
     }
 
-
+    @Override
+    public List<Object[]> getEmployeeProductSalesAndCount() throws RemoteException {
+        return new ArrayList<>(employeeDAO.getEmployeeProductSalesAndCount());
+    }
 }

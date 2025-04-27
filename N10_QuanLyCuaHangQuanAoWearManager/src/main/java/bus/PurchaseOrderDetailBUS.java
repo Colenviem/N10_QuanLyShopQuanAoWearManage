@@ -6,6 +6,7 @@ import interfaces.IPurchaseOrderDetailService;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PurchaseOrderDetailBUS extends UnicastRemoteObject implements IPurchaseOrderDetailService {
@@ -17,7 +18,7 @@ public class PurchaseOrderDetailBUS extends UnicastRemoteObject implements IPurc
 
     @Override
     public List<PurchaseOrderDetail> getAllPurchaseOrderDetails() throws RemoteException {
-        return purchaseOrderDetailDAO.getAllPurchaseOrderDetails();
+        return new ArrayList<>(purchaseOrderDetailDAO.getAllPurchaseOrderDetails());
     }
 
     @Override

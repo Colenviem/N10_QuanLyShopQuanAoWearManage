@@ -7,6 +7,7 @@ import interfaces.IOrderService;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrderBUS extends UnicastRemoteObject implements IOrderService {
@@ -18,12 +19,12 @@ public class OrderBUS extends UnicastRemoteObject implements IOrderService {
 
     @Override
     public List<Order> getAllOrders() throws RemoteException {
-        return orderDAO.getAllOrders();
+        return new ArrayList<>(orderDAO.getAllOrders());
     }
 
     @Override
     public List<Order> getOrderByOrderDate(LocalDate orderDate) throws RemoteException {
-        return orderDAO.getOrderByOrderDate(orderDate);
+        return new ArrayList<>(orderDAO.getOrderByOrderDate(orderDate));
     }
 
     @Override
@@ -43,12 +44,12 @@ public class OrderBUS extends UnicastRemoteObject implements IOrderService {
 
     @Override
     public List<Order> getOrdersByCustomerName(String customerName) throws RemoteException {
-        return orderDAO.getOrdersByCustomerName(customerName);
+        return new ArrayList<>(orderDAO.getOrdersByCustomerName(customerName));
     }
 
     @Override
     public List<Object[]> getOrderSummaries() throws RemoteException {
-        return orderDAO.getOrderSummaries();
+        return new ArrayList<>(orderDAO.getOrderSummaries());
     }
 
     @Override
@@ -68,6 +69,6 @@ public class OrderBUS extends UnicastRemoteObject implements IOrderService {
     
     @Override
     public List<Object[]> getOrderSummariesForYear(int year) throws RemoteException{
-        return orderDAO.getOrderSummariesForYear(year);
+        return new ArrayList<>(orderDAO.getOrderSummariesForYear(year));
     }
 }

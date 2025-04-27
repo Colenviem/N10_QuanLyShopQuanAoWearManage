@@ -6,6 +6,7 @@ import interfaces.IAccountService;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AccountBUS extends UnicastRemoteObject implements IAccountService {
@@ -17,7 +18,7 @@ public class AccountBUS extends UnicastRemoteObject implements IAccountService {
 
     @Override
     public List<Account> getAllAccounts() throws RemoteException {
-        return accountDao.getAllAccounts();
+        return new ArrayList<>(accountDao.getAllAccounts());
     }
 
     @Override
@@ -37,17 +38,17 @@ public class AccountBUS extends UnicastRemoteObject implements IAccountService {
 
     @Override
     public List<Account> getAccountsNotInEmployee() throws RemoteException {
-        return accountDao.getAccountsNotInEmployee();
+        return new ArrayList<>(accountDao.getAccountsNotInEmployee());
     }
 
     @Override
     public List<Account> getAccountByUsername(String username) throws RemoteException {
-        return accountDao.getAccountByUsername(username);
+        return new ArrayList<>(accountDao.getAccountByUsername(username));
     }
 
     @Override
     public List<Account> getAllActiveAccounts() throws RemoteException {
-        return accountDao.getAllActiveAccounts();
+        return new ArrayList<>(accountDao.getAllActiveAccounts());
     }
 
     @Override

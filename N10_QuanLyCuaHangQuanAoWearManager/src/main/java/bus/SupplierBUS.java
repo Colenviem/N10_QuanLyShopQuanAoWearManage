@@ -4,10 +4,9 @@ import dao.SupplierDAO;
 import dto.Supplier;
 import interfaces.ISupplierService;
 
-import java.io.IOException;
-import java.nio.CharBuffer;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SupplierBUS extends UnicastRemoteObject implements ISupplierService {
@@ -19,22 +18,22 @@ public class SupplierBUS extends UnicastRemoteObject implements ISupplierService
 
     @Override
     public List<Supplier> getAllSuppliers() throws RemoteException {
-        return supplierDAO.getAllSuppliers();
+        return new ArrayList<>(supplierDAO.getAllSuppliers());
     }
 
     @Override
     public List<Supplier> getSupplierBySupplierName(String supplierName) throws RemoteException {
-        return supplierDAO.getSupplierBySupplierName(supplierName);
+        return new ArrayList<>(supplierDAO.getSupplierBySupplierName(supplierName));
     }
 
     @Override
     public List<Supplier> getSupplierByPhone(String phone) throws RemoteException {
-        return supplierDAO.getSupplierByPhone(phone);
+        return new ArrayList<>(supplierDAO.getSupplierByPhone(phone));
     }
 
     @Override
     public List<Supplier> getSupplierByStatus(boolean status) throws RemoteException {
-        return supplierDAO.getSupplierByStatus(status);
+        return new ArrayList<>(supplierDAO.getSupplierByStatus(status));
     }
 
     @Override

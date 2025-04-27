@@ -7,6 +7,7 @@ import interfaces.IPurchaseOrderService;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PurchaseOrderBUS extends UnicastRemoteObject implements IPurchaseOrderService {
@@ -18,17 +19,17 @@ public class PurchaseOrderBUS extends UnicastRemoteObject implements IPurchaseOr
 
     @Override
     public List<PurchaseOrder> getAllPurchaseOrders() throws RemoteException {
-        return purchaseOrderDAO.getAllPurchaseOrders();
+        return new ArrayList<>(purchaseOrderDAO.getAllPurchaseOrders());
     }
 
     @Override
     public List<PurchaseOrder> getPurchaseOrderByOrderDate(LocalDate orderDate) throws RemoteException {
-        return purchaseOrderDAO.getPurchaseOrderByOrderDate(orderDate);
+        return new ArrayList<>(purchaseOrderDAO.getPurchaseOrderByOrderDate(orderDate));
     }
 
     @Override
     public List<PurchaseOrder> getPurchaseOrderByStatus(boolean status) throws RemoteException {
-        return purchaseOrderDAO.getPurchaseOrderByStatus(status);
+        return new ArrayList<>(purchaseOrderDAO.getPurchaseOrderByStatus(status));
     }
 
     @Override

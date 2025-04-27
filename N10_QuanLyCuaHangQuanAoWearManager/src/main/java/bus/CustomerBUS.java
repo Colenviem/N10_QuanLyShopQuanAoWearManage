@@ -6,6 +6,7 @@ import interfaces.ICustomerService;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerBUS extends UnicastRemoteObject implements ICustomerService {
@@ -17,12 +18,12 @@ public class CustomerBUS extends UnicastRemoteObject implements ICustomerService
 
     @Override
     public List<Customer> getAllCustomers() throws RemoteException {
-        return customerDAO.getAllCustomers();
+        return new ArrayList<>(customerDAO.getAllCustomers());
     }
 
     @Override
     public List<Customer> getCustomerByName(String name) throws RemoteException {
-        return customerDAO.getCustomerByName(name);
+        return new ArrayList<>(customerDAO.getCustomerByName(name));
     }
 
     @Override

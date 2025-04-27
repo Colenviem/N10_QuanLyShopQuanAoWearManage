@@ -6,6 +6,7 @@ import interfaces.IProductService;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProductBUS extends UnicastRemoteObject implements IProductService {
@@ -26,22 +27,22 @@ public class ProductBUS extends UnicastRemoteObject implements IProductService {
 
     @Override
     public List<Product> getProductByColor(String color) throws RemoteException {
-        return productDAO.getProductByColor(color);
+        return new ArrayList<>(productDAO.getProductByColor(color));
     }
 
     @Override
     public List<Product> getProductBySize(String size) throws RemoteException {
-        return productDAO.getProductBySize(size);
+        return new ArrayList<>(productDAO.getProductBySize(size));
     }
 
     @Override
     public List<Product> getProductByStatus(boolean status) throws RemoteException {
-        return productDAO.getProductByStatus(status);
+        return new ArrayList<>(productDAO.getProductByStatus(status));
     }
 
     @Override
     public List<Product> getAllProducts() throws RemoteException {
-        return productDAO.getAllProducts();
+        return new ArrayList<>(productDAO.getAllProducts());
     }
 
     @Override
@@ -61,7 +62,7 @@ public class ProductBUS extends UnicastRemoteObject implements IProductService {
 
     @Override
     public List<Object[]> getProductDetails() throws RemoteException {
-        return productDAO.getProductDetails();
+        return new ArrayList<>(productDAO.getProductDetails());
     }
 
     @Override
@@ -71,6 +72,6 @@ public class ProductBUS extends UnicastRemoteObject implements IProductService {
 
     @Override
     public List<Object[]> getProductDetailsDashboard() throws  RemoteException{
-        return productDAO.getProductDetailsDashboard();
+        return new ArrayList<>(productDAO.getProductDetailsDashboard());
     }
 }
