@@ -7,11 +7,10 @@ import gui.event.EventItem;
 import com.raven.model.ModelItem;
 import gui.component.Item;
 import gui.swing.ScrollBar;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Point;
+
+import java.awt.*;
 import java.awt.event.*;
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -148,7 +147,12 @@ public class FormProductInventory extends javax.swing.JPanel {
     private void DocDuLieu() throws Exception{
         List<Product> products = productBUS.getAllProducts();
         for (Product product : products) {
-            ImageIcon imageIcon = new ImageIcon(getClass().getClassLoader().getResource("images/png/product1.png"));
+//            ImageIcon imageIcon = new ImageIcon(getClass().getClassLoader().getResource("images/png/product1.png"));
+
+            URL url = new URL(product.getImageUrl());
+            ImageIcon originalIcon = new ImageIcon(url);
+            Image scaledImage = originalIcon.getImage().getScaledInstance(70, 70, Image.SCALE_SMOOTH);
+            ImageIcon scaledIcon = new ImageIcon(scaledImage);
 
             ModelItem modelItem = new ModelItem(
                     product.getId(),
@@ -156,7 +160,7 @@ public class FormProductInventory extends javax.swing.JPanel {
                     product.getDescription(),
                     (double) product.getPrice(),
                     product.getColor(),
-                    imageIcon
+                    scaledIcon
             );
             addItem(modelItem); // Giả sử bạn có phương thức này để thêm item vào giao diện
         }

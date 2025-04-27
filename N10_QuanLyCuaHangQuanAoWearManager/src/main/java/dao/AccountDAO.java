@@ -68,6 +68,20 @@ public class AccountDAO {
                 .getResultList();
     }
 
+    public boolean checkAccountExists(String username, String password) {
+        try {
+            String query = "SELECT a FROM Account a WHERE a.username = :username AND a.password = :password";
+            List<Account> accounts = em.createQuery(query, Account.class)
+                    .setParameter("username", username)
+                    .setParameter("password", password)
+                    .getResultList();
+            return !accounts.isEmpty();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public boolean deleteAccount(int id) {
         try {
             Account account = em.find(Account.class, id);

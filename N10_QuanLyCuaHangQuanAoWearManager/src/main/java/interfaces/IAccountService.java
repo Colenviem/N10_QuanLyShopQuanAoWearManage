@@ -20,4 +20,6 @@ public interface IAccountService extends Remote {
     List<Account> getAccountByUsername(String username) throws RemoteException;
 
     List<Account> getAllActiveAccounts() throws RemoteException;
+
+    boolean checkAccountExists(String username, String password) throws RemoteException;
 }
