@@ -47,6 +47,20 @@ public class OrderDAO {
                 .getResultList();
     }
 
+    public List<Object[]> getOrderSummariesForYear(int year) {
+    String jpql = "SELECT o.id, o.orderDate, c.phone, c.name, o.status, " +
+                  "p.productName, od.price, od.quantity, o.totalAmount, od.subTotal " +
+                  "FROM Order o JOIN OrderDetail od on o.id = od.id " +
+                  "JOIN Product p on p.id = od.id " +
+                  "JOIN Customer c on c.id = o.id " +
+                  "WHERE EXTRACT(YEAR FROM o.orderDate) = :year " +
+                  "ORDER BY o.orderDate ASC";
+
+    return em.createQuery(jpql, Object[].class)
+             .setParameter("year", year)
+            .setMaxResults(7)
+             .getResultList();
+    }
 
     public double getAverageOrderValue(String timePeriod) {
         try {

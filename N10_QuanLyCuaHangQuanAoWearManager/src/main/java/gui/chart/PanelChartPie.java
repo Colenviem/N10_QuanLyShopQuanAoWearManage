@@ -1,11 +1,6 @@
 package gui.chart;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.Shape;
+import java.awt.*;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
@@ -16,24 +11,17 @@ public class PanelChartPie extends javax.swing.JPanel {
 
     private final List<ModelChartPie> list;
     private float chartSize = 0.5f;
-
+    private Font labelFont = new Font("sansserif", Font.PLAIN, 12); // Font for percentage labels
+    private Color labelColor = Color.BLACK; // Color for percentage labels
+    private double labelRadiusFactor = 0.8; // Tăng bán kính đặt nhãn
+    private double minAngleForLabel = 0.05;
     public PanelChartPie() {
         initComponents();
         list = new ArrayList<>();
         setBackground(new Color(250, 250, 250));
         setOpaque(false);
-//        testData();
     }
 
-//    private void testData() {
-//
-//        list.add(new ModelChartPie("Values 1", 50, Color.yellow));
-//
-//        list.add(new ModelChartPie("Values 2", 70, Color.red));
-//
-//        list.add(new ModelChartPie("Values 3", 30, Color.GREEN));
-//
-//    }
 
     private double getTotal() {
         double total = 0;
@@ -59,11 +47,22 @@ public class PanelChartPie extends javax.swing.JPanel {
         double total = getTotal();
         double curvalu = 0;
         for (ModelChartPie data : list) {
-            double startAngle = (curvalu * 360f / total) + 90;  //  +90 to start from 90 angle
+            double startAngle = (curvalu * 360f / total) + 90;
             double angle = (data.getValue() * 360f / total);
             g2.setColor(data.getColor());
             Shape shape = new Arc2D.Double(x, y, size, size, startAngle, angle, Arc2D.PIE);
             g2.fill(shape);
+
+            double percentage = (data.getValue() / total) * 100;
+            String percentageText = String.format("%.1f%%", percentage);
+            g2.setColor(labelColor);
+            g2.setFont(labelFont);
+            FontMetrics fm = g2.getFontMetrics();
+            double halfAngleRadian = Math.toRadians(startAngle + angle / 2);
+            int textX = (int) (width / 2 + (size / 2 * labelRadiusFactor) * Math.cos(halfAngleRadian) - fm.stringWidth(percentageText) / 2);
+            int textY = (int) (height / 2 + (size / 2 * labelRadiusFactor) * Math.sin(halfAngleRadian) + fm.getAscent() / 2);
+            g2.drawString(percentageText, textX, textY);
+
             curvalu += data.getValue();
         }
         double inSize = size * chartSize;
@@ -75,6 +74,7 @@ public class PanelChartPie extends javax.swing.JPanel {
         grphcs.drawImage(img, 0, 0, null);
         super.paintComponent(grphcs);
     }
+
 
     public void addItem(ModelChartPie data) {
         list.add(data);

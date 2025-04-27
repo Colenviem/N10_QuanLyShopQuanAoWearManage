@@ -65,4 +65,9 @@ public class OrderBUS extends UnicastRemoteObject implements IOrderService {
     public double[] getAverageOrderValueAndGrowth(String timePeriod) throws RemoteException{
         return orderDAO.getAverageOrderValueAndGrowth(timePeriod);
     }
+    
+    @Override
+    public List<Object[]> getOrderSummariesForYear(int year) throws RemoteException{
+        return orderDAO.getOrderSummariesForYear(year);
+    }
 }

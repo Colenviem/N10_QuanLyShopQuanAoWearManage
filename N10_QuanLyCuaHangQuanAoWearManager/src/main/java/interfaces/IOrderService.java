@@ -27,4 +27,6 @@ public interface IOrderService extends Remote {
     double getAverageOrderValue(String timePeriod) throws RemoteException;
 
     double[] getAverageOrderValueAndGrowth(String timePeriod) throws RemoteException;
+
+    List<Object[]> getOrderSummariesForYear(int year) throws RemoteException;
 }

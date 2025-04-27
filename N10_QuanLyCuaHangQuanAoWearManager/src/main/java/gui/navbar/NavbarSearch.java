@@ -85,6 +85,15 @@ public class NavbarSearch extends JPanel {
         this.defaultComboBox = defaultComboBox;
         comboBox.setModel(defaultComboBox);
     }
+    public void hideComponentSearch() {
+        txtSearch.setVisible(false);
+        comboBox.setVisible(false);
+    }
+
+    public void getBtnSearch(){
+        btnSearch.setVisible(true);
+    }
+
 
     @Override
     protected void paintComponent(Graphics g) {

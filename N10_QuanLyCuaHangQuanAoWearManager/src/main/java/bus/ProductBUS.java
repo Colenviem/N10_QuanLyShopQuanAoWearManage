@@ -66,7 +66,7 @@ public class ProductBUS extends UnicastRemoteObject implements IProductService {
     }
 
     @Override
-    public List<Object[]> getProductDetailsDashboard(int page, int pageSize) throws  RemoteException{
-        return productDAO.getProductDetailsDashboard(page, pageSize);
+    public List<Object[]> getProductDetailsDashboard() throws  RemoteException{
+        return productDAO.getProductDetailsDashboard();
     }
 }

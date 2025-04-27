@@ -42,6 +42,48 @@ public class EmployeeDAO {
                 .getResultList();
     }
 
+    // Thống kê tổng giá trị bán hàng của mỗi nhân viên
+    public List<Object[]> getEmployeeTotalSales() {
+        return em.createQuery("SELECT e.id, e.fullName, SUM(o.totalAmount) " +
+                "FROM Employee e LEFT JOIN Order o ON e.id = o.id " +
+                "GROUP BY e.id, e.fullName " +
+                "ORDER BY SUM(o.totalAmount) DESC", Object[].class).setMaxResults(7).getResultList();
+    }
+
+    // Thống kê số lượng đơn hàng bán được của mỗi nhân viên
+    public List<Object[]> getEmployeeOrderCounts() {
+        return em.createQuery("SELECT e.id, e.fullName, COUNT(o.id) " +
+                        "FROM Employee e LEFT JOIN Order o ON e.id = o.id " +
+                        "GROUP BY e.id, e.fullName " +
+                        "ORDER BY COUNT(o.id) DESC", Object[].class)
+                .setMaxResults(7)
+                .getResultList();
+    }
+
+    public List<Object[]> getEmployeeProductSales() {
+        return em.createQuery("SELECT e.id, e.fullName, SUM(oi.quantity * oi.price), SUM(oi.quantity) " +
+                "FROM Employee e JOIN Order o ON e.id = o.id " +
+                "JOIN OrderDetail oi ON o.id = oi.id " +
+                "GROUP BY e.id, e.fullName " +
+                "ORDER BY e.id", Object[].class).setMaxResults(7).getResultList();
+    }
+
+    // Thống kê giá trị trung bình mỗi đơn hàng của mỗi nhân viên
+    public List<Object[]> getEmployeeAverageOrderValue() {
+        return em.createQuery("SELECT e.id, e.fullName, AVG(o.totalAmount) " +
+                "FROM Employee e LEFT JOIN Order o ON e.id = o.id " +
+                "GROUP BY e.id, e.fullName " +
+                "ORDER BY AVG(o.totalAmount) DESC", Object[].class).setMaxResults(7).getResultList();
+    }
+
+
+    public List<Object[]> getEmployeeProductSalesAndCount() {
+        return em.createQuery("SELECT e.id, e.fullName, SUM(oi.quantity * oi.price), SUM(oi.quantity) " +
+                "FROM Employee e JOIN Order o ON e.id = o.id " +
+                "JOIN OrderDetail oi ON o.id = oi.id " +
+                "GROUP BY e.id, e.fullName " +
+                "ORDER BY e.id", Object[].class).setMaxResults(7).getResultList();
+    }
 
     public Employee getEmployeeById(int id) {
         return em.find(Employee.class, id);

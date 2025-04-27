@@ -27,6 +27,6 @@ public interface IProductService extends Remote {
 
     int getTotalProductsSold(String timePeriod) throws RemoteException;
 
-    List<Object[]> getProductDetailsDashboard(int page, int pageSize) throws  RemoteException;
+    List<Object[]> getProductDetailsDashboard() throws  RemoteException;
 }
 

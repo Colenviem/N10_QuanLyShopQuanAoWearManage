@@ -52,12 +52,10 @@ public class ProductDAO {
     }
 
 
-    public List<Object[]> getProductDetailsDashboard(int page, int pageSize) {
+    public List<Object[]> getProductDetailsDashboard() {
         String jpql = "SELECT p.id, p.productName, c.name, p.stockQuantity, p.price, p.status " +
-                "FROM Product p JOIN p.category c";
+                "FROM Product p JOIN Category c on p.id = c.id";
         Query query = em.createQuery(jpql);
-        query.setFirstResult((page - 1) * pageSize); // Offset
-        query.setMaxResults(pageSize);
         return query.getResultList();
     }
 

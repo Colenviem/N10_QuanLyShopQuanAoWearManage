@@ -54,4 +54,29 @@ public class EmployeeBUS extends UnicastRemoteObject implements IEmployeeService
     public boolean updateEmployee(Employee employee) throws RemoteException {
         return employeeDAO.updateEmployee(employee);
     }
+    @Override
+    public List<Object[]> getEmployeeTotalSales() throws RemoteException {
+        return employeeDAO.getEmployeeTotalSales();
+    }
+
+    @Override
+    public List<Object[]> getEmployeeOrderCounts() throws RemoteException{
+        return employeeDAO.getEmployeeOrderCounts();
+    }
+    @Override
+    public List<Object[]> getEmployeeAverageOrderValue() throws RemoteException{
+        return employeeDAO.getEmployeeAverageOrderValue();
+    }
+
+    @Override
+    public List<Object[]> getEmployeeProductSales() throws RemoteException{
+        return employeeDAO.getEmployeeProductSales();
+    }
+
+    @Override
+    public List<Object[]> getEmployeeProductSalesAndCount() throws  RemoteException{
+        return employeeDAO.getEmployeeProductSalesAndCount();
+    }
+
+
 }

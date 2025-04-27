@@ -22,4 +22,14 @@ public interface IEmployeeService extends Remote {
     boolean addEmployee(Employee employee) throws RemoteException;
 
     boolean updateEmployee(Employee employee) throws RemoteException;
+
+    List<Object[]> getEmployeeTotalSales() throws RemoteException;
+
+    List<Object[]> getEmployeeOrderCounts() throws RemoteException;
+
+    List<Object[]> getEmployeeAverageOrderValue() throws RemoteException;
+
+    List<Object[]> getEmployeeProductSales() throws RemoteException;
+
+    List<Object[]> getEmployeeProductSalesAndCount() throws  RemoteException;
 }

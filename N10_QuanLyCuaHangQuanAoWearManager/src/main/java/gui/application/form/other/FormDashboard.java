@@ -73,69 +73,39 @@ public class FormDashboard extends javax.swing.JPanel {
         }
     }
 
+
     private void initData() {
-//        DefaultTableModel model = (DefaultTableModel) table.getModel();
-//        model.setRowCount(0); // Clear the table before adding new data
-//        DecimalFormat decimalFormat = new DecimalFormat("#,###.## VNĐ"); // Định dạng giá
-//        int pageSize = 10; // Số lượng sản phẩm trên mỗi trang
-//        int pageNumber = 1; // Trang hiện tại (bắt đầu từ 1)
-//        boolean hasMoreData = true; // Biến kiểm tra xem còn dữ liệu để tải không
-//
-//        try {
-//            // Assuming you have a ProductBUS instance, adjust as needed
-//            ProductBUS productBUS = new ProductBUS();
-//
-//            while (hasMoreData) {
-//                // Get the product details from the database for the current page
-//                List<Object[]> productList = productBUS.getProductDetailsDashboard(pageNumber, pageSize);
-//
-//                // Nếu không có dữ liệu trả về, kết thúc vòng lặp
-//                if (productList.isEmpty()) {
-//                    hasMoreData = false;
-//                    break;
-//                }
-//
-//                // Add each product to the table
-//                for (Object[] product : productList) {
-//                    //status is boolean in Product, String in table
-//                    String statusString = (boolean) product[5] ? "Còn hàng" : "Hết hàng";
-//                    String formattedPrice;
-//                    if (product.length > 4) {
-//                        formattedPrice = decimalFormat.format((double) product[4]); // Format giá
-//                    } else {
-//                        formattedPrice = "N/A";
-//                    }
-//                    model.addRow(new Object[]{
-//                            product[0],       // Product ID
-//                            product[1],       // Product Name
-//                            product[2],       // Category Name
-//                            product[3],       // Stock Quantity
-//                            formattedPrice,       // Price (Formatted)
-//                            statusString // Status
-//                    });
-//                }
-//
-//                // Kiểm tra xem còn dữ liệu để tải tiếp không (ví dụ: so sánh số lượng trả về với pageSize)
-//                if (productList.size() < pageSize) {
-//                    hasMoreData = false;
-//                } else {
-//                    pageNumber++; // Tăng số trang để tải tiếp
-//                }
-//                // In trang hiện tại
-//                System.out.println("Loading page: " + pageNumber);
-//            }
-//
-//            SwingUtilities.invokeLater(() -> {
-//                table.fixTable(jScrollPane1);
-//                table.setRowHeight(150);
-//                table.getColumnModel().getColumn(0).setPreferredWidth(150);
-//                table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
-//            });
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            JOptionPane.showMessageDialog(this, "Error fetching product data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-//        }
+        try {
+            List<Object[]> productDetails = productBUS.getProductDetailsDashboard();
+            DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+            tableModel.setRowCount(0); // Clear existing data
+            for (Object[] rowData : productDetails) {
+                String statusDisplay;
+                String statusStr = rowData[5] != null ? rowData[5].toString().trim().toLowerCase() : "";
+                if (statusStr.equals("còn") || statusStr.equals("active") || statusStr.equals("true")) {
+                    statusDisplay = "Còn";
+                } else if (statusStr.equals("ngưng") || statusStr.equals("inactive") ||
+                        statusStr.equals("false") || statusStr.isEmpty()) {
+                    statusDisplay = "Ngưng";
+                } else {
+                    statusDisplay = "Ngưng"; // Default for unknown values
+                    Logger.getLogger(FormDashboard.class.getName()).log(Level.WARNING,
+                            "Unknown status value: {0}", statusStr);
+                }
+                Object[] displayRowData = {
+                        rowData[0], // Mã sản phẩm
+                        rowData[1], // Tên sản phẩm
+                        rowData[2], // Danh mục
+                        rowData[3], // Số lượng tồn kho
+                        decimalFormatter.format(rowData[4]) + " VNĐ", // Giá
+                        statusDisplay
+                };
+                tableModel.addRow(displayRowData);
+            }
+        } catch (RemoteException ex) {
+            Logger.getLogger(FormDashboard.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu sản phẩm: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
 
@@ -150,8 +120,8 @@ public class FormDashboard extends javax.swing.JPanel {
         card1 = new gui.component.Card();
         card2 = new gui.component.Card();
         card3 = new gui.component.Card();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        table = new gui.swing.Table();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        table = new gui.table.TableCustom();
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(51, 51, 51));
@@ -204,13 +174,13 @@ public class FormDashboard extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(table);
+        jScrollPane2.setViewportView(table);
         if (table.getColumnModel().getColumnCount() > 0) {
             table.getColumnModel().getColumn(0).setPreferredWidth(200);
-            table.getColumnModel().getColumn(1).setPreferredWidth(250);
+            table.getColumnModel().getColumn(1).setPreferredWidth(200);
             table.getColumnModel().getColumn(2).setPreferredWidth(200);
-            table.getColumnModel().getColumn(3).setPreferredWidth(250);
-            table.getColumnModel().getColumn(4).setPreferredWidth(250);
+            table.getColumnModel().getColumn(3).setPreferredWidth(200);
+            table.getColumnModel().getColumn(4).setPreferredWidth(200);
             table.getColumnModel().getColumn(5).setPreferredWidth(200);
         }
 
@@ -220,7 +190,7 @@ public class FormDashboard extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(lb, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jLayeredPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 812, Short.MAX_VALUE)
-            .addComponent(jScrollPane1)
+            .addComponent(jScrollPane2)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -229,8 +199,8 @@ public class FormDashboard extends javax.swing.JPanel {
                 .addGap(0, 0, 0)
                 .addComponent(jLayeredPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
-                .addGap(0, 0, 0))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 //        Notifications.getInstance().show(Notifications.Type.INFO, Notifications.Location.TOP_CENTER, "Hello sample message");
@@ -241,8 +211,8 @@ public class FormDashboard extends javax.swing.JPanel {
     private gui.component.Card card3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLayeredPane jLayeredPane1;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPanel lb;
-    private gui.swing.Table table;
+    private gui.table.TableCustom table;
     // End of variables declaration//GEN-END:variables
 }
