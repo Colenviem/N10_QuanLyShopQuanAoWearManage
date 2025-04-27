@@ -391,7 +391,7 @@ public class FormPromotion extends JPanel implements ActionListener,MouseListene
     private void init() {
         setOpaque(false);
         //---------------------------------//
-        btnDate = new ButtonCustom("", "imgs\\icon\\date.png");
+        btnDate = new ButtonCustom("", "resources/images/png/date.png");
         btnDate.setPreferredSize(new Dimension(40, 40));
         btnDate.addActionListener(new ActionListener() {
             @Override
@@ -423,7 +423,7 @@ public class FormPromotion extends JPanel implements ActionListener,MouseListene
         });
         cmd2.add(btnDate);
         //---------------------------------//
-        btnDateTo = new ButtonCustom("", "imgs\\icon\\date.png");
+        btnDateTo = new ButtonCustom("", "resources/images/png/date.png");
         btnDateTo.setPreferredSize(new Dimension(40, 40));
         btnDateTo.addActionListener(new ActionListener() {
             @Override

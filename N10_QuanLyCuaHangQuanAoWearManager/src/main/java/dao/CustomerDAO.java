@@ -19,16 +19,17 @@ public class CustomerDAO {
     }
 
     public List<Customer> getCustomerByName(String name) {
-        return em.createQuery("SELECT c FROM Customer c WHERE c.name = :name", Customer.class)
-                .setParameter("name", name)
+        return em.createQuery("SELECT c FROM Customer c WHERE c.name LIKE :name", Customer.class)
+                .setParameter("name", "%" + name + "%")
                 .getResultList();
     }
 
     public List<Customer> getCustomerByPhone(String phone) {
-        return em.createQuery("SELECT c FROM Customer c WHERE c.phone = :phone", Customer.class)
-                .setParameter("phone", phone)
+        return em.createQuery("SELECT c FROM Customer c WHERE c.phone LIKE :phone", Customer.class)
+                .setParameter("phone", "%" + phone + "%")
                 .getResultList();
     }
+
 
     public Customer getCustomerById(int id) {
         return em.find(Customer.class, id);

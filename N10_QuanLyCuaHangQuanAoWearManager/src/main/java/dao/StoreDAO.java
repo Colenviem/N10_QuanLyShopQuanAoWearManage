@@ -19,10 +19,11 @@ public class StoreDAO {
     }
 
     public List<Store> getStoreByStoreName(String storeName) {
-        return em.createQuery("SELECT s FROM Store s WHERE s.name = :storeName", Store.class)
-                .setParameter("storeName", storeName)
+        return em.createQuery("SELECT s FROM Store s WHERE s.name LIKE :storeName", Store.class)
+                .setParameter("storeName", "%" + storeName + "%")
                 .getResultList();
     }
+
 
     public Store getStoreById(int id) {
         return em.find(Store.class, id);

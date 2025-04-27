@@ -17,12 +17,12 @@ public class CategoryDAO {
         return em.createQuery("SELECT c FROM Category c", Category.class)
                 .getResultList();
     }
-
     public List<Category> getCategoryByName(String name) {
-        return em.createQuery("SELECT c FROM Category c WHERE c.name = :name", Category.class)
-                .setParameter("name", name)
+        return em.createQuery("SELECT c FROM Category c WHERE c.name LIKE :name", Category.class)
+                .setParameter("name", "%" + name + "%")
                 .getResultList();
     }
+
 
     public Category getCategoryById(String id) {
         return em.find(Category.class, id);

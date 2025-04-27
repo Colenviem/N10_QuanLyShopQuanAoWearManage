@@ -19,16 +19,17 @@ public class SupplierDAO {
     }
 
     public List<Supplier> getSupplierBySupplierName(String supplierName) {
-        return em.createQuery("SELECT s FROM Supplier s WHERE s.supplierName = :supplierName", Supplier.class)
-                .setParameter("supplierName", supplierName)
+        return em.createQuery("SELECT s FROM Supplier s WHERE s.supplierName LIKE :supplierName", Supplier.class)
+                .setParameter("supplierName", "%" + supplierName + "%")
                 .getResultList();
     }
 
     public List<Supplier> getSupplierByPhone(String phone) {
-        return em.createQuery("SELECT s FROM Supplier s WHERE s.phone = :phone", Supplier.class)
-                .setParameter("phone", phone)
+        return em.createQuery("SELECT s FROM Supplier s WHERE s.phone LIKE :phone", Supplier.class)
+                .setParameter("phone", "%" + phone + "%")
                 .getResultList();
     }
+
 
     public List<Supplier> getSupplierByStatus(boolean status) {
         return em.createQuery("SELECT s FROM Supplier s WHERE s.status = :status", Supplier.class)

@@ -19,22 +19,26 @@ public class EmployeeDAO {
     }
 
     public List<Employee> getEmployeeByName(String name) {
-        return em.createQuery("SELECT e FROM Employee e WHERE e.fullName = :name", Employee.class)
-                .setParameter("name", name)
+        return em.createQuery("SELECT e FROM Employee e WHERE e.fullName LIKE :name", Employee.class)
+                .setParameter("name", "%" + name + "%")
                 .getResultList();
     }
 
     public List<Employee> getEmployeeByPhone(String phone) {
-        return em.createQuery("SELECT e FROM Employee e WHERE e.phone = :phone", Employee.class)
-                .setParameter("phone", phone)
+        return em.createQuery("SELECT e FROM Employee e WHERE e.phone LIKE :phone", Employee.class)
+                .setParameter("phone", "%" + phone + "%")
                 .getResultList();
     }
 
+
     public List<Employee> getEmployeeBySalary(double salary) {
-        return em.createQuery("SELECT e FROM Employee e WHERE e.salary = :salary", Employee.class)
-                .setParameter("salary", salary)
+        double range = 1000.0; // khoảng chênh lệch cho phép, ví dụ 1000
+        return em.createQuery("SELECT e FROM Employee e WHERE e.salary BETWEEN :minSalary AND :maxSalary", Employee.class)
+                .setParameter("minSalary", salary - range)
+                .setParameter("maxSalary", salary + range)
                 .getResultList();
     }
+
 
     public List<Employee> getEmployeeByStatus(boolean status) {
         return em.createQuery("SELECT e FROM Employee e WHERE e.status = :status", Employee.class)

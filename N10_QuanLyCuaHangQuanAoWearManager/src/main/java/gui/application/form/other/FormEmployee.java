@@ -409,7 +409,7 @@ public class FormEmployee extends JPanel implements ActionListener, MouseListene
         }
         try {
             employeeBUS = new EmployeeBUS();
-            if (searchText.equals("Mã khách hàng")) {
+            if (searchText.equals("Mã nhân viên")) {
                 if (searchValue.matches("\\d+")) {
                     int id = Integer.parseInt(searchValue);
                     Employee employee = employeeBUS.getEmployeeById(id);
@@ -469,7 +469,7 @@ public class FormEmployee extends JPanel implements ActionListener, MouseListene
                     });
                 }
             } else if (searchText.equals("Số điện thoại")) {
-                List<Employee> employees = employeeBUS.getEmployeeByName(searchValue);
+                List<Employee> employees = employeeBUS.getEmployeeByPhone(searchValue);
                 if (employees != null && !employees.isEmpty()) {
                     tableModel.setRowCount(0);
                     employees.forEach(employee -> {
@@ -498,7 +498,7 @@ public class FormEmployee extends JPanel implements ActionListener, MouseListene
                     });
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy thông tin khách hàng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Không tìm thấy thông tin nhân viên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         }catch (Exception e) {
             e.printStackTrace();

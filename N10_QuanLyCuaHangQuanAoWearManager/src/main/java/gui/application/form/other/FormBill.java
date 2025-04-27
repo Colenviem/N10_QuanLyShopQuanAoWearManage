@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -159,6 +160,8 @@ public class FormBill extends JPanel implements ActionListener, MouseListener {
     private void init() {
         navbar.getComboBox().addItem("Mã hóa đơn");
         navbar.getComboBox().addItem("Tên khách hàng");
+        tableModel = (DefaultTableModel) tableOrder.getModel();
+        tableModelOrderDetail = (DefaultTableModel) tableOrderDetail.getModel();
         setBackground(new Color(255, 255, 255));
         setBorder(new EmptyBorder(5, 5, 5, 5));
         TitledBorder titleOrder = new TitledBorder(
@@ -240,7 +243,7 @@ public class FormBill extends JPanel implements ActionListener, MouseListener {
 
             }
         }
-        if (o.equals(searchButton)) {
+        if (o.equals(navbar.getBtnSearch())) {
             search();
         }
     }
@@ -253,39 +256,42 @@ public class FormBill extends JPanel implements ActionListener, MouseListener {
 
             orderBUS = new OrderBUS();
 
-            if(valueSearch.matches("\\d+")) {
-                int id = Integer.parseInt(valueSearch);
-                if (selectedValue.equals("Mã hóa đơn")) {
-                    if (valueSearch.equals("Nhập nội dung tìm kiếm...")) {
-                        DocDuLieuOrderrVaoTable();
-                    } else {
-                        Order order = orderBUS.getOrderById(id);
+            if (selectedValue.equals("Mã hóa đơn")) {
+                if (valueSearch.matches("\\d+")) {
+                    int id = Integer.parseInt(valueSearch);
+                    Order order = orderBUS.getOrderById(id);
+                    if (order != null) {
                         tableModel.setRowCount(0);
                         tableModel.addRow(new Object[]{
-                            order.getId(),
-                            order.getCustomer().getName(),
-                            order.getEmployee().getFullName(),
-                            order.getOrderDate(),
-                            order.getTotalAmount(),
-                            order.getStatus()
+                                order.getId(),
+                                order.getCustomer().getName(),
+                                order.getEmployee().getFullName(),
+                                order.getOrderDate(),
+                                order.getTotalAmount(),
+                                order.getStatus()
+                        });
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Không tìm thấy hóa đơn!");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Mã hóa đơn phải là số!");
+                }
+            } else if (selectedValue.equals("Tên khách hàng")) {
+                List<Order> orders = orderBUS.getOrdersByCustomerName(valueSearch);
+                tableModel.setRowCount(0);
+                if (!orders.isEmpty()) {
+                    for (Order order : orders) {
+                        tableModel.addRow(new Object[]{
+                                order.getId(),
+                                order.getCustomer().getName(),
+                                order.getEmployee().getFullName(),
+                                order.getOrderDate(),
+                                order.getTotalAmount(),
+                                order.getStatus()
                         });
                     }
                 } else {
-                    if (valueSearch.equals("Nhập nội dung tìm kiếm...")) {
-                        DocDuLieuOrderrVaoTable();
-                    } else {
-                        tableModel.setRowCount(0);
-                        orderBUS.getOrdersByCustomerName(valueSearch)
-                                .stream()
-                                .forEach(order -> tableModel.addRow(new Object[]{
-                                        order.getId(),
-                                        order.getCustomer().getName(),
-                                        order.getEmployee().getFullName(),
-                                        order.getOrderDate(),
-                                        order.getTotalAmount(),
-                                        order.getStatus()
-                                }));
-                    }
+                    JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng!");
                 }
             }
         }catch (Exception e){

@@ -250,11 +250,12 @@ public class OrderDAO {
     }
 
     public List<Order> getOrdersByCustomerName(String customerName) {
-        String query = "SELECT o from Order o where o.customer.name = :customerName";
+        String query = "SELECT o FROM Order o WHERE o.customer.name LIKE :customerName";
         return em.createQuery(query, Order.class)
-                .setParameter("customerName", customerName)
+                .setParameter("customerName", "%" + customerName + "%")
                 .getResultList()
                 .stream()
                 .collect(Collectors.toList());
     }
+
 }

@@ -19,10 +19,11 @@ public class ProductDAO {
 
 
     public List<Product> getProductByName(String name) {
-        return em.createQuery("SELECT p FROM Product p WHERE p.productName = :name", Product.class)
-                .setParameter("name", name)
+        return em.createQuery("SELECT p FROM Product p WHERE p.productName LIKE :name", Product.class)
+                .setParameter("name", "%" + name + "%")
                 .getResultList();
     }
+
 
     public List<Product> getProductByColor(String color) {
         return em.createQuery("SELECT p FROM Product p WHERE p.color = :color", Product.class)

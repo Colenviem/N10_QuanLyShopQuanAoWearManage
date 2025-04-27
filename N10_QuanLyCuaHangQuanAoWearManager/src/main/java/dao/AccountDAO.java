@@ -26,10 +26,11 @@ public class AccountDAO {
     }
 
     public List<Account> getAccountByUsername(String username) {
-        return em.createQuery("SELECT a FROM Account a WHERE a.username = :username", Account.class)
-                .setParameter("username", username)
+        return em.createQuery("SELECT a FROM Account a WHERE a.username LIKE :username", Account.class)
+                .setParameter("username", "%" + username + "%")
                 .getResultList();
     }
+
 
     public Account getAccountById(int id) {
         return em.find(Account.class, id);
