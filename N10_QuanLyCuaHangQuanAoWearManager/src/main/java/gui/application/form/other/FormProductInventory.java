@@ -1,5 +1,6 @@
 package gui.application.form.other;
 
+import bus.ProductBUS;
 import dao.ProductDAO;
 import dto.Product;
 import gui.event.EventItem;
@@ -11,6 +12,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.*;
+import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,17 +22,13 @@ import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
 import org.jdesktop.animation.timing.interpolation.PropertySetter;
 
-/**
- *
- * @author Raven
- */
 public class FormProductInventory extends javax.swing.JPanel {
 
     private EventItem event;
     private Animator animator;
     private ModelItem itemSelected;
     private Point animatePoint;
-            
+    private ProductBUS productBUS;
 
     public FormProductInventory(EventItem event) {
         this.event = event;
@@ -38,23 +36,29 @@ public class FormProductInventory extends javax.swing.JPanel {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Form Inbox");
+            JFrame frame = new JFrame("Product Inventory");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(800, 600);
             frame.setLocationRelativeTo(null); // Căn giữa màn hình
 
-            FormProductInventory formInbox = new FormProductInventory();
+            FormProductInventory formInbox = null;
+            try {
+                formInbox = new FormProductInventory();
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
             frame.add(formInbox);
 
             frame.setVisible(true);
         });
     }
 
-    public FormProductInventory() {
+    public FormProductInventory() throws RemoteException {
         initComponents();
         panelItem.remove(item1);
         panelItem.revalidate();
         panelItem.repaint();
+        productBUS = new ProductBUS();
 
         this.event = new EventItem() {
             @Override
@@ -142,9 +146,7 @@ public class FormProductInventory extends javax.swing.JPanel {
     }
 
     private void DocDuLieu() throws Exception{
-        ProductDAO productDAO = new ProductDAO();
-        List<Product> products = productDAO.getAllProducts();
-
+        List<Product> products = productBUS.getAllProducts();
         for (Product product : products) {
             ImageIcon imageIcon = new ImageIcon(getClass().getClassLoader().getResource("images/png/product1.png"));
 
@@ -156,28 +158,25 @@ public class FormProductInventory extends javax.swing.JPanel {
                     product.getColor(),
                     imageIcon
             );
-            addItem(modelItem);
+            addItem(modelItem); // Giả sử bạn có phương thức này để thêm item vào giao diện
         }
     }
 
     private void TimKiemSanPham(String keyword) throws Exception {
         panelItem.removeAll(); // Xóa các item hiện có trên panel
-        ProductDAO productDAO = new ProductDAO();
-        List<Product> allProducts = productDAO.getAllProducts(); // Lấy tất cả sản phẩm
+        List<Product> searchResults = productBUS.getProductByName(keyword);
 
-        for (Product product : allProducts) {
-            if (product.getProductName().toLowerCase().contains(keyword.toLowerCase())) {
-                ImageIcon imageIcon = new ImageIcon(getClass().getClassLoader().getResource("images/png/product1.png"));
-                ModelItem modelItem = new ModelItem(
-                        product.getId(),
-                        product.getProductName(),
-                        product.getDescription(),
-                        (double) product.getPrice(),
-                        product.getColor(),
-                        imageIcon
-                );
-                addItem(modelItem);
-            }
+        for (Product product : searchResults) {
+            ImageIcon imageIcon = new ImageIcon(getClass().getClassLoader().getResource("images/png/product1.png"));
+            ModelItem modelItem = new ModelItem(
+                    product.getId(),
+                    product.getProductName(),
+                    product.getDescription(),
+                    (double) product.getPrice(),
+                    product.getColor(),
+                    imageIcon
+            );
+            addItem(modelItem);
         }
         panelItem.revalidate();
         panelItem.repaint();

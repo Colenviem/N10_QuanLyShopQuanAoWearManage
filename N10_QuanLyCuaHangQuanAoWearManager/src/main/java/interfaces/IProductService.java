@@ -22,5 +22,11 @@ public interface IProductService extends Remote {
     boolean addProduct(Product product) throws RemoteException;
 
     boolean updateProduct(Product product) throws RemoteException;
+
+    List<Object[]> getProductDetails() throws RemoteException;
+
+    int getTotalProductsSold(String timePeriod) throws RemoteException;
+
+    List<Object[]> getProductDetailsDashboard(int page, int pageSize) throws  RemoteException;
 }
 

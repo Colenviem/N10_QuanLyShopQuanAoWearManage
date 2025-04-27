@@ -7,6 +7,7 @@ import interfaces.IOrderDetailService;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
+import java.util.Map;
 
 public class OrderDetailBUS extends UnicastRemoteObject implements IOrderDetailService {
     private OrderDetailDAO orderDetailDAO;
@@ -23,6 +24,11 @@ public class OrderDetailBUS extends UnicastRemoteObject implements IOrderDetailS
     @Override
     public OrderDetail getOrderDetailById(int id) throws RemoteException {
         return orderDetailDAO.getOrderDetailById(id);
+    }
+
+    @Override
+    public Map<OrderDetail, Double> getOrderDetailAndTotalById(int orderId) throws RemoteException{
+        return orderDetailDAO.getOrderDetailAndTotalById(orderId);
     }
 
     @Override

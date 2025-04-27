@@ -1,50 +1,144 @@
 package gui.application.form.other;
 
+import bus.OrderBUS;
+import bus.ProductBUS;
 import com.formdev.flatlaf.FlatClientProperties;
 import gui.model.ModelStaff;
 import gui.model.Model_Card;
 
+import java.rmi.RemoteException;
+import java.text.DecimalFormat;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.Random;
-import javax.swing.ImageIcon;
-import javax.swing.JTable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-/**
- *
- * @author Raven
- */
+
 public class FormDashboard extends javax.swing.JPanel {
 
-    public FormDashboard() {
+    private OrderBUS orderBUS;
+    private ProductBUS productBUS;
+    private DecimalFormat decimalFormatter = new DecimalFormat("#,###.##");
+
+    public FormDashboard() throws RemoteException {
         initComponents();
-//        lb.putClientProperty(FlatClientProperties.STYLE, ""
-//                + "font:$h1.font");
-        card1.setData(new Model_Card(new ImageIcon(getClass().getClassLoader().getResource("images/icon/1.svg")), "Stock Total", "$200000", "Increased by 60%"));
-        card2.setData(new Model_Card(new ImageIcon(getClass().getClassLoader().getResource("images/icon/2.svg")), "Total Profit", "$15000", "Increased by 25%"));
-        card3.setData(new Model_Card(new ImageIcon(getClass().getClassLoader().getResource("images/icon/3.svg")), "Unique Visitors", "$300000", "Increased by 70%"));
+        orderBUS = new OrderBUS();
+        productBUS = new ProductBUS();
+        initCards();
         initData();
+    }
+    private void initCards() {
+        try {
+            // Lấy dữ liệu từ BUS
+            double totalRevenue = orderBUS.getTotalRevenue("tháng");
+            double previousTotalRevenue = orderBUS.getTotalRevenue("tháng trước");
+            int totalProductsSold = productBUS.getTotalProductsSold("tháng");
+            int previousTotalProductsSold = productBUS.getTotalProductsSold("tháng trước");
+            double[] avgOrderData = orderBUS.getAverageOrderValueAndGrowth("tháng");
+            double averageOrderValue = avgOrderData[0];
+            double growthPercentage = avgOrderData[1];
+
+            // Tính toán tăng trưởng
+            double revenueGrowth = calculateGrowth(totalRevenue, previousTotalRevenue);
+            double productSoldGrowth = calculateGrowth(totalProductsSold, previousTotalProductsSold);
+
+            // Định dạng và hiển thị dữ liệu lên các card
+            card1.setData(new Model_Card(new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("images/icon/1.svg"))), "Tổng doanh thu", decimalFormatter.format(totalRevenue) + " VNĐ", getGrowthText(revenueGrowth)));
+            card2.setData(new Model_Card(new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("images/icon/2.svg"))), "Sản phẩm đã bán", String.valueOf(totalProductsSold) + " sản phẩm", getGrowthText(productSoldGrowth)));
+            card3.setData(new Model_Card(new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("images/icon/3.svg"))), "Giá trị đơn hàng TB", decimalFormatter.format(averageOrderValue) + " VNĐ", getGrowthText(growthPercentage)));
+        } catch (RemoteException ex) {
+            Logger.getLogger(FormDashboard.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "Error fetching card data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private double calculateGrowth(double currentValue, double previousValue) {
+        if (previousValue != 0) {
+            return ((currentValue - previousValue) / previousValue) * 100;
+        } else {
+            return 0; // Or Double.NaN, tùy vào logic của bạn
+        }
+    }
+
+    private String getGrowthText(double growthPercentage) {
+        if (growthPercentage > 0) {
+            return "Tăng trưởng " + decimalFormatter.format(growthPercentage) + "%";
+        } else if (growthPercentage < 0) {
+            return "Giảm " + decimalFormatter.format(Math.abs(growthPercentage)) + "%";
+        } else {
+            return "Tăng trưởng " + decimalFormatter.format(Math.abs(growthPercentage)) + "%";
+        }
     }
 
     private void initData() {
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-        Random r = new Random();
-        for (int i = 1; i < 4; i++) {
-            String status;
-            int ran = r.nextInt(3);
-            if (ran == 0) {
-                status = "Pending";
-            } else if (ran == 1) {
-                status = "Approved";
-            } else {
-                status = "Cancel";
-            }
-            model.addRow(new ModelStaff(new ImageIcon(getClass().getClassLoader().getResource("images/png/staff" + i + ".png")), "Mr Hoang Anh", "Male", "anh321@gmail.com", status).toDataTable());
-        }
-        table.fixTable(jScrollPane1);
-        table.setRowHeight(150);
-        table.getColumnModel().getColumn(0).setPreferredWidth(150);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+//        DefaultTableModel model = (DefaultTableModel) table.getModel();
+//        model.setRowCount(0); // Clear the table before adding new data
+//        DecimalFormat decimalFormat = new DecimalFormat("#,###.## VNĐ"); // Định dạng giá
+//        int pageSize = 10; // Số lượng sản phẩm trên mỗi trang
+//        int pageNumber = 1; // Trang hiện tại (bắt đầu từ 1)
+//        boolean hasMoreData = true; // Biến kiểm tra xem còn dữ liệu để tải không
+//
+//        try {
+//            // Assuming you have a ProductBUS instance, adjust as needed
+//            ProductBUS productBUS = new ProductBUS();
+//
+//            while (hasMoreData) {
+//                // Get the product details from the database for the current page
+//                List<Object[]> productList = productBUS.getProductDetailsDashboard(pageNumber, pageSize);
+//
+//                // Nếu không có dữ liệu trả về, kết thúc vòng lặp
+//                if (productList.isEmpty()) {
+//                    hasMoreData = false;
+//                    break;
+//                }
+//
+//                // Add each product to the table
+//                for (Object[] product : productList) {
+//                    //status is boolean in Product, String in table
+//                    String statusString = (boolean) product[5] ? "Còn hàng" : "Hết hàng";
+//                    String formattedPrice;
+//                    if (product.length > 4) {
+//                        formattedPrice = decimalFormat.format((double) product[4]); // Format giá
+//                    } else {
+//                        formattedPrice = "N/A";
+//                    }
+//                    model.addRow(new Object[]{
+//                            product[0],       // Product ID
+//                            product[1],       // Product Name
+//                            product[2],       // Category Name
+//                            product[3],       // Stock Quantity
+//                            formattedPrice,       // Price (Formatted)
+//                            statusString // Status
+//                    });
+//                }
+//
+//                // Kiểm tra xem còn dữ liệu để tải tiếp không (ví dụ: so sánh số lượng trả về với pageSize)
+//                if (productList.size() < pageSize) {
+//                    hasMoreData = false;
+//                } else {
+//                    pageNumber++; // Tăng số trang để tải tiếp
+//                }
+//                // In trang hiện tại
+//                System.out.println("Loading page: " + pageNumber);
+//            }
+//
+//            SwingUtilities.invokeLater(() -> {
+//                table.fixTable(jScrollPane1);
+//                table.setRowHeight(150);
+//                table.getColumnModel().getColumn(0).setPreferredWidth(150);
+//                table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+//            });
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            JOptionPane.showMessageDialog(this, "Error fetching product data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+//        }
     }
+
+
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -99,11 +193,11 @@ public class FormDashboard extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Profile", "Name", "Gender", "Email", "Status"
+                "Mã sản phẩm", "Tên sản phẩm", "Danh mục", "Số lượng tồn kho", "Giá", "Trạng thái"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -112,7 +206,12 @@ public class FormDashboard extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(table);
         if (table.getColumnModel().getColumnCount() > 0) {
-            table.getColumnModel().getColumn(0).setPreferredWidth(250);
+            table.getColumnModel().getColumn(0).setPreferredWidth(200);
+            table.getColumnModel().getColumn(1).setPreferredWidth(250);
+            table.getColumnModel().getColumn(2).setPreferredWidth(200);
+            table.getColumnModel().getColumn(3).setPreferredWidth(250);
+            table.getColumnModel().getColumn(4).setPreferredWidth(250);
+            table.getColumnModel().getColumn(5).setPreferredWidth(200);
         }
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);

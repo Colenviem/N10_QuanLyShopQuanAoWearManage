@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="WearDB@localhost" uuid="c948d17c-82e3-466d-9545-35fe30ea1eeb">
+    <data-source source="LOCAL" name="weardb@localhost" uuid="c89847af-e2c3-4b46-ad62-1702477ff9b0">
       <driver-ref>mariadb</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mariadb://localhost:3306/WearDB</jdbc-url>
+      <jdbc-url>jdbc:mariadb://localhost:3306/weardb</jdbc-url>
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />

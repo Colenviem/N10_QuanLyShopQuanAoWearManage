@@ -1,6 +1,6 @@
 package gui.application.form.other;
 
-import dao.AccountDAO;
+import bus.AccountBUS;
 import dto.Account;
 import gui.button.ButtonCustom;
 import gui.button.NavButtonCustom;
@@ -22,8 +22,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.lang.System.Logger;
-import java.lang.System.Logger.Level;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,12 +53,12 @@ import java.sql.SQLException;
 public class FormAccount extends JPanel implements ActionListener, MouseListener {
 
     private Navbar navbar;
-    private AccountDAO tk_dao;
+    private AccountBUS accountBUS;
     private DefaultTableModel tableModel;
 
     public FormAccount() {
         try {
-            tk_dao = new AccountDAO();
+            accountBUS = new AccountBUS();
             initComponents();
             init();
             DocDuLieuDatabaseVaoTableAcc(); // Đẩy dữ liệu lên bảng khi khởi tạo
@@ -229,15 +227,16 @@ public class FormAccount extends JPanel implements ActionListener, MouseListener
     }
 
     public void DocDuLieuDatabaseVaoTableAcc() {
+        DefaultTableModel model = (DefaultTableModel) tableCustomer.getModel();
+        model.setRowCount(0); // Xóa tất cả các hàng hiện có
+
         try {
-            List<Account> list = tk_dao.getAllActiveAccounts();
-            DefaultTableModel model = (DefaultTableModel) tableCustomer.getModel();
-            model.setRowCount(0);
-            for (Account tk : list) {
+            List<Account> activeAccounts = accountBUS.getAllActiveAccounts();
+            for (Account tk : activeAccounts) {
                 model.addRow(new Object[]{
                         tk.getUsername(),
-                        tk.getPassword(), // Or a masked password
-                        tk.isStatus() ? "Có hoạt động" : "Không hoạt động", // Display based on the boolean
+                        tk.getPassword(), // Hiển thị mật khẩu đã che hoặc bạn có thể chọn không hiển thị
+                        tk.isStatus() ? "Có hoạt động" : "Không hoạt động",
                         tk.getCreatedDate()
                 });
             }
@@ -247,47 +246,72 @@ public class FormAccount extends JPanel implements ActionListener, MouseListener
         }
     }
 
+    public void DocALLDatabaseVaoTableAcc() {
+        DefaultTableModel model = (DefaultTableModel) tableCustomer.getModel();
+        model.setRowCount(0); // Xóa tất cả các hàng hiện có
+
+        try {
+            List<Account> activeAccounts = accountBUS.getAllAccounts();
+            for (Account tk : activeAccounts) {
+                model.addRow(new Object[]{
+                        tk.getUsername(),
+                        tk.getPassword(), // Hiển thị mật khẩu đã che hoặc bạn có thể chọn không hiển thị
+                        tk.isStatus() ? "Có hoạt động" : "Không hoạt động",
+                        tk.getCreatedDate()
+                });
+            }
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(FormAccount.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu tài khoản: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     private void searchAcc() {
         ComboBoxSuggestion<String> comboBox = navbar.getComboBox();
         String selectedValueAcc = (String) comboBox.getSelectedItem();
         DefaultTableModel modelAcc = (DefaultTableModel) tableCustomer.getModel();
         String searchText = navbar.getTxtSearch().getText().trim();
 
-        List<Account> tkList = new ArrayList<>();
         modelAcc.setRowCount(0);
 
         if (!searchText.equals("Nhập nội dung tìm kiếm...") && !searchText.isEmpty()) {
-            switch (selectedValueAcc) {
-                case "Tài khoản":
-                    tkList = tk_dao.getAccountByUsername(searchText);
-                    break;
-                // You can add more search criteria here if needed (e.g., search by registration date)
-            }
-        } else {
-            DocDuLieuDatabaseVaoTableAcc(); // Reload all data if search text is empty
-            return;
-        }
+            try {
+                List<Account> tkList = switch (selectedValueAcc) {
+                    case "Tài khoản" -> accountBUS.getAccountByUsername(searchText);
+                    default -> List.of(); // Handle other search criteria if added
+                };
 
-        if (tkList.isEmpty() && !searchText.equals("Nhập nội dung tìm kiếm...") && !searchText.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Không tìm thấy tài khoản: " + searchText, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            DocDuLieuDatabaseVaoTableAcc(); // Reload all data if no results
-        } else {
-            for (Account tk : tkList) {
-                modelAcc.addRow(new Object[]{
-                        tk.getUsername(), tk.getPassword(), tk.getCreatedDate()
-                });
+                if (tkList.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Không tìm thấy tài khoản: " + searchText, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                    DocDuLieuDatabaseVaoTableAcc();
+                } else {
+                    for (Account tk : tkList) {
+                        modelAcc.addRow(new Object[]{
+                                tk.getUsername(),
+                                tk.getPassword(), // Or a masked password
+                                tk.getCreatedDate()
+                        });
+                    }
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Lỗi khi tìm kiếm tài khoản: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                DocALLDatabaseVaoTableAcc(); // Reload all data on error
             }
+        } else {
+            DocALLDatabaseVaoTableAcc(); // Reload all data if search text is empty
+            return;
         }
 
         SwingUtilities.invokeLater(() -> {
             modelAcc.fireTableDataChanged();
             tableCustomer.revalidate();
             tableCustomer.repaint();
-            JScrollPane scrollPane = (JScrollPane) tableCustomer.getParent().getParent();
-            scrollPane.revalidate();
-            scrollPane.repaint();
+            if (tableCustomer.getParent() instanceof JViewport && tableCustomer.getParent().getParent() instanceof JScrollPane scrollPane) {
+                scrollPane.revalidate();
+                scrollPane.repaint();
+            }
         });
     }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -447,15 +471,20 @@ public class FormAccount extends JPanel implements ActionListener, MouseListener
         Account newAccount = new Account();
         newAccount.setUsername(username);
         newAccount.setPassword(password);
-        newAccount.setStatus(status.equals("Có hoạt động")); // Set boolean based on Vietnamese selection
+        newAccount.setStatus(status.equals("Có hoạt động"));
         newAccount.setCreatedDate(LocalDate.now());
 
-        if (tk_dao.addAccount(newAccount)) {
-            DocDuLieuDatabaseVaoTableAcc();
-            addAccountDialog.dispose();
-            JOptionPane.showMessageDialog(this, "Thêm tài khoản thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(addAccountDialog, "Không thể thêm tài khoản. Có thể tài khoản đã tồn tại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        try {
+            if (accountBUS.addAccount(newAccount)) {
+                DocDuLieuDatabaseVaoTableAcc();
+                addAccountDialog.dispose();
+                JOptionPane.showMessageDialog(this, "Thêm tài khoản thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(addAccountDialog, "Không thể thêm tài khoản. Có thể tài khoản đã tồn tại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(addAccountDialog, "Lỗi khi thêm tài khoản: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
 

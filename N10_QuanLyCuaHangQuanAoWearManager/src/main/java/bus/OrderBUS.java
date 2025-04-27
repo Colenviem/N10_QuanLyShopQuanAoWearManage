@@ -45,4 +45,24 @@ public class OrderBUS extends UnicastRemoteObject implements IOrderService {
     public List<Order> getOrdersByCustomerName(String customerName) throws RemoteException {
         return orderDAO.getOrdersByCustomerName(customerName);
     }
+
+    @Override
+    public List<Object[]> getOrderSummaries() throws RemoteException {
+        return orderDAO.getOrderSummaries();
+    }
+
+    @Override
+    public double getTotalRevenue(String timePeriod) throws RemoteException{
+        return orderDAO.getTotalRevenue(timePeriod);
+    }
+
+    @Override
+    public double getAverageOrderValue(String timePeriod) throws RemoteException{
+        return orderDAO.getAverageOrderValue(timePeriod);
+    }
+
+    @Override
+    public double[] getAverageOrderValueAndGrowth(String timePeriod) throws RemoteException{
+        return orderDAO.getAverageOrderValueAndGrowth(timePeriod);
+    }
 }

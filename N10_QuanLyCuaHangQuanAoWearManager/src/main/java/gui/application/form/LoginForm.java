@@ -2,6 +2,7 @@ package gui.application.form;
 
 import gui.application.Application;
 import java.awt.Color;
+import java.rmi.RemoteException;
 
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
@@ -100,7 +101,11 @@ public class LoginForm extends javax.swing.JFrame {
         cmdSignIn.setText("LOGIN");
         cmdSignIn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmdSignInActionPerformed(evt);
+                try {
+                    cmdSignInActionPerformed(evt);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 
@@ -196,7 +201,7 @@ public class LoginForm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void cmdSignInActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdSignInActionPerformed
+    private void cmdSignInActionPerformed(java.awt.event.ActionEvent evt) throws RemoteException {//GEN-FIRST:event_cmdSignInActionPerformed
         if (!animatorLogin.isRunning()) {
             signIn = true;
             String user = txtUser.getText().trim();

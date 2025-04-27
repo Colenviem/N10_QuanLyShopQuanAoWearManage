@@ -17,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class NavbarSearch extends JPanel {
+
     private TextFieldCustom txtSearch;
     private ButtonCustom btnSearch;
     private DefaultComboBoxModel<String> defaultComboBox;
@@ -25,12 +26,12 @@ public class NavbarSearch extends JPanel {
     private JButton btnDateTo;
     private TextFieldCustom txtDate;
     private JButton btnDate;
-    
+
     public NavbarSearch() {
         initComponents();
         init();
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -41,7 +42,7 @@ public class NavbarSearch extends JPanel {
     private void init() {
         txtSearch = new TextFieldCustom("Nhập nội dung tìm kiếm...");
         txtSearch.setPreferredSize(new Dimension(200, 40));
-        btnSearch = new ButtonCustom("Tìm kiếm", "imgs\\img\\search.png");
+        btnSearch = new ButtonCustom("Tìm kiếm", "resources\\images\\png\\search.png");
         defaultComboBox = new DefaultComboBoxModel<>();
         comboBox = new ComboBoxSuggestion<>(defaultComboBox);
         comboBox.setPreferredSize(new Dimension(160, 40));
@@ -49,12 +50,12 @@ public class NavbarSearch extends JPanel {
         txtDateTo = new TextFieldCustom("Tháng năm");
         txtDateTo.setPreferredSize(new Dimension(160, 40));
         btnDateTo = new JButton();
-        btnDateTo.setIcon(new ImageIcon("imgs\\icon\\date.png"));
+        btnDateTo.setIcon(new ImageIcon("resources\\images\\png\\date.png"));
         btnDateTo.setPreferredSize(new Dimension(40, 40));
         btnDateTo.setOpaque(false);
-        btnDateTo.setBorderPainted(false); 
-        btnDateTo.setContentAreaFilled(false); 
-        btnDateTo.setFocusPainted(false); 
+        btnDateTo.setBorderPainted(false);
+        btnDateTo.setContentAreaFilled(false);
+        btnDateTo.setFocusPainted(false);
         btnDateTo.setOpaque(false);
         JLabel lblDate = new JLabel("Đến: ");
         txtDate = new TextFieldCustom("Tháng năm");
@@ -63,9 +64,9 @@ public class NavbarSearch extends JPanel {
         btnDate.setIcon(new ImageIcon("imgs\\icon\\date.png"));
         btnDate.setPreferredSize(new Dimension(40, 40));
         btnDate.setOpaque(false);
-        btnDate.setBorderPainted(false); 
-        btnDate.setContentAreaFilled(false); 
-        btnDate.setFocusPainted(false); 
+        btnDate.setBorderPainted(false);
+        btnDate.setContentAreaFilled(false);
+        btnDate.setFocusPainted(false);
         btnDate.setOpaque(false);
         add(comboBox);
         add(txtSearch);
@@ -84,20 +85,20 @@ public class NavbarSearch extends JPanel {
         this.defaultComboBox = defaultComboBox;
         comboBox.setModel(defaultComboBox);
     }
-    
+
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g); 
+        super.paintComponent(g);
 
         Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); 
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // Thêm đổ bóng
-        g2.setColor(new Color(0, 0, 0, 20)); 
+        g2.setColor(new Color(0, 0, 0, 20));
         g2.fillRoundRect(5, 5, getWidth() - 10, getHeight() - 10, 18, 18);
 
         // Màu nền
-        g2.setColor(new Color(255, 255, 255)); 
+        g2.setColor(new Color(255, 255, 255));
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), 18, 18);
 
         // Vẽ viền dày

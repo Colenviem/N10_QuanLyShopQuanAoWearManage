@@ -3,6 +3,7 @@ package gui.application;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.rmi.RemoteException;
 import javax.swing.*;
 
 import com.formdev.flatlaf.FlatClientProperties;
@@ -35,7 +36,7 @@ public class Application extends javax.swing.JFrame {
         app.mainForm.showForm(component);
     }
 
-    public static void login() {
+    public static void login() throws RemoteException {
         FlatAnimatedLafChange.showSnapshot();
         app.loginForm.setVisible(false); // Ẩn dialog đăng nhập
         app.setVisible(true); // Hiển thị cửa sổ chính
@@ -55,7 +56,7 @@ public class Application extends javax.swing.JFrame {
         FlatAnimatedLafChange.hideSnapshotWithAnimation();
     }
 
-    public static void setSelectedMenu(int index, int subIndex) {
+    public static void setSelectedMenu(int index, int subIndex) throws RemoteException {
         app.mainForm.setSelectedMenu(index, subIndex);
     }
 

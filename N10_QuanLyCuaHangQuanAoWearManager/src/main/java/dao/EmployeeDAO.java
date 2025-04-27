@@ -42,6 +42,7 @@ public class EmployeeDAO {
                 .getResultList();
     }
 
+
     public Employee getEmployeeById(int id) {
         return em.find(Employee.class, id);
     }

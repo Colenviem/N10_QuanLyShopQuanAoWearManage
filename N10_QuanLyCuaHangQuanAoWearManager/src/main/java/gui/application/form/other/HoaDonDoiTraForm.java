@@ -1,13 +1,13 @@
-package gui.application.form;
+package gui.application.form.other;
 
 //import dao.ChiTietHoaDon_DAO;
 //import dao.DVT_DAO;
-//import dao.HoaDon_DAO;
 //import dao.NhaCungCap_DAO;
 //import dao.NhomThuoc_DAO;
 //import entity.ChiTietHoaDon;
 //import entity.DonViTinh;
 //import entity.Thuoc;
+import dto.Order;
 import gui.button.ButtonCustom;
 import gui.textfield.TextPay;
 import java.awt.BasicStroke;
@@ -42,8 +42,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
-
-public class HoaDonDoiTraForm extends JPanel {
+public class HoaDonDoiTraForm extends JPanel implements ActionListener,MouseListener,TableModelListener {
 
     private JFrame parentFrame;
     private ButtonCustom btnLuu;
@@ -55,8 +54,6 @@ public class HoaDonDoiTraForm extends JPanel {
     private JCheckBox trangThai;
     private DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 //    private  ChiTietHoaDon_DAO cthd_dao;
-//    private HoaDon_DAO hd_dao;
-
 
     public HoaDonDoiTraForm(JFrame parentFrame) {
         this.parentFrame = parentFrame;
@@ -65,22 +62,21 @@ public class HoaDonDoiTraForm extends JPanel {
        
     }
     
-    public HoaDonDoiTraForm()  throws Exception {
-//        this.parentFrame = parentFrame;
-//        initComponents();
-//        init();
-////        hd_dao= new HoaDon_DAO();
-////        cthd_dao= new ChiTietHoaDon_DAO();
+    public HoaDonDoiTraForm(JFrame parentFrame, Order hdMau)  throws Exception {
+        this.parentFrame = parentFrame;
+        initComponents();
+        init();
+//        cthd_dao= new ChiTietHoaDon_DAO();
 //        DocDuLieuDatabaseVaoTableCT(hdMau);
 //        DienDuLieuHDCuVaoForm(hdMau);
-//        radDoi.addActionListener(this);
-//        radTra.addActionListener(this);
-//        tableChiTietHDCu.addMouseListener(this);
-//        btnThem.addActionListener(this);
-//        btnXoaDong.addActionListener(this);
-//        btnXoaAll.addActionListener(this);
-//        tableChiTietDoiTra.getModel().addTableModelListener(this);
-//        btnLuu.addActionListener(this);
+        radDoi.addActionListener(this);
+        radTra.addActionListener(this);
+        tableChiTietHDCu.addMouseListener(this);
+        btnThem.addActionListener(this);
+        btnXoaDong.addActionListener(this);
+        btnXoaAll.addActionListener(this);
+        tableChiTietDoiTra.getModel().addTableModelListener(this);
+        btnLuu.addActionListener(this);
     }
 
     private void init() {
@@ -107,23 +103,8 @@ public class HoaDonDoiTraForm extends JPanel {
         pnlBtn.add(btnLuu);
         pnlBtn.add(btnHuy);
         pnlBtn.setBorder(new EmptyBorder(0, 0, 10, 10));
-        txtMaNV.setFocusable(false);
-        txtMaNV.setEditable(false);
-        txtTenNV.setFocusable(false);
-        txtTenNV.setEditable(false);
-        txtMaKH.setFocusable(false);
-        txtMaKH.setEditable(false);
-        txtMaKH.setFocusable(false);
-        txtTenKH.setEditable(false);
-        txtMaHDCu.setFocusable(false);
-        txtMaHDCu.setEditable(false);
-        txtMaHDMoi.setFocusable(false);
-        txtMaHDMoi.setEditable(false);
-        txtNgayDoiTra.setFocusable(false);
-        txtNgayDoiTra.setEditable(false);
-        txtTongTienHoaDonTra.setFocusable(false);
-        txtTongTienHoaDonTra.setEditable(false);
-//        btnHuy.addActionListener(this);
+
+        btnHuy.addActionListener(this);
         //---------------------------------------//
     }
 
@@ -140,58 +121,58 @@ public class HoaDonDoiTraForm extends JPanel {
         super.paintComponent(g);
     }
 
-//    @Override
-//    public void actionPerformed(ActionEvent e) {
-//        Object o = e.getSource();
-//        if (o.equals(btnHuy)) {
-//            parentFrame.dispose();
-//        }
-//        if(o.equals(radDoi)){
-//            if(radDoi.isSelected()){
-//                txtMaHDMoi.setText(txtMaHDCu.getText()+"D");
-//            }else{
-//                txtMaHDMoi.setText(txtMaHDCu.getText()+"T");
-//            }
-//        }
-//        if(o.equals(radTra)){
-//            if(radTra.isSelected()){
-//                txtMaHDMoi.setText(txtMaHDCu.getText()+"T");
-//            }else{
-//                txtMaHDMoi.setText(txtMaHDCu.getText()+"D");
-//            }
-//        }
-//        if(o.equals(btnThem)){
-//            if(tableChiTietHDCu.getSelectedRow()!=-1){
-//                themVaoCTHDDT(tableChiTietHDCu.getSelectedRow());
-//            }
-//            System.out.println("gui.form.HoaDonDoiTraForm.actionPerformed()");
-//        }
-//        if(o.equals(btnXoaDong)){
-//            DefaultTableModel model = (DefaultTableModel) tableChiTietDoiTra.getModel();
-//            int selectedRow = tableChiTietDoiTra.getSelectedRow();
-//            if (selectedRow != -1) { // Kiểm tra nếu có dòng nào được chọn
-//                model.removeRow(selectedRow);
-//                System.out.println("Đã xóa dòng: " + selectedRow);
-//            } else {
-//                System.out.println("Vui lòng chọn một dòng để xóa.");
-//            }
-//        }
-//        if(o.equals(btnXoaAll)){
-//            DefaultTableModel model = (DefaultTableModel) tableChiTietDoiTra.getModel();
-//            model.setRowCount(0);
-//        }
-//        if(o.equals(btnLuu)){
-//            if(tableChiTietDoiTra.getRowCount()<1){
-//                JOptionPane.showMessageDialog(null, "Bạn chưa thêm sản phẩm vào bảng chi tiết hóa đơn đổi/sửa", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-//            }else{
-//                if(txtLyDo.getText().trim().isEmpty()){
-//                    JOptionPane.showMessageDialog(null, "Vui lòng nhập lý do đổi/trả sản phẩm", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-//                }else{
-//                    entity.HoaDon hoaDonMoi=taoHDTuForm();
-//                }
-//            }
-//        }
-//    }
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Object o = e.getSource();
+        if (o.equals(btnHuy)) {
+            parentFrame.dispose();
+        }
+        if(o.equals(radDoi)){
+            if(radDoi.isSelected()){
+                txtMaHDMoi.setText(txtMaHDCu.getText()+"D");
+            }else{
+                txtMaHDMoi.setText(txtMaHDCu.getText()+"T");
+            }
+        }
+        if(o.equals(radTra)){
+            if(radTra.isSelected()){
+                txtMaHDMoi.setText(txtMaHDCu.getText()+"T");
+            }else{
+                txtMaHDMoi.setText(txtMaHDCu.getText()+"D");
+            }
+        }
+        if(o.equals(btnThem)){
+            if(tableChiTietHDCu.getSelectedRow()!=-1){
+                themVaoCTHDDT(tableChiTietHDCu.getSelectedRow());
+            }
+            System.out.println("gui.form.HoaDonDoiTraForm.actionPerformed()");
+        }
+        if(o.equals(btnXoaDong)){
+            DefaultTableModel model = (DefaultTableModel) tableChiTietDoiTra.getModel();
+            int selectedRow = tableChiTietDoiTra.getSelectedRow();
+            if (selectedRow != -1) { // Kiểm tra nếu có dòng nào được chọn
+                model.removeRow(selectedRow);
+                System.out.println("Đã xóa dòng: " + selectedRow);
+            } else {
+                System.out.println("Vui lòng chọn một dòng để xóa.");
+            }
+        }
+        if(o.equals(btnXoaAll)){
+            DefaultTableModel model = (DefaultTableModel) tableChiTietDoiTra.getModel();
+            model.setRowCount(0);
+        }
+        if(o.equals(btnLuu)){
+            if(tableChiTietDoiTra.getRowCount()<1){
+                JOptionPane.showMessageDialog(null, "Bạn chưa thêm sản phẩm vào bảng chi tiết hóa đơn đổi/sửa", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            }else{
+                if(txtLyDo.getText().trim().isEmpty()){
+                    JOptionPane.showMessageDialog(null, "Vui lòng nhập lý do đổi/trả sản phẩm", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                }else{
+                    //Tạo hóa đơn
+                }
+            }
+        }
+    }
     
     
     
@@ -572,7 +553,7 @@ public class HoaDonDoiTraForm extends JPanel {
         return tongTien;
     }
 //    public void DocDuLieuDatabaseVaoTableCT(entity.HoaDon hd) throws Exception {
-//       
+//
 //        HashMap<entity.ChiTietHoaDon, Double> giaBanMap = new HashMap<>();
 //
 //        HashMap<ChiTietHoaDon, Double> list = cthd_dao.getChiTietHoaDonThuocByMaHoaDon(hd.getMaHoaDon());
@@ -605,7 +586,7 @@ public class HoaDonDoiTraForm extends JPanel {
 //        txtMaHDMoi.setText(hd.getMaHoaDon()+"D");
 //        txtNgayDoiTra.setText(String.valueOf(LocalDateTime.now()));
 //        radDoi.setSelected(true);
-//        txtLyDo.setText(hd.getGhiChu());
+//
 //        txtTongTienHoaDonTra.setText(String.valueOf(tinhTongTien()));
 //    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -687,93 +668,81 @@ public class HoaDonDoiTraForm extends JPanel {
         });
         return true;
     }
-//    @Override
-//    public void mouseClicked(MouseEvent e) {
-//        Object o=e.getSource();
-//        if(o.equals(tableChiTietHDCu)){
-//            int row = tableChiTietHDCu.getSelectedRow();
-//            if (row != -1) { // Kiểm tra xem có hàng nào được chọn không
-////                String maHD = tableOrde.getValueAt(row, 0).toString();
-////                String tenKH = tableOrder.getValueAt(row, 1).toString();
-////                String tenNV = tableOrder.getValueAt(row, 2).toString();
-//            }
-//        }
-//    }
-//    @Override
-//    public void mousePressed(MouseEvent e) {}
-//
-//    @Override
-//    public void mouseReleased(MouseEvent e) {}
-//
-//    @Override
-//    public void mouseEntered(MouseEvent e) {}
-//
-//    @Override
-//    public void mouseExited(MouseEvent e) {}
-//
-//    @Override
-//    public void tableChanged(TableModelEvent e) {
-//       double tongTien = tinhTongTien();
-//        System.out.println("Tiền");
-//        // Cập nhật giá trị tổng tiền vào txtTongTien
-//        txtTongTienHoaDonTra.setText(String.valueOf(tongTien)); 
-//        
-//        
-//        int row = e.getFirstRow();
-//        int column = e.getColumn();
-//        
-//        // Kiểm tra nếu cột được chỉnh sửa là cột số lượng (cột 5)
-//        if (column == 4) {
-//            
-//            Object maSanPham = tableChiTietDoiTra.getValueAt(row, 0);
-//            Object donViTinh = tableChiTietDoiTra.getValueAt(row, 2);
-//            Object soLuongMoi = tableChiTietDoiTra.getValueAt(row, 4);
-//
-//            if (maSanPham != null && donViTinh != null && soLuongMoi != null) {
-//                try {
-//                    int soLuongMoiInt = Integer.parseInt(soLuongMoi.toString());
-//                    // Kiểm tra số lượng mới > 0
-//                    if (soLuongMoiInt <= 0) {
-//                        JOptionPane.showMessageDialog(null, "Số lượng phải lớn hơn 0.");
-//                        tableChiTietDoiTra.setValueAt(1, row, 4); // Đặt lại giá trị nếu không hợp lệ
-//                        return;
-//                    }
-//
-//                    // Lấy số lượng từ tableChiTietHDCu dựa trên mã sản phẩm và đơn vị tính
-//                    int soLuongCu = 0;
-//                    boolean found = false;
-//
-//                    for (int i = 0; i < tableChiTietHDCu.getRowCount(); i++) {
-//                        if (maSanPham.equals(tableChiTietHDCu.getValueAt(i, 0)) &&
-//                            donViTinh.equals(tableChiTietHDCu.getValueAt(i, 2))) {
-//                            soLuongCu = Integer.parseInt(tableChiTietHDCu.getValueAt(i, 4).toString());
-//                            found = true;
-//                            break;
-//                        }
-//                    }
-//
-//                    // Kiểm tra số lượng mới phải nhỏ hơn số lượng cũ
-//                    if (soLuongMoiInt > soLuongCu) {
-//                        JOptionPane.showMessageDialog(null, "Số lượng phải nhỏ hơn số lượng trong hóa đơn cũ.");
-//                        tableChiTietDoiTra.setValueAt(soLuongCu, row, 4); // Đặt giá trị hợp lệ
-//                    }
-//                } catch (NumberFormatException ex) {
-//                    JOptionPane.showMessageDialog(null, "Vui lòng nhập số nguyên hợp lệ cho số lượng.");
-//                    tableChiTietDoiTra.setValueAt(1, row, 4); // Đặt lại giá trị nếu không hợp lệ
-//                }
-//            }
-//        }
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        Object o=e.getSource();
+        if(o.equals(tableChiTietHDCu)){
+            int row = tableChiTietHDCu.getSelectedRow();
+            if (row != -1) { // Kiểm tra xem có hàng nào được chọn không
+//                String maHD = tableOrde.getValueAt(row, 0).toString();
+//                String tenKH = tableOrder.getValueAt(row, 1).toString();
+//                String tenNV = tableOrder.getValueAt(row, 2).toString();
+            }
+        }
     }
-//    public entity.HoaDon taoHDTuForm(){
-//       
-//        String maNew =txtMaHDMoi.getText();
-//        String maNV = txtMaNV.getText(); // Mã nhân viên
-//        String maKH = txtMaKH.getText(); // Mã khách hàng
-//        LocalDateTime ngayDoiTra = LocalDateTime.now(); // Ngày giờ đổi trả hiện tại
-//        double tongTien = tinhTongTien()*-1; // Tổng tiền từ hàm tính toán
-//        String ghiChu = txtLyDo.getText();
-//        entity.HoaDon hdw = null;
-//        hdw = new entity.HoaDon(maKH, ngayDoiTra, tongTien, 0, tongTien, ghiChu,new entity.KhachHang(maKH),new entity.NhanVien(maNV));
-//        return hdw;
-//    } 
-//}
+    @Override
+    public void mousePressed(MouseEvent e) {}
+
+    @Override
+    public void mouseReleased(MouseEvent e) {}
+
+    @Override
+    public void mouseEntered(MouseEvent e) {}
+
+    @Override
+    public void mouseExited(MouseEvent e) {}
+
+    @Override
+    public void tableChanged(TableModelEvent e) {
+       double tongTien = tinhTongTien();
+        System.out.println("Tiền");
+        // Cập nhật giá trị tổng tiền vào txtTongTien
+        txtTongTienHoaDonTra.setText(String.valueOf(tongTien)); 
+        
+        
+        int row = e.getFirstRow();
+        int column = e.getColumn();
+        
+        // Kiểm tra nếu cột được chỉnh sửa là cột số lượng (cột 5)
+        if (column == 4) {
+            
+            Object maSanPham = tableChiTietDoiTra.getValueAt(row, 0);
+            Object donViTinh = tableChiTietDoiTra.getValueAt(row, 2);
+            Object soLuongMoi = tableChiTietDoiTra.getValueAt(row, 4);
+
+            if (maSanPham != null && donViTinh != null && soLuongMoi != null) {
+                try {
+                    int soLuongMoiInt = Integer.parseInt(soLuongMoi.toString());
+                    // Kiểm tra số lượng mới > 0
+                    if (soLuongMoiInt <= 0) {
+                        JOptionPane.showMessageDialog(null, "Số lượng phải lớn hơn 0.");
+                        tableChiTietDoiTra.setValueAt(1, row, 4); // Đặt lại giá trị nếu không hợp lệ
+                        return;
+                    }
+
+                    // Lấy số lượng từ tableChiTietHDCu dựa trên mã sản phẩm và đơn vị tính
+                    int soLuongCu = 0;
+                    boolean found = false;
+
+                    for (int i = 0; i < tableChiTietHDCu.getRowCount(); i++) {
+                        if (maSanPham.equals(tableChiTietHDCu.getValueAt(i, 0)) &&
+                            donViTinh.equals(tableChiTietHDCu.getValueAt(i, 2))) {
+                            soLuongCu = Integer.parseInt(tableChiTietHDCu.getValueAt(i, 4).toString());
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    // Kiểm tra số lượng mới phải nhỏ hơn số lượng cũ
+                    if (soLuongMoiInt > soLuongCu) {
+                        JOptionPane.showMessageDialog(null, "Số lượng phải nhỏ hơn số lượng trong hóa đơn cũ.");
+                        tableChiTietDoiTra.setValueAt(soLuongCu, row, 4); // Đặt giá trị hợp lệ
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Vui lòng nhập số nguyên hợp lệ cho số lượng.");
+                    tableChiTietDoiTra.setValueAt(1, row, 4); // Đặt lại giá trị nếu không hợp lệ
+                }
+            }
+        }
+    }
+}

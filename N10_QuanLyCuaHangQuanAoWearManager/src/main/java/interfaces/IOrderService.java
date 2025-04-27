@@ -19,4 +19,12 @@ public interface IOrderService extends Remote {
     boolean updateOrder(Order order) throws RemoteException;
 
     List<Order> getOrdersByCustomerName(String customerName) throws RemoteException;
+
+    List<Object[]> getOrderSummaries() throws RemoteException;
+
+    double getTotalRevenue(String timePeriod) throws RemoteException;
+
+    double getAverageOrderValue(String timePeriod) throws RemoteException;
+
+    double[] getAverageOrderValueAndGrowth(String timePeriod) throws RemoteException;
 }
