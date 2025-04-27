@@ -27,7 +27,11 @@ public class CustomerBUS extends UnicastRemoteObject implements ICustomerService
 
     @Override
     public List<Customer> getCustomerByPhone(String phone) throws RemoteException {
-        return customerDAO.getCustomerByPhone(phone);
+        List<Customer> customers = customerDAO.getCustomerByPhone(phone);
+        if (customers.isEmpty()) {
+            return null;
+        }
+        return customers;
     }
 
     @Override

@@ -17,7 +17,11 @@ public class ProductBUS extends UnicastRemoteObject implements IProductService {
 
     @Override
     public List<Product> getProductByName(String name) throws RemoteException {
-        return productDAO.getProductByName(name);
+        List<Product> products = productDAO.getProductByName(name);
+        if (products.isEmpty()) {
+            return null;
+        }
+        return products;
     }
 
     @Override
