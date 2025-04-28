@@ -76,8 +76,6 @@ public class MainForm extends JLayeredPane {
                     EmployeeBUS employeeBUS1 = new EmployeeBUS();
                     Employee employee = employeeBUS1.getEmployeeById(2);
                     Application.showForm(new FormSales(employee));
-                } else if (subIndex == 2) {
-                    Application.showForm(new FormProductInventory());
                 } else {
                     action.cancel();
                 }
@@ -92,20 +90,14 @@ public class MainForm extends JLayeredPane {
             } else if (index == 4) {
                 Application.showForm(new FormEmployee());
             } else if (index == 5) {
-                if (subIndex == 1) {
-                    Application.showForm(new FormPromotion());
-                } else {
-                    action.cancel();
-                }
-            } else if (index == 6) {
                 Application.showForm(new FormLookup());
-            }else if (index == 7) {
+            }else if (index == 6) {
                 Application.showForm(new FormAccount());
             }
-            else if (index == 8) {
+            else if (index == 7) {
                 Application.showForm(new FormStore());
             }
-            else if (index == 9) {
+            else if (index == 8) {
                 if (subIndex == 1) {
                     Application.showForm(new FormStatisticalDoanhThu());
                 } else if (subIndex == 2) {
@@ -113,7 +105,7 @@ public class MainForm extends JLayeredPane {
                 } else {
                     action.cancel();
                 }
-            } else if (index == 10) {
+            } else if (index == 9) {
                 Application.logout();
             } else {
                 action.cancel();

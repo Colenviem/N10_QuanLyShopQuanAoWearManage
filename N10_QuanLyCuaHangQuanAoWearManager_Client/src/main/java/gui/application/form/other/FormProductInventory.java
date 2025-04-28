@@ -151,6 +151,7 @@ public class FormProductInventory extends javax.swing.JPanel {
         for (Product product : products) {
             URL imageURL = getClass().getClassLoader().getResource(product.getImageUrl());
             ImageIcon imageIcon = null;
+            String stockQuantityString = String.valueOf(product.getStockQuantity());
             if (imageURL != null) {
                 imageIcon = new ImageIcon(imageURL);
             } else {
@@ -162,7 +163,7 @@ public class FormProductInventory extends javax.swing.JPanel {
                     product.getProductName(),
                     product.getDescription(),
                     (double) product.getPrice(),
-                    product.getColor(),
+                    stockQuantityString,
                     imageIcon
             );
             addItem(modelItem); // Giả sử bạn có phương thức này để thêm item vào giao diện

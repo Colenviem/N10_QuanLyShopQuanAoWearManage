@@ -1,8 +1,10 @@
 package gui.application.form;
 
+import bus.EmployeeBUS;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.UIScale;
+import dto.Employee;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
@@ -68,12 +70,18 @@ public class MainForm extends JLayeredPane {
             // Application.mainForm.showForm(new DefaultForm("Form : " + index + " " + subIndex));
             if (index == 0) {
                 Application.showForm(new FormProductInventory());
-            } else if (index == 1) {
+            }else if (index == 1) {
+                try {
+                    Application.showForm(new FormSales(null));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if (index == 2) {
                 Application.showForm(new FormBill());
             }
-            else if (index == 2) {
+            else if (index == 3) {
                     Application.showForm(new FormStatisticalDoanhThu());
-            } else if (index == 3) {
+            } else if (index == 4) {
                 Application.logout();
             } else {
                 action.cancel();

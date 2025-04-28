@@ -16,25 +16,21 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 
-/**
- *
- * @author Raven
- */
 public class Menu extends JPanel {
 
     private final String menuItems[][] = {
         {"~HOME~"},
         {"Dashboard"},
         {"~Products~"},
-        {"Products", "Product Sales", "Inventory Products"},
+        {"Products", "Product Sales"},
         {"Orders"},
         {"~MANAGEMENT~"},
         {"Customers", "Customer List"},
         {"Employees"},
-        {"Promotions", "Discount Codes", "Marketing Campaigns"},
         {"Lookup"},
             {"Account"},
             {"Store"},
+            {"~REPORT~"},
         {"Reports", "Sales Report", "Employee Report"},
         {"Logout"}
     };

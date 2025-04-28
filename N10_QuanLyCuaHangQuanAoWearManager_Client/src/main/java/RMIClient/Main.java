@@ -1,4 +1,4 @@
-package RMIServer;
+package RMIClient;
 
 import bus.CustomerBUS;
 import interfaces.ICustomerService;

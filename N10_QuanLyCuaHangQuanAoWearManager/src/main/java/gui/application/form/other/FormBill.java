@@ -19,9 +19,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Locale;
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -344,9 +346,14 @@ public class FormBill extends JPanel implements ActionListener, MouseListener {
                         order.getCustomer().getName(),
                         order.getEmployee().getFullName(),
                         order.getOrderDate(),
-                        order.getTotalAmount(),
+                        formatCurrencyVN(order.getTotalAmount()),
                         order.getStatus()
                 }));
+    }
+
+    public static String formatCurrencyVN(double amount) {
+        NumberFormat currencyVN = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        return currencyVN.format(amount);
     }
 
     private void DocDuLieuOrderDetailVaoTable(int id) throws Exception {

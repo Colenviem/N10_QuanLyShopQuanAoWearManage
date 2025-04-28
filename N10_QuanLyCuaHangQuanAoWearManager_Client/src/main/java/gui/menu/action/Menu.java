@@ -20,10 +20,11 @@ import javax.swing.JScrollPane;
 public class Menu extends JPanel {
 
     private final String menuItems[][] = {
-        {"~Products~"},
-        {"Products"},
+        {"~PRODUCTS~"},
+        {"Products Sales"},
+        {"Products Cart"},
         {"Orders"},
-        {"~Report~"},
+        {"~REPORT~"},
         {"Sales Report"},
         {"Logout"}
     };
