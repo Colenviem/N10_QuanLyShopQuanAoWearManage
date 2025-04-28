@@ -96,7 +96,7 @@ public class FormProduct extends JPanel implements ActionListener, MouseListener
 
         pnlTxtCon.setBackground(new java.awt.Color(255, 255, 255));
         pnlTxtCon.setOpaque(false);
-        pnlTxtCon.setPreferredSize(new java.awt.Dimension(500, 130));
+        pnlTxtCon.setPreferredSize(new java.awt.Dimension(500, 180));
         pnlTxtCon.setLayout(new java.awt.BorderLayout());
 
         pnlTxt.setBackground(new java.awt.Color(255, 255, 255));

@@ -98,9 +98,13 @@ public class MainForm extends JLayeredPane {
                 Application.showForm(new FormStore());
             }
             else if (index == 8) {
+                Application.showForm(new FormSupplier());
+            }
+
+            else if (index == 9) {
                 Application.showForm(new FormProduct());
             }
-            else if (index == 9) {
+            else if (index == 10) {
                 if (subIndex == 1) {
                     Application.showForm(new FormStatisticalDoanhThu());
                 } else if (subIndex == 2) {
@@ -108,7 +112,7 @@ public class MainForm extends JLayeredPane {
                 } else {
                     action.cancel();
                 }
-            } else if (index == 10) {
+            } else if (index == 11) {
                 Application.logout();
             } else {
                 action.cancel();

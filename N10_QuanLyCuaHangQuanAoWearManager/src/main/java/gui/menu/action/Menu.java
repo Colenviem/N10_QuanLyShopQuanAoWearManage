@@ -30,7 +30,9 @@ public class Menu extends JPanel {
         {"Lookup"},
         {"Account"},
         {"Store"},
+        {"Supplier"},
         {"Product"},
+
         {"~REPORT~"},
         {"Reports", "Sales Report", "Employee Report"},
         {"Logout"}

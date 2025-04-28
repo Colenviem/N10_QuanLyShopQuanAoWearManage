@@ -1,7 +1,9 @@
 package gui.application.form.other;
 
 import bus.AccountBUS;
+import bus.SupplierBUS;
 import dto.Account;
+import dto.Supplier;
 import gui.button.ButtonCustom;
 import gui.button.NavButtonCustom;
 import gui.combobox.ComboBoxSuggestion;
@@ -48,20 +50,21 @@ import javax.swing.table.DefaultTableModel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 
-public class FormAccount extends JPanel implements ActionListener, MouseListener {
+public class FormSupplier extends JPanel implements ActionListener, MouseListener {
 
     private Navbar navbar;
-    private AccountBUS accountBUS;
+    private SupplierBUS sup_bus;
     private DefaultTableModel tableModel;
 
-    public FormAccount() {
+    public FormSupplier() {
         try {
-            accountBUS = new AccountBUS();
+            sup_bus = new SupplierBUS();
             initComponents();
             init();
-            DocDuLieuDatabaseVaoTableAcc(); // Đẩy dữ liệu lên bảng khi khởi tạo
+            DocDuLieuDatabaseVaoTable(); // Đẩy dữ liệu lên bảng khi khởi tạo
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -72,6 +75,7 @@ public class FormAccount extends JPanel implements ActionListener, MouseListener
         btnExport.addActionListener(this);
         searchButton.addActionListener(this);
         navbar.getBtnAdd().addActionListener(this);
+        navbar.getBtnEdit().addActionListener(this);
         tableCustomer.addMouseListener(this);
     }
 
@@ -89,6 +93,8 @@ public class FormAccount extends JPanel implements ActionListener, MouseListener
         txtTenKH = new gui.textfield.TextPay();
         lblSDT = new javax.swing.JLabel();
         txtSDT = new gui.textfield.TextPay();
+        lblDiaChi = new javax.swing.JLabel();
+        txtDiaChi = new gui.textfield.TextPay();
         pnlTable = new javax.swing.JPanel();
         lblCustomer = new javax.swing.JLabel();
         scrollPane = new javax.swing.JScrollPane();
@@ -103,15 +109,15 @@ public class FormAccount extends JPanel implements ActionListener, MouseListener
 
         pnlTxtCon.setBackground(new java.awt.Color(255, 255, 255));
         pnlTxtCon.setOpaque(false);
-        pnlTxtCon.setPreferredSize(new java.awt.Dimension(500, 100));
+        pnlTxtCon.setPreferredSize(new java.awt.Dimension(500, 130));
         pnlTxtCon.setLayout(new java.awt.BorderLayout());
 
         pnlTxt.setBackground(new java.awt.Color(255, 255, 255));
         pnlTxt.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(206, 212, 218), 2));
-        pnlTxt.setPreferredSize(new java.awt.Dimension(100, 60));
+        pnlTxt.setPreferredSize(new java.awt.Dimension(100, 100));
         pnlTxt.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        lblMaKH.setText("Tài khoản");
+        lblMaKH.setText("Mã nhà cung cấp");
         lblMaKH.setPreferredSize(new java.awt.Dimension(100, 40));
         pnlTxt.add(lblMaKH);
 
@@ -120,7 +126,7 @@ public class FormAccount extends JPanel implements ActionListener, MouseListener
         pnlTxt.add(txtMaKH);
 
         lblTenKH.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblTenKH.setText("Mật khẩu");
+        lblTenKH.setText("Tên nhà cung cấp");
         lblTenKH.setPreferredSize(new java.awt.Dimension(100, 40));
         pnlTxt.add(lblTenKH);
 
@@ -128,12 +134,20 @@ public class FormAccount extends JPanel implements ActionListener, MouseListener
         pnlTxt.add(txtTenKH);
 
         lblSDT.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblSDT.setText("Quyền");
+        lblSDT.setText("Số điện thoại");
         lblSDT.setPreferredSize(new java.awt.Dimension(100, 40));
         pnlTxt.add(lblSDT);
 
         txtSDT.setPreferredSize(new java.awt.Dimension(200, 40));
         pnlTxt.add(txtSDT);
+
+        lblDiaChi.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblDiaChi.setText("Địa chỉ");
+        lblDiaChi.setPreferredSize(new java.awt.Dimension(100, 40));
+        pnlTxt.add(lblDiaChi);
+
+        txtDiaChi.setPreferredSize(new java.awt.Dimension(200, 40));
+        pnlTxt.add(txtDiaChi);
 
         pnlTxtCon.add(pnlTxt, java.awt.BorderLayout.CENTER);
 
@@ -145,7 +159,7 @@ public class FormAccount extends JPanel implements ActionListener, MouseListener
 
         lblCustomer.setBackground(new java.awt.Color(255, 255, 255));
         lblCustomer.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblCustomer.setText("Danh sách tài khoản");
+        lblCustomer.setText("Danh sách nhà cung cấp");
         lblCustomer.setPreferredSize(new java.awt.Dimension(37, 40));
         pnlTable.add(lblCustomer, java.awt.BorderLayout.PAGE_START);
 
@@ -157,11 +171,11 @@ public class FormAccount extends JPanel implements ActionListener, MouseListener
 
             },
             new String [] {
-                "Tài khoản", "Mật khẩu", "Trạng thái", "Ngày đăng ký"
+                "Mã nhà cung cấp", "Tên nhà cung cấp", "Số điện thoại", "Địa chỉ", "Trạng thái"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -169,6 +183,13 @@ public class FormAccount extends JPanel implements ActionListener, MouseListener
             }
         });
         scrollPane.setViewportView(tableCustomer);
+        if (tableCustomer.getColumnModel().getColumnCount() > 0) {
+            tableCustomer.getColumnModel().getColumn(0).setPreferredWidth(200);
+            tableCustomer.getColumnModel().getColumn(1).setPreferredWidth(200);
+            tableCustomer.getColumnModel().getColumn(2).setPreferredWidth(200);
+            tableCustomer.getColumnModel().getColumn(3).setPreferredWidth(320);
+            tableCustomer.getColumnModel().getColumn(4).setPreferredWidth(200);
+        }
 
         pnlTable.add(scrollPane, java.awt.BorderLayout.CENTER);
 
@@ -180,7 +201,7 @@ public class FormAccount extends JPanel implements ActionListener, MouseListener
     public static void main(String[] args) {
         JFrame frame = new JFrame();
         frame.setSize(1400, 800);
-        FormAccount card = new FormAccount();
+        FormSupplier card = new FormSupplier();
         frame.add(card);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -189,6 +210,7 @@ public class FormAccount extends JPanel implements ActionListener, MouseListener
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel lblCustomer;
+    private javax.swing.JLabel lblDiaChi;
     private javax.swing.JLabel lblMaKH;
     private javax.swing.JLabel lblSDT;
     private javax.swing.JLabel lblTenKH;
@@ -199,6 +221,7 @@ public class FormAccount extends JPanel implements ActionListener, MouseListener
     private javax.swing.JPanel pnlTxtCon;
     private javax.swing.JScrollPane scrollPane;
     private gui.table.TableCustom tableCustomer;
+    private gui.textfield.TextPay txtDiaChi;
     private gui.textfield.TextPay txtMaKH;
     private gui.textfield.TextPay txtSDT;
     private gui.textfield.TextPay txtTenKH;
@@ -206,7 +229,7 @@ public class FormAccount extends JPanel implements ActionListener, MouseListener
 
     private void init() {
 
-        String[] content = new String[]{"Tài khoản"};
+        String[] content = new String[]{"Mã nhà cung cấp", "Tên nhà cung cấp"};
         navbar = new Navbar();
         navbar.setDefaultComboBox(new DefaultComboBoxModel<>(content));
 
@@ -227,107 +250,90 @@ public class FormAccount extends JPanel implements ActionListener, MouseListener
         Border comboBorder = new CompoundBorder(new LineBorder(new Color(206, 212, 218), 2), new EmptyBorder(10, 10, 0, 0));
         pnlTxt.setBorder(comboBorder);
 
-        navbar.removeEdit();
         pnlTxtCon.setBorder(new EmptyBorder(0, 0, 20, 0));
 
         tableCustomer.ScrollPaneTable(scrollPane);
         setBackground(new Color(246, 250, 255));
     }
 
-    public void DocDuLieuDatabaseVaoTableAcc() {
+    public void DocDuLieuDatabaseVaoTable() throws RemoteException {
+        List<Supplier> list = sup_bus.getAllSuppliers();
         DefaultTableModel model = (DefaultTableModel) tableCustomer.getModel();
-        model.setRowCount(0); // Xóa tất cả các hàng hiện có
-
-        try {
-            List<Account> activeAccounts = accountBUS.getAllActiveAccounts();
-            for (Account tk : activeAccounts) {
-                model.addRow(new Object[]{
-                        tk.getUsername(),
-                        tk.getPassword(), // Hiển thị mật khẩu đã che hoặc bạn có thể chọn không hiển thị
-                        tk.isStatus() ? "Có hoạt động" : "Không hoạt động",
-                        tk.getCreatedDate()
-                });
-            }
-        } catch (Exception ex) {
-            java.util.logging.Logger.getLogger(FormAccount.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu tài khoản: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        model.setRowCount(0);
+        for (Supplier ncc : list) {
+            String trangThai = ncc.isStatus() ? "Còn" : "Ngưng";
+            model.addRow(new Object[]{
+                ncc.getId(), ncc.getSupplierName(), ncc.getPhone(), ncc.getAddress(), trangThai
+            });
         }
     }
 
-    public void DocALLDatabaseVaoTableAcc() {
-        DefaultTableModel model = (DefaultTableModel) tableCustomer.getModel();
-        model.setRowCount(0); // Xóa tất cả các hàng hiện có
-
-        try {
-            List<Account> activeAccounts = accountBUS.getAllAccounts();
-            for (Account tk : activeAccounts) {
-                model.addRow(new Object[]{
-                        tk.getUsername(),
-                        tk.getPassword(), // Hiển thị mật khẩu đã che hoặc bạn có thể chọn không hiển thị
-                        tk.isStatus() ? "Có hoạt động" : "Không hoạt động",
-                        tk.getCreatedDate()
-                });
-            }
-        } catch (Exception ex) {
-            java.util.logging.Logger.getLogger(FormAccount.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu tài khoản: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-    private void searchAcc() {
+    private void searchVen() {
         ComboBoxSuggestion<String> comboBox = navbar.getComboBox();
-        String selectedValueAcc = (String) comboBox.getSelectedItem();
-        DefaultTableModel modelAcc = (DefaultTableModel) tableCustomer.getModel();
-        String searchText = navbar.getTxtSearch().getText().trim();
+        String selectedValue = (String) comboBox.getSelectedItem();
+        DefaultTableModel modelVen = (DefaultTableModel) tableCustomer.getModel();
 
-        modelAcc.setRowCount(0);
-
-        if (!searchText.equals("Nhập nội dung tìm kiếm...") && !searchText.isEmpty()) {
-            try {
-                List<Account> tkList = switch (selectedValueAcc) {
-                    case "Tài khoản" -> accountBUS.getAccountByUsername(searchText);
-                    default -> List.of(); // Handle other search criteria if added
-                };
-
-                if (tkList.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Không tìm thấy tài khoản: " + searchText, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                    DocDuLieuDatabaseVaoTableAcc();
-                } else {
-                    for (Account tk : tkList) {
-                        modelAcc.addRow(new Object[]{
-                                tk.getUsername(),
-                                tk.getPassword(), // Or a masked password
-                                tk.getCreatedDate()
-                        });
-                    }
+        List<Supplier> nccList = new ArrayList<>();
+        modelVen.setRowCount(0); // Xóa dữ liệu cũ trước khi tìm kiếm
+        Supplier supplier = new Supplier();
+        try {
+            if (!navbar.getTxtSearch().getText().equals("Nhập nội dung tìm kiếm...") && !navbar.getTxtSearch().getText().isEmpty()) {
+                switch (selectedValue) {
+                    case "Mã nhà cung cấp":
+                        try {
+                            int id = Integer.parseInt(navbar.getTxtSearch().getText());
+                            supplier = sup_bus.getSupplierById(id);
+                            nccList.add(supplier);
+                        } catch (NumberFormatException e) {
+                            JOptionPane.showMessageDialog(null, "Mã nhà cung cấp phải là một số nguyên.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                            return; // Dừng tìm kiếm nếu không phải là số
+                        }
+                        break;
+                    case "Tên nhà cung cấp":
+                        nccList = sup_bus.getSupplierBySupplierName(navbar.getTxtSearch().getText());
+                        break;
                 }
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Lỗi khi tìm kiếm tài khoản: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-                DocALLDatabaseVaoTableAcc(); // Reload all data on error
+                if (nccList.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Không tìm thấy nhà cung cấp với: " + navbar.getTxtSearch().getText(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                nccList = sup_bus.getAllSuppliers();
             }
-        } else {
-            DocALLDatabaseVaoTableAcc(); // Reload all data if search text is empty
-            return;
-        }
 
-        SwingUtilities.invokeLater(() -> {
-            modelAcc.fireTableDataChanged();
+            // Hiển thị kết quả lên table
+            for (Supplier ncc : nccList) {
+                String trangThai = ncc.isStatus() ? "Còn" : "Ngưng";
+                modelVen.addRow(new Object[]{
+                    ncc.getId(),
+                    ncc.getSupplierName(),
+                    ncc.getPhone(),
+                    ncc.getAddress(),
+                    trangThai
+                });
+            }
+
+            // Không cần dùng SwingUtilities.invokeLater ở đây vì không có thao tác nặng trên EDT
+            modelVen.fireTableDataChanged();
             tableCustomer.revalidate();
             tableCustomer.repaint();
-            if (tableCustomer.getParent() instanceof JViewport && tableCustomer.getParent().getParent() instanceof JScrollPane scrollPane) {
-                scrollPane.revalidate();
-                scrollPane.repaint();
-            }
-        });
-    }
+            JScrollPane scrollPane = (JScrollPane) tableCustomer.getParent().getParent();
+            scrollPane.revalidate();
+            scrollPane.repaint();
 
+        } catch (RemoteException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         Object o = e.getSource();
         if (o.equals(navbar.getBtnSearch())) {
-            searchAcc();
+            searchVen();
         } else if (o.equals(navbar.getBtnAdd())) {
-            showAddAccountDialog();
+            showAddSupplierDialog();
+        } else if (o.equals(navbar.getBtnEdit())) {
+            editSupplier();
         } else if (o.equals(navbar.getBtnImport())) {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Chọn file Excel để nhập");
@@ -408,6 +414,7 @@ public class FormAccount extends JPanel implements ActionListener, MouseListener
             txtMaKH.setText(model.getValueAt(row, 0).toString());
             txtTenKH.setText(model.getValueAt(row, 1).toString());
             txtSDT.setText(model.getValueAt(row, 2).toString());
+            txtDiaChi.setText(model.getValueAt(row,3).toString());
         }
     }
 
@@ -432,68 +439,117 @@ public class FormAccount extends JPanel implements ActionListener, MouseListener
     ) {
     }
 
-    private void showAddAccountDialog() {
-        JDialog addAccountDialog = new JDialog();
-        addAccountDialog.setTitle("Thêm Tài Khoản");
-        addAccountDialog.setModal(true);
+    private void showAddSupplierDialog() { // Đổi tên hàm
+        JDialog addSupplierDialog = new JDialog(); // Đổi tên biến
+        addSupplierDialog.setTitle("Thêm Nhà Cung Cấp"); // Đổi title
+        addSupplierDialog.setModal(true);
 
-        JPanel inputPanel = new JPanel(new GridLayout(3, 2, 5, 5));
-        JTextField txtTaiKhoan = new JTextField(20);
-        JPasswordField txtMatKhau = new JPasswordField(20);
-        JComboBox<String> comboStatus = new JComboBox<>(new String[]{"Có hoạt động", "Không hoạt động"}); // Vietnamese options
+        JPanel inputPanel = new JPanel(new GridLayout(4, 2, 5, 5)); // Thay đổi số hàng lưới
+        JTextField txtTenNCC = new JTextField(20); // Đổi tên biến
+        JTextField txtDiaChi = new JTextField(20);  // Thêm text field cho địa chỉ
+        JTextField txtSDT = new JTextField(20);    // Thêm text field cho số điện thoại
+        JComboBox<String> comboStatus = new JComboBox<>(new String[]{"Còn hoạt động", "Ngừng hoạt động"}); // Vietnamese options
 
-        inputPanel.add(new JLabel("Tên Tài Khoản:"));
-        inputPanel.add(txtTaiKhoan);
-        inputPanel.add(new JLabel("Mật Khẩu:"));
-        inputPanel.add(txtMatKhau);
-        inputPanel.add(new JLabel("Trạng thái:"));
+        inputPanel.add(new JLabel("Tên NCC:")); // Đổi label
+        inputPanel.add(txtTenNCC); // Đổi tên biến
+        inputPanel.add(new JLabel("Địa chỉ:")); // Đổi label
+        inputPanel.add(txtDiaChi);
+        inputPanel.add(new JLabel("SĐT:")); // Đổi label
+        inputPanel.add(txtSDT);
+        inputPanel.add(new JLabel("Trạng thái:")); // Đổi label
         inputPanel.add(comboStatus);
 
-        JButton btnAdd = new JButton("Thêm");
+        JButton btnAdd = new JButton("Thêm"); // Giữ nguyên tên biến nếu cần
         btnAdd.addActionListener(e -> {
             try {
-                addAccount(txtTaiKhoan.getText().trim(), new String(txtMatKhau.getPassword()).trim(), (String) comboStatus.getSelectedItem(), addAccountDialog);
+                addSupplier(txtTenNCC.getText().trim(), txtDiaChi.getText().trim(), txtSDT.getText().trim(), (String) comboStatus.getSelectedItem(), addSupplierDialog); // Gọi hàm addSupplier
             } catch (SQLException ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(addAccountDialog, "Lỗi khi thêm tài khoản vào database!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(addSupplierDialog, "Lỗi khi thêm nhà cung cấp vào database!", "Lỗi", JOptionPane.ERROR_MESSAGE); // Thông báo lỗi phù hợp
             }
         });
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.add(btnAdd);
 
-        addAccountDialog.add(inputPanel, BorderLayout.CENTER);
-        addAccountDialog.add(buttonPanel, BorderLayout.SOUTH);
+        addSupplierDialog.add(inputPanel, BorderLayout.CENTER); // Đổi tên biến
+        addSupplierDialog.add(buttonPanel, BorderLayout.SOUTH);
 
-        addAccountDialog.setSize(400, 200);
-        addAccountDialog.setLocationRelativeTo(this);
-        addAccountDialog.setVisible(true);
+        addSupplierDialog.setSize(400, 200); // Có thể điều chỉnh kích thước
+        addSupplierDialog.setLocationRelativeTo(this);
+        addSupplierDialog.setVisible(true);
     }
 
-    private void addAccount(String username, String password, String status, JDialog addAccountDialog) throws SQLException {
-        if (username.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(addAccountDialog, "Vui lòng điền đầy đủ tên tài khoản và mật khẩu.", "Thông báo", JOptionPane.WARNING_MESSAGE);
+    private void addSupplier(String tenNCC, String diaChi, String sdt, String trangThai, JDialog addSupplierDialog) throws SQLException { // Thêm các tham số cần thiết
+        if (tenNCC.isEmpty() || diaChi.isEmpty() || sdt.isEmpty()) {
+            JOptionPane.showMessageDialog(addSupplierDialog, "Vui lòng điền đầy đủ thông tin nhà cung cấp.", "Thông báo", JOptionPane.WARNING_MESSAGE); // Thông báo phù hợp
             return;
         }
 
-        Account newAccount = new Account();
-        newAccount.setUsername(username);
-        newAccount.setPassword(password);
-        newAccount.setStatus(status.equals("Có hoạt động"));
-        newAccount.setCreatedDate(LocalDate.now());
+        Supplier newSupplier = new Supplier(); // Sử dụng đối tượng Supplier
+        newSupplier.setSupplierName(tenNCC);
+        newSupplier.setAddress(diaChi);
+        newSupplier.setPhone(sdt);
+        newSupplier.setStatus(trangThai.equals("Còn hoạt động")); // Chuyển đổi trạng thái
+        //newSupplier.setCreatedDate(LocalDate.now()); // Không cần thiết, Supplier không có thuộc tính này
 
         try {
-            if (accountBUS.addAccount(newAccount)) {
-                DocDuLieuDatabaseVaoTableAcc();
-                addAccountDialog.dispose();
-                JOptionPane.showMessageDialog(this, "Thêm tài khoản thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            if (sup_bus.addSupplier(newSupplier)) { // Gọi BUS để thêm nhà cung cấp
+                DocDuLieuDatabaseVaoTable(); // Cập nhật bảng
+                addSupplierDialog.dispose();
+                JOptionPane.showMessageDialog(this, "Thêm nhà cung cấp thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE); // Thông báo thành công
             } else {
-                JOptionPane.showMessageDialog(addAccountDialog, "Không thể thêm tài khoản. Có thể tài khoản đã tồn tại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(addSupplierDialog, "Không thể thêm nhà cung cấp. Có thể đã tồn tại.", "Lỗi", JOptionPane.ERROR_MESSAGE); // Thông báo lỗi cụ thể
             }
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(addAccountDialog, "Lỗi khi thêm tài khoản: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(addSupplierDialog, "Lỗi khi thêm nhà cung cấp: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE); // Hiển thị chi tiết lỗi
         }
+    }
+
+    private void editSupplier() {
+        try {
+            sup_bus = new SupplierBUS();
+
+            int id = Integer.parseInt(txtMaKH.getText()); // Mã nhà cung cấp
+            String name = txtTenKH.getText(); // Tên nhà cung cấp
+            String phone = txtSDT.getText(); // Số điện thoại
+            String address = txtDiaChi.getText(); // Địa chỉ
+            // Note: Status is not directly available in text fields; assume it's handled elsewhere or add a field
+            // For simplicity, we'll assume status is not updated here or is managed separately
+
+            Supplier supplier = sup_bus.getSupplierById(id);
+            if (supplier == null) {
+                JOptionPane.showMessageDialog(this, "Nhà cung cấp không tồn tại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            supplier.setSupplierName(name);
+            supplier.setPhone(phone);
+            supplier.setAddress(address);
+            // If you want to update status, you need a way to get it (e.g., from a combo box or another field)
+            // Example: supplier.setStatus(statusComboBox.getSelectedItem().equals("Còn hoạt động"));
+
+            if (sup_bus.updateSupplier(supplier)) {
+                JOptionPane.showMessageDialog(this, "Cập nhật nhà cung cấp thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                DocDuLieuDatabaseVaoTable();
+                clearTextFields();
+            } else {
+                JOptionPane.showMessageDialog(this, "Cập nhật nhà cung cấp thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đúng định dạng số cho Mã nhà cung cấp!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật nhà cung cấp: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void clearTextFields() {
+        txtMaKH.setText("");
+        txtTenKH.setText("");
+        txtSDT.setText("");
+        txtDiaChi.setText("");
     }
 
 }

@@ -812,7 +812,7 @@ public class FormLookup extends JPanel {
     }
 }
 
-//
+
 //    private void searchEmp() {
 //        // Nhân viên
 //        ComboBoxSuggestion<String> comboBoxEmp = navEmp.getComboBox();
@@ -1296,65 +1296,6 @@ public class FormLookup extends JPanel {
 //        }
 //    }
 //
-//    private void searchThietBi() {
-//        // Khách hàng
-//        ComboBoxSuggestion<String> comboBox = navMeE.getComboBox();
-//        String selectedValue = (String) comboBox.getSelectedItem();
-//        DefaultTableModel modelTB = (DefaultTableModel) tableMeE.getModel();
-//
-//        List<entity.ThietBiYTe> tbytList = new ArrayList<>();
-//        tbytList.clear();
-//        modelTB.setRowCount(0);
-//        tbyt_dao = new ThietBiYTe_DAO();
-//
-//        if (!navMeE.getTxtSearch().getText().equals("Nhập nội dung tìm kiếm...")) {
-//            try {
-//                switch (selectedValue) {
-//                    case "Mã thiết bị":
-//                        tbytList = tbyt_dao.getTBYTTheoMaThietBi(navMeE.getTxtSearch().getText());
-//                        break;
-//                    case "Tên thiết bị":
-//                        tbytList = tbyt_dao.getTBYTTheoTenThietBi(navMeE.getTxtSearch().getText());
-//                        break;
-//                }
-//            } catch (SQLServerException ex) {
-//                ex.printStackTrace();
-//            } catch (Exception ex) {
-//                Logger.getLogger(FormLookup.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-//
-//        if (tbytList.isEmpty()) {
-//            try {
-//                tbytList = tbyt_dao.getALLTBThietBiYTe();
-//                if (navMeE.getTxtSearch().getText().equals("Nhập nội dung tìm kiếm...")) {
-//                } else {
-//                    JOptionPane.showMessageDialog(null, "Không tìm thấy: " + navMeE.getTxtSearch().getText(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-//                }
-//            } catch (Exception ex) {
-//                Logger.getLogger(FormLookup.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-//        // Hiển thị kết quả lên table
-//        for (entity.ThietBiYTe tb : tbytList) {
-//            String ngaySanXuat = tb.getNgaySanXuat().format(formatter);
-//            String ngayNhap = tb.getNgayNhap().format(formatter);
-//            String trangThai = tb.isTrangThai() ? "Còn" : "Ngưng";
-//            modelTB.addRow(new Object[]{
-//                tb.getImg(), tb.getMaThietBi(), tb.getTenThietBi(), ngaySanXuat, ngayNhap, tb.getHanSuDung() + " Năm", tb.getCachDung(), tb.getQuyCachDongGoi(), tb.getVAT(), tb.getNuocSanXuat(), tb.getViTri(), tb.getGiaBan() + " VND", tb.getGiaNhap() + " VND", tb.getSoLuong(), tb.getTongSoLuong(), trangThai, tb.getNhomThietBiYTe().getMaNhomThietBi(), tb.getDonViTinh().getMaDVT(), tb.getNhaCungCap().getMaNhaCungCap()
-//            });
-//        }
-//
-//        SwingUtilities.invokeLater(() -> {
-//            modelTB.fireTableDataChanged();
-//            tableMeE.revalidate(); // Cập nhật JTable
-//            tableMeE.repaint(); // Vẽ lại JTable
-//            JScrollPane scrollPane = (JScrollPane) tableMeE.getParent().getParent(); // Lấy JScrollPane
-//            scrollPane.revalidate(); // Cập nhật JScrollPane
-//            scrollPane.repaint(); // Vẽ lại JScrollPane
-//        });
-//    }
 //
 //    public void addActionListener() {
 //        // Nhân viên
@@ -1447,7 +1388,6 @@ public class FormLookup extends JPanel {
 //    @Override
 //    public void actionPerformed(ActionEvent e) {
 //        Object o = e.getSource();
-// Emp
 //        if (o.equals(navEmp.getBtnSearch())) {
 //            searchEmp();
 //        } // Cus
@@ -1483,6 +1423,7 @@ public class FormLookup extends JPanel {
 //            chooseDate(navDis.getTxtDateTo());
 //        }
 //    }
+
 //
 //    private Object[] createRowData(Thuoc thuoc) {
 //        return new Object[]{
