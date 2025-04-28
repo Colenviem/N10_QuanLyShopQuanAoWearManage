@@ -68,11 +68,11 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
         pnlHoaDon.add(lblQuay);
         pnlHoaDon.add(txtQuay);
         pnlHoaDon.add(lblMaHD);
-        pnlHoaDon.add(txtMaHD);
-        pnlHoaDon.add(new JLabel("Đơn vị tính"));
-        comboxDVT = new ComboBoxSuggestion();
-        comboxDVT.setPreferredSize(new Dimension(100, 40));
-        pnlHoaDon.add(comboxDVT);
+//        pnlHoaDon.add(txtMaHD);
+//        pnlHoaDon.add(new JLabel("Đơn vị tính"));
+//        comboxDVT = new ComboBoxSuggestion();
+//        comboxDVT.setPreferredSize(new Dimension(100, 40));
+//        pnlHoaDon.add(comboxDVT);
         btnSearch1 = new ButtonCustom("", "imgs\\img\\search.png");
         btnSearch1.setPreferredSize(new Dimension(40, 40));
         pnlKH.add(btnSearch1);
@@ -102,8 +102,8 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
         txtMaNV.setFocusable(false);
         txtTenNV.setEditable(false);
         txtTenNV.setFocusable(false);
-        txtMaHD.setEditable(false);
-        txtMaHD.setFocusable(false);
+//        txtMaHD.setEditable(false);
+//        txtMaHD.setFocusable(false);
         txtDTLMoi.setText("0");
         txtDTL.setText("0");
         txtThanhTien = pay1.getTxtThanhTien();
@@ -379,8 +379,8 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
 
         txtMaHD.setPreferredSize(new java.awt.Dimension(150, 40));
 
-        lblMaHD.setText("Mã hóa đơn");
-        lblMaHD.setPreferredSize(new java.awt.Dimension(90, 40));
+//        lblMaHD.setText("Mã hóa đơn");
+//        lblMaHD.setPreferredSize(new java.awt.Dimension(90, 40));
 
         txtQuay.setText("Quầy số 1");
         txtQuay.setPreferredSize(new java.awt.Dimension(98, 40));

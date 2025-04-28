@@ -73,12 +73,12 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
         pnlHoaDon.add(btnSearch);
         pnlHoaDon.add(lblQuay);
         pnlHoaDon.add(txtQuay);
-        pnlHoaDon.add(lblMaHD);
-        pnlHoaDon.add(txtMaHD);
-        pnlHoaDon.add(new JLabel("Đơn vị tính"));
-        comboxDVT = new ComboBoxSuggestion();
-        comboxDVT.setPreferredSize(new Dimension(100, 40));
-        pnlHoaDon.add(comboxDVT);
+//        pnlHoaDon.add(lblMaHD);
+//        pnlHoaDon.add(txtMaHD);
+//        pnlHoaDon.add(new JLabel("Đơn vị tính"));
+//        comboxDVT = new ComboBoxSuggestion();
+//        comboxDVT.setPreferredSize(new Dimension(100, 40));
+//        pnlHoaDon.add(comboxDVT);
         btnSearch1 = new ButtonCustom("", "imgs\\img\\search.png");
         btnSearch1.setPreferredSize(new Dimension(40, 40));
         pnlKH.add(btnSearch1);
@@ -104,10 +104,10 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
         txtDTL.setFocusable(false);
         txtDTLMoi.setEditable(false);
         txtDTLMoi.setFocusable(false);
-        txtMaNV.setEditable(false);
-        txtMaNV.setFocusable(false);
-        txtTenNV.setEditable(false);
-        txtTenNV.setFocusable(false);
+//        txtMaNV.setEditable(false);
+//        txtMaNV.setFocusable(false);
+//        txtTenNV.setEditable(false);
+//        txtTenNV.setFocusable(false);
         txtMaHD.setEditable(false);
         txtMaHD.setFocusable(false);
         txtDTLMoi.setText("0");
@@ -425,10 +425,10 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
         jLabel1 = new javax.swing.JLabel();
         txtSearch = new gui.textfield.TextPay();
 
-        txtMaHD.setPreferredSize(new java.awt.Dimension(150, 40));
+//        txtMaHD.setPreferredSize(new java.awt.Dimension(150, 40));
 
-        lblMaHD.setText("Mã hóa đơn");
-        lblMaHD.setPreferredSize(new java.awt.Dimension(90, 40));
+//        lblMaHD.setText("Mã hóa đơn");
+//        lblMaHD.setPreferredSize(new java.awt.Dimension(90, 40));
 
         txtQuay.setText("Quầy số 1");
         txtQuay.setPreferredSize(new java.awt.Dimension(98, 40));
@@ -545,19 +545,19 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
         pnlTTNV.setPreferredSize(new java.awt.Dimension(350, 100));
         pnlTTNV.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 2));
 
-        lblMaNV.setText("Mã nhân viên");
-        lblMaNV.setPreferredSize(new java.awt.Dimension(90, 40));
-        pnlTTNV.add(lblMaNV);
+//        lblMaNV.setText("Mã nhân viên");
+//        lblMaNV.setPreferredSize(new java.awt.Dimension(90, 40));
+//        pnlTTNV.add(lblMaNV);
 
-        txtMaNV.setPreferredSize(new java.awt.Dimension(246, 40));
-        pnlTTNV.add(txtMaNV);
+//        txtMaNV.setPreferredSize(new java.awt.Dimension(246, 40));
+//        pnlTTNV.add(txtMaNV);
 
-        lblTenNV.setText("Tên nhân viên");
-        lblTenNV.setPreferredSize(new java.awt.Dimension(90, 40));
-        pnlTTNV.add(lblTenNV);
-
-        txtTenNV.setPreferredSize(new java.awt.Dimension(246, 40));
-        pnlTTNV.add(txtTenNV);
+//        lblTenNV.setText("Tên nhân viên");
+//        lblTenNV.setPreferredSize(new java.awt.Dimension(90, 40));
+//        pnlTTNV.add(lblTenNV);
+//
+//        txtTenNV.setPreferredSize(new java.awt.Dimension(246, 40));
+//        pnlTTNV.add(txtTenNV);
 
         pnlTop.add(pnlTTNV, java.awt.BorderLayout.LINE_END);
 

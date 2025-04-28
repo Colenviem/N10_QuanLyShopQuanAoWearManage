@@ -4,6 +4,7 @@ import bus.OrderBUS;
 import bus.OrderDetailBUS;
 import dao.OrderDetailDAO;
 import dto.Order;
+import gui.application.form.LoginForm;
 import gui.button.ButtonCustom;
 import gui.button.NavButtonCustom;
 import gui.combobox.ComboBoxSuggestion;
@@ -43,6 +44,7 @@ public class FormBill extends JPanel implements ActionListener, MouseListener {
     private NavButtonCustom btnAdd;
     private OrderBUS orderBUS;
     private OrderDetailBUS orderDetailBUS;
+    private LoginForm loginFormInstance;
 
     public FormBill() {
         try {
@@ -76,10 +78,10 @@ public class FormBill extends JPanel implements ActionListener, MouseListener {
 
         tableOrderDetail.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null}
+
             },
             new String [] {
-                "Mã sản phẩm", "Sản phẩm", "Giá bán", "Số lượng", "Thành tiền"
+                "Mã sản phẩm", "Sản phẩm", "Đơn Vị Tính", "Giá bán", "Số lượng", "Thành tiền"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -118,11 +120,11 @@ public class FormBill extends JPanel implements ActionListener, MouseListener {
 
             },
             new String [] {
-                "Mã hóa đơn", "Khách hàng", "Nhân viên", "Ngày thanh toán", "Tổng tiền hóa đơn", "Tình trạng"
+                "Mã hóa đơn", "Khách hàng", "Nhân viên", "Ngày thanh toán", "Tổng tiền hóa đơn", "Ghi chú"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, true, false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -196,7 +198,7 @@ public class FormBill extends JPanel implements ActionListener, MouseListener {
 
         try {
             DocDuLieuOrderrVaoTable();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -265,12 +267,12 @@ public class FormBill extends JPanel implements ActionListener, MouseListener {
                     if (order != null) {
                         tableModel.setRowCount(0);
                         tableModel.addRow(new Object[]{
-                                order.getId(),
-                                order.getCustomer().getName(),
-                                order.getEmployee().getFullName(),
-                                order.getOrderDate(),
-                                order.getTotalAmount(),
-                                order.getStatus()
+                            order.getId(),
+                            order.getCustomer().getName(),
+                            order.getEmployee().getFullName(),
+                            order.getOrderDate(),
+                            formatCurrencyVN(order.getTotalAmount()),
+                            order.getStatus()
                         });
                     } else {
                         JOptionPane.showMessageDialog(this, "Không tìm thấy hóa đơn!");
@@ -284,23 +286,22 @@ public class FormBill extends JPanel implements ActionListener, MouseListener {
                 if (!orders.isEmpty()) {
                     for (Order order : orders) {
                         tableModel.addRow(new Object[]{
-                                order.getId(),
-                                order.getCustomer().getName(),
-                                order.getEmployee().getFullName(),
-                                order.getOrderDate(),
-                                order.getTotalAmount(),
-                                order.getStatus()
+                            order.getId(),
+                            order.getCustomer().getName(),
+                            order.getEmployee().getFullName(),
+                            order.getOrderDate(),
+                            formatCurrencyVN(order.getTotalAmount()),
+                            order.getStatus()
                         });
                     }
                 } else {
                     JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng!");
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -342,13 +343,13 @@ public class FormBill extends JPanel implements ActionListener, MouseListener {
         orderBUS.getAllOrders()
                 .stream()
                 .forEach(order -> tableModel.addRow(new Object[]{
-                        order.getId(),
-                        order.getCustomer().getName(),
-                        order.getEmployee().getFullName(),
-                        order.getOrderDate(),
-                        formatCurrencyVN(order.getTotalAmount()),
-                        order.getStatus()
-                }));
+            order.getId(),
+            order.getCustomer().getName(),
+            order.getEmployee().getFullName(),
+            order.getOrderDate(),
+            formatCurrencyVN(order.getTotalAmount()),
+            order.getStatus()
+        }));
     }
 
     public static String formatCurrencyVN(double amount) {
@@ -364,11 +365,11 @@ public class FormBill extends JPanel implements ActionListener, MouseListener {
                 .getOrderDetails()
                 .stream()
                 .forEach(orderDetail -> tableModelOrderDetail.addRow(new Object[]{
-                        orderDetail.getProduct().getId(),
-                        orderDetail.getProduct().getProductName(),
-                        orderDetail.getProduct().getPrice(),
-                        orderDetail.getQuantity(),
-                        orderDetail.getPrice()
-                }));
+            orderDetail.getProduct().getId(),
+            orderDetail.getProduct().getProductName(),
+            orderDetail.getProduct().getPrice(),
+            orderDetail.getQuantity(),
+            orderDetail.getPrice() * orderDetail.getQuantity()
+        }));
     }
 }

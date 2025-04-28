@@ -2,9 +2,12 @@ package gui.application.form;
 
 import bus.AccountBUS;
 import bus.EmployeeBUS;
+import dto.Account;
+import dto.Order;
 import gui.application.Application;
 import java.awt.Color;
 import java.rmi.RemoteException;
+import java.util.List;
 
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
@@ -16,6 +19,7 @@ public class LoginForm extends javax.swing.JFrame {
     private Animator animatorBody;
     private boolean signIn;
     private AccountBUS accountBUS;
+    private Account loggedInAccount;
 
     public LoginForm() {
         initComponents();
@@ -249,6 +253,8 @@ public class LoginForm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_cmdSignInActionPerformed
 
+
+
     private void cmdSignUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdSignUpActionPerformed
         RegisterForm registerForm = new RegisterForm();
         registerForm.setVisible(true);
@@ -272,9 +278,6 @@ public class LoginForm extends javax.swing.JFrame {
         txtPass.setHelperText("");
     }
 
-    /**
-     * @param args the command line arguments
-     */
 //    public static void main(String args[]) {
 //        /* Set the Nimbus look and feel */
 //        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

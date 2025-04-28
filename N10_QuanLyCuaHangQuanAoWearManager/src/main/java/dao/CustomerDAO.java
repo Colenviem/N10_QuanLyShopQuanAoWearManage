@@ -24,6 +24,7 @@ public class CustomerDAO {
                 .getResultList();
     }
 
+
     public List<Customer> getCustomerByPhone(String phone) {
         return em.createQuery("SELECT c FROM Customer c WHERE c.phone LIKE :phone", Customer.class)
                 .setParameter("phone", "%" + phone + "%")
