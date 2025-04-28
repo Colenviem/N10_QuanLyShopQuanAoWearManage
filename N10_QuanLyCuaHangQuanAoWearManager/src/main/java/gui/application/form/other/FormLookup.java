@@ -48,7 +48,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 
-public class FormLookup extends JPanel {
+public class FormLookup extends JPanel implements ActionListener, MouseListener{
 
     private AccountBUS acc_bus;
     private CustomerBUS cus_bus;
@@ -70,7 +70,7 @@ public class FormLookup extends JPanel {
             initComponents();
             init();
             DocDuLieu();
-
+            addActionListener();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -680,6 +680,7 @@ public class FormLookup extends JPanel {
         pnlTableEmp.setBackground(new Color(255, 255, 255));
         pnlTableEmp.setBorder(new LineBorder(new Color(206, 212, 218), 2));
         navEmp.setDefaultComboBox(new DefaultComboBoxModel<>(new String[]{"Mã nhân viên", "Tên nhân viên", "Số điện thoại"}));
+        navEmp.hideComponentDate();
         tableEmp.setAutoResizeMode(TableCustom.AUTO_RESIZE_OFF);
         tableEmp.ScrollPaneTable(scrollPaneEmp);
         lblNameEmp.setPreferredSize(new Dimension(100, 40));
@@ -695,6 +696,7 @@ public class FormLookup extends JPanel {
         pnlTableCus.setBackground(new Color(255, 255, 255));
         pnlTableCus.setBorder(new LineBorder(new Color(206, 212, 218), 2));
         navCus.setDefaultComboBox(new DefaultComboBoxModel<>(new String[]{"Mã khách hàng", "Tên khách hàng", "Số điện thoại"}));
+        navCus.hideComponentDate();
         tableCus.ScrollPaneTable(scrollPaneCus);
         tableCus.setAutoResizeMode(TableCustom.AUTO_RESIZE_OFF);
         lblNameCus.setPreferredSize(new Dimension(100, 40));
@@ -710,6 +712,7 @@ public class FormLookup extends JPanel {
         pnlTableOrder.setBackground(new Color(255, 255, 255));
         pnlTableOrder.setBorder(new LineBorder(new Color(206, 212, 218), 2));
         navOrder.setDefaultComboBox(new DefaultComboBoxModel<>(new String[]{"Mã hoá đơn", "Tên khách hàng", "SDT khách hàng", "Mã nhân viên", "Tên nhân viên", "Ngày thanh toán"}));
+        navOrder.hideComponentDate();
         tableOrder.ScrollPaneTable(scrollPaneOrder);
         lblNameOrder.setPreferredSize(new Dimension(100, 40));
         lblNameOrder.setBorder(new EmptyBorder(0, 20, 0, 20));
@@ -724,6 +727,7 @@ public class FormLookup extends JPanel {
         pnlTableVender.setBackground(new Color(255, 255, 255));
         pnlTableVender.setBorder(new LineBorder(new Color(206, 212, 218), 2));
         navVender.setDefaultComboBox(new DefaultComboBoxModel<>(new String[]{"Mã nhà cung cấp", "Tên nhà cung cấp", "Uy tín"}));
+       navVender.hideComponentDate();
         tableVender.ScrollPaneTable(scrollPaneVender);
         tableVender.setAutoResizeMode(TableCustom.AUTO_RESIZE_OFF);
         lblNameVender.setPreferredSize(new Dimension(100, 40));
@@ -753,6 +757,7 @@ public class FormLookup extends JPanel {
         pnlTableAcc.setBackground(new Color(255, 255, 255));
         pnlTableAcc.setBorder(new LineBorder(new Color(206, 212, 218), 2));
         navAcc.setDefaultComboBox(new DefaultComboBoxModel<>(new String[]{"Tài khoản"}));
+        navAcc.hideComponentDate();
         tableAcc.ScrollPaneTable(scrollPaneAcc);
         tableAcc.setAutoResizeMode(TableCustom.AUTO_RESIZE_OFF);
         lblNameAcc.setPreferredSize(new Dimension(100, 40));
@@ -769,7 +774,7 @@ public class FormLookup extends JPanel {
         pnlTableMe.setBorder(new LineBorder(new Color(206, 212, 218), 2));
         navPro.setDefaultComboBox(new DefaultComboBoxModel<>(new String[]{"Mã thuốc", "Tên thuốc", "Số đăng ký"}));
         tableMe.ScrollPaneTable(scrollPaneMe);
-//        navPro.hideDateComponents();
+        navPro.hideComponentDate();
         tableMe.setAutoResizeMode(TableCustom.AUTO_RESIZE_OFF);
         tableMe.getColumnModel().getColumn(0).setCellRenderer(new TableProductCellRender(tableMe));
         tableMe.setRowHeight(80);
@@ -810,783 +815,459 @@ public class FormLookup extends JPanel {
         g2.drawRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 16, 16);
         super.paintComponent(g);
     }
+
+
+
+private void searchEmp() {
+    ComboBoxSuggestion<String> comboBoxEmp = navEmp.getComboBox();
+    String selectedValueEmp = (String) comboBoxEmp.getSelectedItem();
+    String searchText = navEmp.getTxtSearch().getText().trim();
+    DefaultTableModel modelEmp = (DefaultTableModel) tableEmp.getModel();
+    modelEmp.setRowCount(0); // Xóa dữ liệu cũ
+
+    List<Employee> empList = new ArrayList<>();
+    try {
+        if (!searchText.isEmpty() && !searchText.equals("Nhập nội dung tìm kiếm...")) {
+            switch (selectedValueEmp) {
+                case "Mã nhân viên":
+                    int id = Integer.parseInt(searchText); // Chuyển đổi searchText thành int
+                    Employee employee = em_bus.getEmployeeById(id);
+                    if (employee != null) {
+                        empList.add(employee);
+                    }
+                    break;
+                case "Tên nhân viên":
+                    empList = em_bus.getEmployeeByName(searchText);
+                    break;
+                case "Số điện thoại":
+                    empList = em_bus.getEmployeeByPhone(searchText);
+                    break;
+            }
+        } else {
+            empList = em_bus.getEmployeeByStatus(true); // Tải lại toàn bộ dữ liệu
+        }
+
+        if (empList.isEmpty() && !searchText.isEmpty() && !searchText.equals("Nhập nội dung tìm kiếm...")) {
+            JOptionPane.showMessageDialog(null, "Không tìm thấy: " + searchText, "Lỗi", JOptionPane.ERROR_MESSAGE);
+            empList = em_bus.getEmployeeByStatus(true); // Tải lại toàn bộ nếu không tìm thấy
+        }
+
+        // Hiển thị kết quả lên bảng
+        for (Employee nv : empList) {
+            String ngaySinh = nv.getHireDate().format(df);
+            String luong = dfm.format(nv.getSalary());
+            String trangThai = nv.isStatus() ? "Còn" : "Ngưng";
+            modelEmp.addRow(new Object[]{
+                    nv.getId(), nv.getFullName(), ngaySinh, nv.getPhone(), luong, trangThai, nv.getRole()
+            });
+        }
+
+        SwingUtilities.invokeLater(() -> {
+            modelEmp.fireTableDataChanged();
+            tableEmp.revalidate();
+            tableEmp.repaint();
+            scrollPaneEmp.revalidate();
+            scrollPaneEmp.repaint();
+        });
+
+    } catch (Exception ex) {
+        Logger.getLogger(FormLookup.class.getName()).log(Level.SEVERE, null, ex);
+        JOptionPane.showMessageDialog(null, "Lỗi khi tìm kiếm: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
 }
+    private void searchCus() {
+        ComboBoxSuggestion<String> comboBoxCus = navCus.getComboBox();
+        String selectedValueCus = (String) comboBoxCus.getSelectedItem();
+        String searchText = navCus.getTxtSearch().getText().trim();
+        DefaultTableModel modelCus = (DefaultTableModel) tableCus.getModel();
+        modelCus.setRowCount(0); // Xóa dữ liệu cũ
 
+        List<Customer> cusList = new ArrayList<>();
+        try {
+            if (!searchText.isEmpty() && !searchText.equals("Nhập nội dung tìm kiếm...")) {
+                switch (selectedValueCus) {
+                    case "Mã khách hàng":
+                        int id = Integer.parseInt(searchText); // Chuyển đổi searchText thành int
+                        Customer customer = cus_bus.getCustomerById(id);
+                        if (customer != null) {
+                            cusList.add(customer);
+                        }
+                        break;
+                    case "Tên khách hàng":
+                        cusList = cus_bus.getCustomerByName(searchText);
+                        break;
+                    case "Số điện thoại":
+                        cusList = cus_bus.getCustomerByPhone(searchText);
+                        break;
+                }
+            } else {
+                cusList = cus_bus.getAllCustomers(); // Tải lại toàn bộ dữ liệu
+            }
 
-//    private void searchEmp() {
-//        // Nhân viên
-//        ComboBoxSuggestion<String> comboBoxEmp = navEmp.getComboBox();
-//        String selectedValueEmp = (String) comboBoxEmp.getSelectedItem();
-//        DefaultTableModel modelEmp = (DefaultTableModel) tableEmp.getModel();
-//
-//        List<entity.NhanVien> nvList = new ArrayList<>();
-//        nvList.clear();
-//        modelEmp.setRowCount(0);
-//        nv_dao = new NhanVien_DAO();
-//
-//        if (!navEmp.getTxtSearch().getText().equals("Nhập nội dung tìm kiếm...")) {
-//            try {
-//                switch (selectedValueEmp) {
-//                    case "Mã nhân viên":
-//                        nvList = nv_dao.getNhanVienTheoMaNhanVien(navEmp.getTxtSearch().getText());
-//                        break;
-//                    case "Tên nhân viên":
-//                        nvList = nv_dao.getNhanVienTheoTenNhanVien(navEmp.getTxtSearch().getText());
-//                        break;
-//                    case "Số điện thoại":
-//                        nvList = nv_dao.getNhanVienTheoSDT(navEmp.getTxtSearch().getText());
-//                        break;
-//                }
-//            } catch (SQLServerException ex) {
-//                ex.printStackTrace();
-//            } catch (Exception ex) {
-//                Logger.getLogger(FormLookup.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-//
-//        if (nvList.isEmpty()) {
-//            try {
-//                nvList = nv_dao.getAllTBNhanVien();
-//                if (navEmp.getTxtSearch().getText().equals("Nhập nội dung tìm kiếm...")) {
-//                } else {
-//                    JOptionPane.showMessageDialog(null, "Không tìm thấy: " + navEmp.getTxtSearch().getText(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-//                }
-//            } catch (Exception ex) {
-//                ex.printStackTrace();
-//            }
-//        }
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-//        // Hiển thị kết quả lên table
-//        for (entity.NhanVien nv : nvList) {
-//            String ngaySinh = nv.getNgaySinh().format(formatter);
-//            String ngayVaoLam = nv.getNgayVaoLam().format(formatter);
-//            String gioiTinh = nv.isGioiTinh() ? "Nam" : "Nữ";
-//            modelEmp.addRow(new Object[]{
-//                nv.getMaNhanVien(), nv.getTenNhanVien(), nv.getSoDienThoai(), nv.getEmail(), gioiTinh, ngaySinh, ngayVaoLam, nv.getCCCD(), nv.getTrangThai(), nv.getLuong() + " VND", nv.getTienThuong() + " VND", nv.getLuongThucTe() + " VND", nv.getNhaThuoc().getMaNhaThuoc().toString(), nv.getTaiKhoan().getTaiKhoan().toString(), nv.getChucVu().getMaChucVu()
-//            });
-//        }
-//
-//        SwingUtilities.invokeLater(() -> {
-//            modelEmp.fireTableDataChanged();
-//            tableEmp.revalidate(); // Cập nhật JTable
-//            tableEmp.repaint(); // Vẽ lại JTable
-//            JScrollPane scrollPane = (JScrollPane) tableEmp.getParent().getParent(); // Lấy JScrollPane
-//            scrollPane.revalidate(); // Cập nhật JScrollPane
-//            scrollPane.repaint(); // Vẽ lại JScrollPane
-//        });
-//    }
-//
-//    private void searchCus() {
-//        // Khách hàng
-//        ComboBoxSuggestion<String> comboBox = navCus.getComboBox();
-//        String selectedValueCus = (String) comboBox.getSelectedItem();
-//        DefaultTableModel modelCus = (DefaultTableModel) tableCus.getModel();
-//
-//        List<entity.KhachHang> khList = new ArrayList<>();
-//        khList.clear();
-//        modelCus.setRowCount(0);
-//        kh_dao = new KhachHang_DAO();
-//
-//        if (!navCus.getTxtSearch().getText().equals("Nhập nội dung tìm kiếm...")) {
-//            try {
-//                switch (selectedValueCus) {
-//                    case "Mã khách hàng":
-//                        khList = kh_dao.getKHTheoMaKhachHang(navCus.getTxtSearch().getText());
-//                        break;
-//                    case "Tên khách hàng":
-//                        khList = kh_dao.getKHTheoTenKhachHang(navCus.getTxtSearch().getText());
-//                        break;
-//                    case "Số điện thoại":
-//                        khList = kh_dao.getKHTheoSDT(navCus.getTxtSearch().getText());
-//                        break;
-//                }
-//            } catch (SQLServerException ex) {
-//                ex.printStackTrace();
-//            } catch (Exception ex) {
-//                Logger.getLogger(FormLookup.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-//
-//        if (khList.isEmpty()) {
-//            khList = kh_dao.getAllTBKhachHang();
-//            if (navCus.getTxtSearch().getText().equals("Nhập nội dung tìm kiếm...")) {
-//            } else {
-//                JOptionPane.showMessageDialog(null, "Không tìm thấy: " + navCus.getTxtSearch().getText(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-//            }
-//        }
-//
-//        // Hiển thị kết quả lên table
-//        for (entity.KhachHang kh : khList) {
-//            modelCus.addRow(new Object[]{
-//                kh.getMaKH(), kh.getTenKH(), kh.getSoDienThoai(), kh.getDiemTichLuy()
-//            });
-//        }
-//
-//        SwingUtilities.invokeLater(() -> {
-//            modelCus.fireTableDataChanged();
-//            tableCus.revalidate(); // Cập nhật JTable
-//            tableCus.repaint(); // Vẽ lại JTable
-//            JScrollPane scrollPane = (JScrollPane) tableCus.getParent().getParent(); // Lấy JScrollPane
-//            scrollPane.revalidate(); // Cập nhật JScrollPane
-//            scrollPane.repaint(); // Vẽ lại JScrollPane
-//        });
-//    }
-//
-//    private void searchVen() {
-//        // Khách hàng
-//        ComboBoxSuggestion<String> comboBox = navVender.getComboBox();
-//        String selectedValue = (String) comboBox.getSelectedItem();
-//        DefaultTableModel modelVen = (DefaultTableModel) tableVender.getModel();
-//
-//        List<entity.NhaCungCap> nccList = new ArrayList<>();
-//        nccList.clear();
-//        modelVen.setRowCount(0);
-//        ncc_dao = new NhaCungCap_DAO();
-//
-//        if (!navVender.getTxtSearch().getText().equals("Nhập nội dung tìm kiếm...")) {
-//            try {
-//                switch (selectedValue) {
-//                    case "Mã nhà cung cấp":
-//                        nccList = ncc_dao.getNCCTheoMaNhaCungCap(navVender.getTxtSearch().getText());
-//                        break;
-//                    case "Tên nhà cung cấp":
-//                        nccList = ncc_dao.getNCCTheoTenNhaCungCap(navVender.getTxtSearch().getText());
-//                        break;
-//                    case "Uy tín":
-//                        nccList = ncc_dao.getNCCTheoUyTin(navVender.getTxtSearch().getText());
-//                        break;
-//                }
-//            } catch (SQLServerException ex) {
-//                ex.printStackTrace();
-//            } catch (Exception ex) {
-//                Logger.getLogger(FormLookup.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-//
-//        if (nccList.isEmpty()) {
-//            try {
-//                nccList = ncc_dao.getAllTBNhaCungCap();
-//                if (navVender.getTxtSearch().getText().equals("Nhập nội dung tìm kiếm...")) {
-//                } else {
-//                    JOptionPane.showMessageDialog(null, "Không tìm thấy: " + navVender.getTxtSearch().getText(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-//                }
-//            } catch (Exception ex) {
-//                Logger.getLogger(FormLookup.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-//
-//        // Hiển thị kết quả lên table
-//        for (entity.NhaCungCap ncc : nccList) {
-//            String trangThai = ncc.isTrangThai() ? "Còn" : "Ngưng";
-//            modelVen.addRow(new Object[]{
-//                ncc.getMaNhaCungCap(), ncc.getTenNhaCungCap(), ncc.getSoTaiKhoan(), ncc.getDiaChi(), ncc.getUyTin(), trangThai, ncc.getMaSoThue()
-//            });
-//        }
-//
-//        SwingUtilities.invokeLater(() -> {
-//            modelVen.fireTableDataChanged();
-//            tableVender.revalidate(); // Cập nhật JTable
-//            tableVender.repaint(); // Vẽ lại JTable
-//            JScrollPane scrollPane = (JScrollPane) tableVender.getParent().getParent(); // Lấy JScrollPane
-//            scrollPane.revalidate(); // Cập nhật JScrollPane
-//            scrollPane.repaint(); // Vẽ lại JScrollPane
-//        });
-//    }
-//
-//    private void searchAcc() {
-//        // Khách hàng
-//        ComboBoxSuggestion<String> comboBox = navAcc.getComboBox();
-//        String selectedValueAcc = (String) comboBox.getSelectedItem();
-//        DefaultTableModel modelAcc = (DefaultTableModel) tableAcc.getModel();
-//
-//        List<entity.TaiKhoan> tkList = new ArrayList<>();
-//        tkList.clear();
-//        modelAcc.setRowCount(0);
-//        tk_dao = new TaiKhoan_DAO();
-//
-//        if (!navAcc.getTxtSearch().getText().equals("Nhập nội dung tìm kiếm...")) {
-//            switch (selectedValueAcc) {
-//                case "Tài khoản":
-//                    tkList = tk_dao.getTaiKhoanTheoTK(navAcc.getTxtSearch().getText());
-//                    break;
-//            }
-//        }
-//        if (tkList.isEmpty()) {
-//            try {
-//                tkList = tk_dao.getAllTBTaiKhoan();
-//                if (navAcc.getTxtSearch().getText().equals("Nhập nội dung tìm kiếm...")) {
-//                } else {
-//                    JOptionPane.showMessageDialog(null, "Không tìm thấy: " + navAcc.getTxtSearch().getText(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-//                }
-//            } catch (Exception ex) {
-//                Logger.getLogger(FormLookup.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-//
-//        // Hiển thị kết quả lên table
-//        for (entity.TaiKhoan tk : tkList) {
-//            modelAcc.addRow(new Object[]{
-//                tk.getTaiKhoan(), tk.getMatKhau(), tk.getQuyen()
-//            });
-//        }
-//
-//        SwingUtilities.invokeLater(() -> {
-//            modelAcc.fireTableDataChanged();
-//            tableAcc.revalidate(); // Cập nhật JTable
-//            tableAcc.repaint(); // Vẽ lại JTable
-//            JScrollPane scrollPane = (JScrollPane) tableAcc.getParent().getParent(); // Lấy JScrollPane
-//            scrollPane.revalidate(); // Cập nhật JScrollPane
-//            scrollPane.repaint(); // Vẽ lại JScrollPane
-//        });
-//    }
-//
-//    private void searchThuoc() {
-//        // Khách hàng
-//        ComboBoxSuggestion<String> comboBox = navMe.getComboBox();
-//        String selectedValue = (String) comboBox.getSelectedItem();
-//        DefaultTableModel modelThuoc = (DefaultTableModel) tableMe.getModel();
-//
-//        List<entity.Thuoc> thuocList = new ArrayList<>();
-//        thuocList.clear();
-//        modelThuoc.setRowCount(0);
-//        thuoc_dao = new Thuoc_DAO();
-//
-//        if (!navMe.getTxtSearch().getText().equals("Nhập nội dung tìm kiếm...")) {
-//            try {
-//                switch (selectedValue) {
-//                    case "Mã thuốc":
-//                        thuocList = thuoc_dao.getThuocTheoMaThuoc(navMe.getTxtSearch().getText());
-//                        break;
-//                    case "Số đăng ký":
-//                        thuocList = thuoc_dao.getThuocTheoSoDangKy(navMe.getTxtSearch().getText());
-//                        break;
-//                    case "Tên thuốc":
-//                        thuocList = thuoc_dao.getThuocTheoTenThuoc(navMe.getTxtSearch().getText());
-//                        break;
-//                }
-//            } catch (SQLException ex) {
-//                ex.printStackTrace();
-//            }
-//            if (!thuocList.isEmpty()) {
-//                thuocList.forEach(thuoc -> modelThuoc.addRow(createRowData(thuoc)));
-//            } else {
-//                DocDuLieuDatabaseVaoTableThuoc();
-//            }
-//            SwingUtilities.invokeLater(() -> {
-//                modelThuoc.fireTableDataChanged();
-//                tableMe.revalidate(); // Cập nhật JTable
-//                tableMe.repaint(); // Vẽ lại JTable
-//                JScrollPane scrollPane = (JScrollPane) tableMe.getParent().getParent(); // Lấy JScrollPane
-//                scrollPane.revalidate(); // Cập nhật JScrollPane
-//                scrollPane.repaint(); // Vẽ lại JScrollPane
-//            });
-//        } else {
-//            DocDuLieuDatabaseVaoTableThuoc();
-//            SwingUtilities.invokeLater(() -> {
-//                modelThuoc.fireTableDataChanged();
-//                tableMe.revalidate(); // Cập nhật JTable
-//                tableMe.repaint(); // Vẽ lại JTable
-//                JScrollPane scrollPane = (JScrollPane) tableMe.getParent().getParent(); // Lấy JScrollPane
-//                scrollPane.revalidate(); // Cập nhật JScrollPane
-//                scrollPane.repaint(); // Vẽ lại JScrollPane
-//            });
-//
-//        }
-//    }
-//
-//    private void searchOrder() {
-//        // Khách hàng
-//        ComboBoxSuggestion<String> comboBox = navOrder.getComboBox();
-//        String selectedValue = (String) comboBox.getSelectedItem();
-//        DefaultTableModel modelOrder = (DefaultTableModel) tableOrder.getModel();
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-//        ArrayList<entity.HoaDon> list = hd_dao.getAllHD();
-//        modelOrder.setRowCount(0);
-//        hd_dao = new HoaDon_DAO();
-//        if (!navOrder.getTxtSearch().getText().equals("Nhập nội dung tìm kiếm...") || selectedValue.equals("Ngày thanh toán")) {
-//            try {
-//                switch (selectedValue) {
-//                    case "Mã hoá đơn":
-//                        list = hd_dao.getHDTheoMaHoaDon(navOrder.getTxtSearch().getText());
-//                        break;
-//                    case "Tên khách hàng":
-//                        list = hd_dao.getHDTheoTenKH(navOrder.getTxtSearch().getText());
-//                        break;
-//                    case "SDT khách hàng":
-//                        list = hd_dao.getHDTheoSDT(navOrder.getTxtSearch().getText());
-//                        break;
-//                    case "Mã nhân viên":
-//                        list = hd_dao.getHDTheoMaNV(navOrder.getTxtSearch().getText());
-//                        break;
-//                    case "Tên nhân viên":
-//                        list = hd_dao.getHDTheoTenNV(navOrder.getTxtSearch().getText());
-//                        break;
-//
-//                    case "Ngày thanh toán":
-//                        // Phân tích chuỗi thành LocalDate
-//                        LocalDate startDate = LocalDate.parse(navOrder.getTxtDate().getText(), df);
-//                        LocalDate endDate = LocalDate.parse(navOrder.getTxtDateTo().getText(), df);
-//                        list = hd_dao.getHoaDonTheoDate(startDate, endDate);
-//                        break;
-//                }
-//            } catch (SQLServerException ex) {
-//                ex.printStackTrace();
-//            } catch (Exception ex) {
-//                Logger.getLogger(FormLookup.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-//        if (list.isEmpty()) {
-//            try {
-//                list = hd_dao.getAllHD();
-//                if (navOrder.getTxtSearch().getText().equals("Nhập nội dung tìm kiếm...")) {
-//                } else {
-//                    JOptionPane.showMessageDialog(null, "Không tìm thấy: " + navOrder.getTxtSearch().getText(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-//                }
-//            } catch (Exception ex) {
-//                Logger.getLogger(FormLookup.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-//        for (entity.HoaDon hd : list) {
-//            String ngayThanhToan = hd.getNgayThanhToan().format(formatter);
-//            modelOrder.addRow(new Object[]{
-//                hd.getMaHoaDon(), hd.getKhachHang().getTenKH(), hd.getKhachHang().getSoDienThoai(), hd.getNhanVien().getMaNhanVien(), hd.getNhanVien().getTenNhanVien(), ngayThanhToan, hd.getTongTien() + " VND", hd.getTienGiam() + " VND", hd.getTongTienHoaDon() + " VND"
-//            });
-//        }
-//        SwingUtilities.invokeLater(() -> {
-//            modelOrder.fireTableDataChanged();
-//            tableOrder.revalidate(); // Cập nhật JTable
-//            tableOrder.repaint(); // Vẽ lại JTable
-//            JScrollPane scrollPane = (JScrollPane) tableOrder.getParent().getParent(); // Lấy JScrollPane
-//            scrollPane.revalidate(); // Cập nhật JScrollPane
-//            scrollPane.repaint(); // Vẽ lạFi JScrollPane
-//        });
-//    }
-//
-//    private void searchDis() {
-//        try {
-//            // Khách hàng
-//            ComboBoxSuggestion<String> comboBox = navDis.getComboBox();
-//            String selectedValue = (String) comboBox.getSelectedItem();
-//            DefaultTableModel modelDis = (DefaultTableModel) tableDis.getModel();
-//
-//            ArrayList<entity.KhuyenMai> list = km_dao.getAllKhuyenMaiThuoc();
-//            ArrayList<entity.KhuyenMai> listTB = km_dao.getAllKhuyenMaiTB();
-//            list.clear();
-//            listTB.clear();
-//            modelDis.setRowCount(0);
-//            km_dao = new KhuyenMai_DAO();
-//            if (!navDis.getTxtSearch().getText().equals("Nhập nội dung tìm kiếm...")) {
-//                try {
-//                    switch (selectedValue) {
-//                        case "Mã khuyến mãi":
-//                            list = km_dao.getAllKhuyenMaiTheoMaThuoc(navDis.getTxtSearch().getText());
-//                            listTB = km_dao.getAllKhuyenMaiTheoMaTB(navDis.getTxtSearch().getText());
-//                            break;
-//                        case "Tên khuyến mãi":
-//                            list = km_dao.getAllKhuyenMaiTheoTenKMThuoc(navDis.getTxtSearch().getText());
-//                            listTB = km_dao.getAllKhuyenMaiTheoTenKMTB(navDis.getTxtSearch().getText());
-//                            break;
-//                        case "Tên thuốc":
-//                            list = km_dao.getAllKhuyenMaiTheoTenThuoc(navDis.getTxtSearch().getText());
-//                            listTB = new ArrayList<>();
-//                            break;
-//                        case "Tên thiết bị y tế":
-//                            listTB = km_dao.getAllKhuyenMaiTheoTenTB(navDis.getTxtSearch().getText());
-//                            list = new ArrayList<>();
-//                            break;
-//                        case "Theo thời gian":
-//                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-//                            // Phân tích chuỗi thành LocalDate
-//                            LocalDate startDate = LocalDate.parse(navOrder.getTxtDate().getText(), formatter);
-//                            LocalDate endDate = LocalDate.parse(navOrder.getTxtDateTo().getText(), formatter);
-//                            list = km_dao.getKhuyenMaiTheoDateThuoc(startDate, endDate);
-//                            listTB = km_dao.getKhuyenMaiTheoDateTB(startDate, endDate);
-//                    }
-//                } catch (Exception ex) {
-//                    Logger.getLogger(FormLookup.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-//            }
-//
-//            if (list.isEmpty() && listTB.isEmpty()) {
-//                try {
-//
-//                    list = km_dao.getAllKhuyenMaiThuoc();
-//                    listTB = km_dao.getAllKhuyenMaiTB();
-//                    if (navDis.getTxtSearch().getText().equals("Nhập nội dung tìm kiếm...")) {
-//
-//                    } else {
-//                        JOptionPane.showMessageDialog(null, "Không tìm thấy: " + navDis.getTxtSearch().getText(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-//                    }
-//                } catch (Exception ex) {
-//                    Logger.getLogger(FormLookup.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-//            }
-//            // Vòng lặp qua list (danh sách thuốc)
-//            for (entity.KhuyenMai km : list) {
-//                String ngayBatDau = km.getThoiGianBatDau().format(df);
-//                String ngayKetThuc = km.getThoiGianKetThuc().format(df);
-//                String trangThai = km.isTrangThai() ? "Còn" : "Ngưng";
-//
-//                // Check if ChiTietKhuyenMai and Thuoc are not null
-//                if (km.getDsCTKM() != null && !km.getDsCTKM().isEmpty()) {
-//                    ChiTietKhuyenMai ctkm = km.getDsCTKM().getFirst();
-//                    if (ctkm.getThuoc() != null && ctkm.getThuoc().getDsDVT() != null && !ctkm.getThuoc().getDsDVT().isEmpty()) {
-//                        double giaBan = ctkm.getThuoc().getDsDVT().getFirst().getGiaBan();
-//                        double giaBanSauKhuyenMai = giaBan - giaBan * km.getGiaTriKhuyenMai();
-//
-//                        modelDis.addRow(new Object[]{
-//                            km.getMaKhuyenMai(),
-//                            km.getTenKhuyenMai(),
-//                            ctkm.getThuoc().getDsDVT().getFirst().getDVT().getDVT(),
-//                            ctkm.getThuoc().getTenThuoc(),
-//                            giaBan + " VND",
-//                            giaBanSauKhuyenMai + " VND",
-//                            km.getGiaTriKhuyenMai() + " %",
-//                            ngayBatDau,
-//                            ngayKetThuc,
-//                            trangThai,
-//                            km.getSoTienGiamToiDa() + " VND",
-//                            ctkm.getSoLuong()
-//                        });
-//                    }
-//                }
-//            }
-//
-//            // Vòng lặp qua listTB (danh sách thiết bị y tế)
-//            for (entity.KhuyenMai ct : listTB) {
-//                String ngayBatDau = ct.getThoiGianBatDau().format(df);
-//                String ngayKetThuc = ct.getThoiGianKetThuc().format(df);
-//                String trangThai = ct.isTrangThai() ? "Còn" : "Ngưng";
-//
-//                // Check if ChiTietKhuyenMai and ThietBiYTe are not null
-//                if (ct.getDsCTKM() != null && !ct.getDsCTKM().isEmpty()) {
-//                    ChiTietKhuyenMai ctkm = ct.getDsCTKM().getFirst();
-//                    if (ctkm.getThietBiYTe() != null) {
-//                        double giaBanTB = ctkm.getThietBiYTe().getGiaBan();
-//                        double giaBanSauKhuyenMaiTB = giaBanTB - giaBanTB * ct.getGiaTriKhuyenMai();
-//
-//                        modelDis.addRow(new Object[]{
-//                            ct.getMaKhuyenMai(),
-//                            ct.getTenKhuyenMai(),
-//                            ctkm.getThietBiYTe().getQuyCachDongGoi(),
-//                            ctkm.getThietBiYTe().getTenThietBi(),
-//                            giaBanTB + " VND",
-//                            giaBanSauKhuyenMaiTB + " VND",
-//                            ct.getGiaTriKhuyenMai() + " %",
-//                            ngayBatDau,
-//                            ngayKetThuc,
-//                            trangThai,
-//                            ct.getSoTienGiamToiDa() + " VND",
-//                            ctkm.getSoLuong()
-//                        });
-//                    }
-//                }
-//            }
-//
-//            SwingUtilities.invokeLater(() -> {
-//                modelDis.fireTableDataChanged();
-//                tableDis.revalidate(); // Cập nhật JTable
-//                tableDis.repaint(); // Vẽ lại JTable
-//                JScrollPane scrollPane = (JScrollPane) tableDis.getParent().getParent(); // Lấy JScrollPane
-//                scrollPane.revalidate(); // Cập nhật JScrollPane
-//                scrollPane.repaint(); // Vẽ lại JScrollPane
-//            });
-//        } catch (SQLException ex) {
-//            Logger.getLogger(FormLookup.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//    }
-//
-//
-//    public void addActionListener() {
-//        // Nhân viên
-//        navEmp.getTxtSearch().addFocusListener(new FocusAdapter() {
-//            @Override
-//            public void focusGained(FocusEvent e) {
-//                navEmp.getTxtSearch().selectAll();
-//            }
-//        });
-//
-//        navEmp.getBtnSearch().addActionListener(this);
-//        navEmp.getBtnDate().addActionListener(this);
-//        navEmp.getBtnDateTo().addActionListener(this);
-//        // Khách hàng
-//        navCus.getBtnSearch().addActionListener(this);
-//        navCus.getTxtSearch().addFocusListener(new FocusAdapter() {
-//            @Override
-//            public void focusGained(FocusEvent e) {
-//                navCus.getTxtSearch().selectAll();
-//            }
-//        });
-//        //Nhà cung cấp
-//        navVender.getBtnSearch().addActionListener(this);
-//        navVender.getTxtSearch().addFocusListener(new FocusAdapter() {
-//            @Override
-//            public void focusGained(FocusEvent e) {
-//                navVender.getTxtSearch().selectAll();
-//            }
-//        });
-//
-//        //Tài khoản
-//        navAcc.getBtnSearch().addActionListener(this);
-//        navAcc.getTxtSearch().addFocusListener(new FocusAdapter() {
-//            @Override
-//
-//            public void focusGained(FocusEvent e) {
-//                navAcc.getTxtSearch().selectAll();
-//
-//            }
-//        });
-//        //Thuốc
-//        navMe.getBtnSearch().addActionListener(this);
-//        navMe.getTxtSearch().addFocusListener(new FocusAdapter() {
-//            @Override
-//
-//            public void focusGained(FocusEvent e) {
-//                navMe.getTxtSearch().selectAll();
-//
-//            }
-//        });
-//        //TBYT
-//        navMeE.getTxtSearch().addFocusListener(new FocusAdapter() {
-//            @Override
-//
-//            public void focusGained(FocusEvent e) {
-//                navMeE.getTxtSearch().selectAll();
-//
-//            }
-//        });
-//        navMeE.getBtnSearch().addActionListener(this);
-//        //HD
-//        navOrder.getTxtSearch().addFocusListener(new FocusAdapter() {
-//            @Override
-//
-//            public void focusGained(FocusEvent e) {
-//                navOrder.getTxtSearch().selectAll();
-//
-//            }
-//        });
-//        navOrder.getBtnSearch().addActionListener(this);
-//        navOrder.getBtnDate().addActionListener(this);
-//        navOrder.getBtnDateTo().addActionListener(this);
-//
-//        // Km
-//        navDis.getBtnSearch().addActionListener(this);
-//        navDis.getTxtSearch().addFocusListener(new FocusAdapter() {
-//            @Override
-//
-//            public void focusGained(FocusEvent e) {
-//                navDis.getTxtSearch().selectAll();
-//
-//            }
-//        });
-//        navDis.getBtnDate().addActionListener(this);
-//        navDis.getBtnDateTo().addActionListener(this);
-//
-//        tableMe.addMouseListener(this);
-//        tableMeE.addMouseListener(this);
-//    }
-//    @Override
-//    public void actionPerformed(ActionEvent e) {
-//        Object o = e.getSource();
-//        if (o.equals(navEmp.getBtnSearch())) {
-//            searchEmp();
-//        } // Cus
-//        else if (o.equals(navCus.getBtnSearch())) {
-//            searchCus();
-//        } // Order 
-//        else if (o.equals(navOrder.getBtnSearch())) {
-//            searchOrder();
-//        } else if (o.equals(navOrder.getBtnDate())) {
-//            chooseDate(navOrder.getTxtDate());
-//        } else if (o.equals(navOrder.getBtnDateTo())) {
-//            chooseDate(navOrder.getTxtDateTo());
-//        } // Vender
-//        else if (o.equals(navVender.getBtnSearch())) {
-//            searchVen();
-//        } // Account
-//        else if (o.equals(navAcc.getBtnSearch())) {
-//            searchAcc();
-//        } // Thuoc
-//        else if (o.equals(navMe.getBtnSearch())) {
-//            searchThuoc();
-//        } // TBYT
-//        else if (o.equals(navMeE.getBtnSearch())) {
-//            searchThietBi();
-//        } else if (o.equals(navMeE.getBtnDate())) {
-//            chooseDate(navMeE.getTxtDate());
-//        }// KhuyenMai
-//        else if (o.equals(navDis.getBtnSearch())) {
-//            searchDis();
-//        } else if (o.equals(navDis.getBtnDate())) {
-//            chooseDate(navDis.getTxtDate());
-//        } else if (o.equals(navDis.getBtnDateTo())) {
-//            chooseDate(navDis.getTxtDateTo());
-//        }
-//    }
+            if (cusList.isEmpty() && !searchText.isEmpty() && !searchText.equals("Nhập nội dung tìm kiếm...")) {
+                JOptionPane.showMessageDialog(null, "Không tìm thấy: " + searchText, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                cusList = cus_bus.getAllCustomers(); // Tải lại toàn bộ nếu không tìm thấy
+            }
 
-//
-//    private Object[] createRowData(Thuoc thuoc) {
-//        return new Object[]{
-//            thuoc.getImg(),
-//            thuoc.getMaThuoc(),
-//            thuoc.getSoDangKy(),
-//            thuoc.getTenThuoc(),
-//            thuoc.getThanhPhanChinh(),
-//            thuoc.getNongDo(),
-//            thuoc.getDangBaoChe(),
-//            df.format(thuoc.getNgaySanXuat()),
-//            df.format(thuoc.getNgayNhap()),
-//            thuoc.getQuyCachDongGoi(),
-//            thuoc.getHanSuDung() + " Tháng",
-//            thuoc.getCachDung(),
-//            thuoc.getHoatChat(),
-//            thuoc.getDuongDung(),
-//            thuoc.getNuocSanXuat(),
-//            thuoc.getSoLuong(),
-//            thuoc.getViTri(),
-//            thuoc.getVAT() + "%",
-//            dfm.format(thuoc.getGiaNhap()),
-//            dfm.format(thuoc.getDsDVT().getFirst().getGiaBan()),
-//            thuoc.isTrangThai() ? "Còn" : "Hết",
-//            thuoc.getTongSoLuong(),
-//            thuoc.getSoLuongThuocLe(),
-//            thuoc.getDsDVT().getFirst().getDVT().getDVT(),
-//            thuoc.getNhaCungCap().getTenNhaCungCap(),
-//            thuoc.getNhomThuoc().getTenNhom()
-//        };
-////    }
-//
-//    public void DocDuLieuDatabaseVaoTableThuoc() {
-//        Thuoc_DAO thuoc_DAO_duyet = new Thuoc_DAO();
-//        DefaultTableModel tableModel = (DefaultTableModel) tableMe.getModel();
-//        thuoc_DAO_duyet.getALLThuocOnTable().stream()
-//                .forEach(thuoc -> tableModel.addRow(
-//                new Object[]{
-//                    thuoc.getImg(),
-//                    thuoc.getMaThuoc(),
-//                    thuoc.getSoDangKy(),
-//                    thuoc.getTenThuoc(),
-//                    thuoc.getThanhPhanChinh(),
-//                    thuoc.getNongDo(),
-//                    thuoc.getDangBaoChe(),
-//                    df.format(thuoc.getNgaySanXuat()),
-//                    df.format(thuoc.getNgayNhap()), // Sửa lại chỗ này
-//                    thuoc.getQuyCachDongGoi(),
-//                    thuoc.getHanSuDung() + " Tháng", // Thêm khoảng trắng giữa số tháng và từ "Tháng"
-//                    thuoc.getCachDung(),
-//                    thuoc.getHoatChat(),
-//                    thuoc.getDuongDung(),
-//                    thuoc.getNuocSanXuat(),
-//                    thuoc.getSoLuong(),
-//                    thuoc.getViTri(),
-//                    thuoc.getVAT() + "%",
-//                    dfm.format(thuoc.getGiaNhap()),
-//                    dfm.format(thuoc.getDsDVT().getFirst().getGiaBan()),
-//                    thuoc.isTrangThai() ? "Còn" : "Hết", // Sử dụng phương thức isTrangThai() để kiểm tra trạng thái
-//                    thuoc.getTongSoLuong(),
-//                    thuoc.getSoLuongThuocLe(),
-//                    thuoc.getDsDVT().getFirst().getDVT().getDVT(),
-//                    thuoc.getNhaCungCap().getTenNhaCungCap(),
-//                    thuoc.getNhomThuoc().getTenNhom()
-//                }
-//        ));
-//    }
-//
-//    private Thuoc ceateThuocForEdit() {
-//        Thuoc thuoc = null;
-//        Thuoc_DAO thuoc_DAO_Edit = new Thuoc_DAO();
-//        int row = tableMe.getSelectedRow();
-//        if (row != -1) { // Kiểm tra nếu có hàng nào được chọn
-//            String maThuoc = tableMe.getValueAt(row, 1).toString();
-//            try {
-//                thuoc = thuoc_DAO_Edit.getThuocTheoMaThuoc(maThuoc).getFirst();
-//            } catch (SQLException ex) {
-//                Logger.getLogger(Thuoc_GUI.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        } else {
-//            JOptionPane.showMessageDialog(this, "Vui lòng chọn dòng để sửa", "Lỗi", JOptionPane.ERROR_MESSAGE);
-//            return null;
-//        }
-//        return thuoc;
-//    }
-//
-//    private void openProductInfoFormForThuoc() {
-//        JFrame frame = new JFrame();
-//        frame.setSize(960, 700);
-//        Thuoc thuoc = ceateThuocForEdit();
-//        DefaultTableModel modelMe = (DefaultTableModel) tableMe.getModel();
-//        if (thuoc != null) {
-//            ThongTinSanPhamForm tn = new ThongTinSanPhamForm(frame, thuoc);
-//            frame.add(tn);
-//            frame.setBackground(new Color(255, 255, 255));
-//            frame.setLocationRelativeTo(null);
-//            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-//            frame.setUndecorated(true);
-//            frame.pack();
-//            frame.addWindowListener(new WindowAdapter() {
-//                @Override
-//                public void windowClosed(WindowEvent e) {
-//                    SwingUtilities.invokeLater(() -> {
-//                        // Cập nhật bảng sau khi form đóng
-//                        if (tn.getCloseReason().equals("edit")) {
-//                            JOptionPane.showMessageDialog(null, "Bạn đã cập nhật thành công");
-//                            modelMe.setRowCount(0);
-//                            DocDuLieuDatabaseVaoTableMe();
-//                            System.out.println("Frame closed. Table updated via invokeLater.");
-//                        }
-//                    });
-//                }
-//            });
-//            frame.setVisible(true);
-//        }
-//    }
-//
-//    private void chooseDate(JTextField txtDateField) {
-//        JDialog dialog = new JDialog();
-//        dialog.setSize(300, 300);
-//
-//        // Tạo JCalendar
-//        JCalendar calendar = new JCalendar();
-//        dialog.add(calendar, BorderLayout.CENTER);
-//
-//        // Thêm nút để xác nhận chọn ngày
-//        JButton okButton = new JButton("OK");
-//        okButton.addActionListener(event -> {
-//            Date selectedDate = calendar.getDate();
-//            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-//            txtDateField.setText(sdf.format(selectedDate));
-//            dialog.dispose(); // Đóng hộp thoại
-//        });
-//
-//        dialog.add(okButton, BorderLayout.SOUTH);
-//
-//        // Căn giữa JDialog với thành phần cha (JPanel)
-//        dialog.setLocationRelativeTo(getTopLevelAncestor());
-//
-//        // Hiển thị JDialog
-//        dialog.setVisible(true);
-//    }
-//    @Override
-//    public void mouseClicked(MouseEvent e) {
-//        Object o = e.getSource(); // Lấy nguồn của sự kiện
-//        if (o == tableMe) {
-////            openProductInfoFormForThuoc();
-//        } 
-//    }
-//
-//    @Override
-//    public void mousePressed(MouseEvent e) {
-//    }
-//
-//    @Override
-//    public void mouseReleased(MouseEvent e) {
-//    }
-//
-//    @Override
-//    public void mouseEntered(MouseEvent e) {
-//    }
-//
-//    @Override
-//    public void mouseExited(MouseEvent e) {
-//    }
-//}
+            // Hiển thị kết quả lên bảng
+            for (Customer kh : cusList) {
+                modelCus.addRow(new Object[]{
+                        kh.getId(), kh.getName(), kh.getPhone(), kh.getPoint()
+                });
+            }
+
+            SwingUtilities.invokeLater(() -> {
+                modelCus.fireTableDataChanged();
+                tableCus.revalidate();
+                tableCus.repaint();
+                scrollPaneCus.revalidate();
+                scrollPaneCus.repaint();
+            });
+
+        } catch (Exception ex) {
+            Logger.getLogger(FormLookup.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Lỗi khi tìm kiếm: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void searchVen() {
+        ComboBoxSuggestion<String> comboBoxVen = navVender.getComboBox();
+        String selectedValueVen = (String) comboBoxVen.getSelectedItem();
+        String searchText = navVender.getTxtSearch().getText().trim();
+        DefaultTableModel modelVen = (DefaultTableModel) tableVender.getModel();
+        modelVen.setRowCount(0); // Xóa dữ liệu cũ
+
+        List<Supplier> supList = new ArrayList<>();
+        try {
+            if (!searchText.isEmpty() && !searchText.equals("Nhập nội dung tìm kiếm...")) {
+                switch (selectedValueVen) {
+                    case "Mã nhà cung cấp":
+                        int id = Integer.parseInt(searchText);
+                        Supplier supplier = sup_bus.getSupplierById(id);
+                        supList.add(supplier);
+                        break;
+                    case "Tên nhà cung cấp":
+                        supList = sup_bus.getSupplierBySupplierName(searchText);
+                        break;
+                }
+            } else {
+                supList = sup_bus.getAllSuppliers(); // Tải lại toàn bộ dữ liệu
+            }
+
+            if (supList.isEmpty() && !searchText.isEmpty() && !searchText.equals("Nhập nội dung tìm kiếm...")) {
+                JOptionPane.showMessageDialog(null, "Không tìm thấy: " + searchText, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                supList = sup_bus.getAllSuppliers(); // Tải lại toàn bộ nếu không tìm thấy
+            }
+
+            // Hiển thị kết quả lên bảng
+            for (Supplier ncc : supList) {
+                String trangThai = ncc.isStatus() ? "Còn" : "Ngưng";
+                modelVen.addRow(new Object[]{
+                        ncc.getId(), ncc.getSupplierName(), ncc.getPhone(), ncc.getAddress(), trangThai
+                });
+            }
+
+            SwingUtilities.invokeLater(() -> {
+                modelVen.fireTableDataChanged();
+                tableVender.revalidate();
+                tableVender.repaint();
+                scrollPaneVender.revalidate();
+                scrollPaneVender.repaint();
+            });
+
+        } catch (Exception ex) {
+            Logger.getLogger(FormLookup.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Lỗi khi tìm kiếm: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void searchAcc() {
+        ComboBoxSuggestion<String> comboBoxAcc = navAcc.getComboBox();
+        String selectedValueAcc = (String) comboBoxAcc.getSelectedItem();
+        String searchText = navAcc.getTxtSearch().getText().trim();
+        DefaultTableModel modelAcc = (DefaultTableModel) tableAcc.getModel();
+        modelAcc.setRowCount(0); // Xóa dữ liệu cũ
+
+        List<Account> accList = new ArrayList<>();
+        try {
+            if (!searchText.isEmpty() && !searchText.equals("Nhập nội dung tìm kiếm...")) {
+                switch (selectedValueAcc) {
+                    case "Tài khoản":
+                        accList = acc_bus.getAccountByUsername(searchText);
+                        break;
+                }
+            } else {
+                accList = acc_bus.getAllActiveAccounts(); // Tải lại toàn bộ dữ liệu
+            }
+
+            if (accList.isEmpty() && !searchText.isEmpty() && !searchText.equals("Nhập nội dung tìm kiếm...")) {
+                JOptionPane.showMessageDialog(null, "Không tìm thấy: " + searchText, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                accList = acc_bus.getAllActiveAccounts(); // Tải lại toàn bộ nếu không tìm thấy
+            }
+
+            // Hiển thị kết quả lên bảng
+            for (Account tk : accList) {
+                String trangThai = tk.isStatus() ? "Còn" : "Ngưng";
+                modelAcc.addRow(new Object[]{
+                        tk.getUsername(), tk.getPassword(), tk.getCreatedDate(), trangThai
+                });
+            }
+
+            SwingUtilities.invokeLater(() -> {
+                modelAcc.fireTableDataChanged();
+                tableAcc.revalidate();
+                tableAcc.repaint();
+                scrollPaneAcc.revalidate();
+                scrollPaneAcc.repaint();
+            });
+
+        } catch (Exception ex) {
+            Logger.getLogger(FormLookup.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Lỗi khi tìm kiếm: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void searchOrder() {
+        ComboBoxSuggestion<String> comboBoxOrder = navOrder.getComboBox();
+        String selectedValueOrder = (String) comboBoxOrder.getSelectedItem();
+        String searchText = navOrder.getTxtSearch().getText().trim();
+        DefaultTableModel modelOrder = (DefaultTableModel) tableOrder.getModel();
+        modelOrder.setRowCount(0); // Xóa dữ liệu cũ
+
+        List<Object[]> orderList = new ArrayList<>();
+        try {
+            if (!searchText.isEmpty() && !searchText.equals("Nhập nội dung tìm kiếm...") || selectedValueOrder.equals("Ngày thanh toán")) {
+                switch (selectedValueOrder) {
+                    case "Mã hoá đơn":
+                        try {
+                            int id = Integer.parseInt(searchText);
+                            Object[] orderRow = new Order[]{order_bus.getOrderById(id)};
+                            if (orderRow != null) {
+                                orderList.add(orderRow);
+                            }
+                        } catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(null, "Mã hóa đơn phải là số nguyên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        break;
+
+                }
+            } else {
+                orderList = order_bus.getOrderSummaries(); // Tải lại toàn bộ dữ liệu
+            }
+
+            if (orderList.isEmpty() && !searchText.isEmpty() && !searchText.equals("Nhập nội dung tìm kiếm...") && !selectedValueOrder.equals("Ngày thanh toán")) {
+                JOptionPane.showMessageDialog(null, "Không tìm thấy: " + searchText, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                orderList = order_bus.getOrderSummaries(); // Tải lại toàn bộ nếu không tìm thấy
+            }
+
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            DecimalFormat decimalFormatter = new DecimalFormat("#,###.##");
+
+            for (Object[] row : orderList) {
+                String orderDate = ((LocalDate) row[1]).format(dateFormatter);
+                String status = row[4].toString();
+                String unitPrice = decimalFormatter.format((double) row[6]);
+                String totalAmount = decimalFormatter.format((double) row[8]);
+                String subTotal = decimalFormatter.format((double) row[9]);
+
+                modelOrder.addRow(new Object[]{
+                        row[0], // Mã hóa đơn
+                        orderDate, // Ngày tạo hóa đơn
+                        row[2], // Số điện thoại KH
+                        row[3], // Tên khách hàng
+                        row[5], // Tên sản phẩm
+                        unitPrice, // Đơn giá
+                        row[7], // Số lượng
+                        subTotal, // Tổng tiền sản phẩm
+                        totalAmount, // Tổng tiền hóa đơn
+                        status // Trạng thái hóa đơn
+                });
+            }
+
+            SwingUtilities.invokeLater(() -> {
+                modelOrder.fireTableDataChanged();
+                tableOrder.revalidate();
+                tableOrder.repaint();
+                scrollPaneOrder.revalidate();
+                scrollPaneOrder.repaint();
+            });
+
+        } catch (Exception ex) {
+            Logger.getLogger(FormLookup.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Lỗi khi tìm kiếm: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void searchPro() {
+        ComboBoxSuggestion<String> comboBoxPro = navPro.getComboBox();
+        String selectedValuePro = (String) comboBoxPro.getSelectedItem();
+        String searchText = navPro.getTxtSearch().getText().trim();
+        DefaultTableModel modelPro = (DefaultTableModel) tableMe.getModel();
+        modelPro.setRowCount(0); // Xóa dữ liệu cũ
+
+        List<Product> proList = new ArrayList<>();
+        try {
+            if (!searchText.isEmpty() && !searchText.equals("Nhập nội dung tìm kiếm...")) {
+                switch (selectedValuePro) {
+                    case "Mã thuốc":
+                        try {
+                            int id = Integer.parseInt(searchText);
+                            Product product = pro_bus.getProductById(id);
+                            if (product != null) {
+                                proList.add(product);
+                            }
+                        } catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(null, "Mã thuốc phải là số nguyên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        break;
+                    case "Tên thuốc": // Changed from "Tên sản phẩm" to match ComboBox
+                        proList = pro_bus.getProductByName(searchText);
+                        break;
+
+                }
+            } else {
+                proList = pro_bus.getAllProducts(); // Tải lại toàn bộ dữ liệu
+            }
+
+            if (proList.isEmpty() && !searchText.isEmpty() && !searchText.equals("Nhập nội dung tìm kiếm...")) {
+                JOptionPane.showMessageDialog(null, "Không tìm thấy: " + searchText, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                proList = pro_bus.getAllProducts(); // Tải lại toàn bộ nếu không tìm thấy
+            }
+
+            DecimalFormat decimalFormatter = new DecimalFormat("#,###.##");
+            for (Product product : proList) {
+                String priceAfterDiscount = decimalFormatter.format(product.getPrice());
+                String status = product.isStatus() ? "Còn hàng" : "Hết hàng";
+                modelPro.addRow(new Object[]{
+                        product.getImageUrl(), // Ảnh
+                        product.getId(), // Mã sản phẩm
+                        product.getProductName(), // Tên sản phẩm
+                        product.getCategory(), // Danh mục
+                        product.getDescription(), // Mô tả
+                        product.getColor(), // Color
+                        product.getDiscount(), // Khuyến mãi
+                        priceAfterDiscount, // Giá sau chiết khấu
+                        product.getStockQuantity(), // Số lượng tồn kho
+                        status // Trạng thái
+                });
+            }
+
+            SwingUtilities.invokeLater(() -> {
+                modelPro.fireTableDataChanged();
+                tableMe.revalidate();
+                tableMe.repaint();
+                scrollPaneMe.revalidate();
+                scrollPaneMe.repaint();
+            });
+
+        } catch (Exception ex) {
+            Logger.getLogger(FormLookup.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Lỗi khi tìm kiếm: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void addActionListener() {
+        // Nhân viên
+        navEmp.getTxtSearch().addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                navEmp.getTxtSearch().selectAll();
+            }
+        });
+        navEmp.getBtnSearch().addActionListener(this);
+
+        // Khách hàng
+        navCus.getTxtSearch().addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                navCus.getTxtSearch().selectAll();
+            }
+        });
+        navCus.getBtnSearch().addActionListener(this);
+
+        // Nhà cung cấp
+        navVender.getTxtSearch().addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                navVender.getTxtSearch().selectAll();
+            }
+        });
+        navVender.getBtnSearch().addActionListener(this);
+
+        // Tài khoản
+        navAcc.getTxtSearch().addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                navAcc.getTxtSearch().selectAll();
+            }
+        });
+        navAcc.getBtnSearch().addActionListener(this);
+
+        // Hóa đơn
+        navOrder.getTxtSearch().addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                navOrder.getTxtSearch().selectAll();
+            }
+        });
+        navOrder.getBtnSearch().addActionListener(this);
+        navOrder.getBtnDate().addActionListener(this);
+        navOrder.getBtnDateTo().addActionListener(this);
+
+        // Sản phẩm
+        navPro.getTxtSearch().addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                navPro.getTxtSearch().selectAll();
+            }
+        });
+        navPro.getBtnSearch().addActionListener(this);
+
+        // Add MouseListener for tableMe (since FormLookup implements MouseListener)
+        tableMe.addMouseListener(this);
+    }
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Object o = e.getSource();
+        if (o.equals(navEmp.getBtnSearch())) {
+            searchEmp();
+        } // Cus
+        else if (o.equals(navCus.getBtnSearch())) {
+            searchCus();
+        } // Order
+        else if (o.equals(navOrder.getBtnSearch())) {
+            searchOrder();
+        }
+        else if (o.equals(navVender.getBtnSearch())) {
+            searchVen();
+        } // Account
+        else if (o.equals(navAcc.getBtnSearch())) {
+            searchAcc();
+        } // Thuoc
+        else if (o.equals(navPro.getBtnSearch())) {
+            searchPro();
+        }
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+    }
+}

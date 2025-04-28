@@ -3,6 +3,8 @@ package gui.navbar;
 import gui.button.ButtonCustom;
 import gui.combobox.ComboBoxSuggestion;
 import gui.textfield.TextFieldCustom;
+import lombok.Getter;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -15,11 +17,13 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
+@Getter
 public class NavbarSearch extends JPanel {
+
 
     private TextFieldCustom txtSearch;
     private ButtonCustom btnSearch;
+
     private DefaultComboBoxModel<String> defaultComboBox;
     private ComboBoxSuggestion<String> comboBox;
     private TextFieldCustom txtDateTo;
@@ -71,10 +75,10 @@ public class NavbarSearch extends JPanel {
         add(comboBox);
         add(txtSearch);
         add(btnSearch);
-        add(lblDateTo);
+//        add(lblDateTo);
         add(txtDateTo);
         add(btnDateTo);
-        add(lblDate);
+//        add(lblDate);
         add(txtDate);
         add(btnDate);
         setOpaque(false);
@@ -90,9 +94,14 @@ public class NavbarSearch extends JPanel {
         comboBox.setVisible(false);
     }
 
-    public void getBtnSearch(){
-        btnSearch.setVisible(true);
+    public void hideComponentDate() {
+        txtDateTo.setVisible(false);
+        txtDate.setVisible(false);
+        btnDate.setVisible(false);
+        btnDateTo.setVisible(false);
     }
+
+
 
 
     @Override
