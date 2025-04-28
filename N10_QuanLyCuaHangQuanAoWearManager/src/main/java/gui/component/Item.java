@@ -45,7 +45,7 @@ public class Item extends javax.swing.JPanel {
         lbName.setText(data.getItemName());
         lbDescription.setText(data.getDescription());
         lbBrand.setText(data.getBrandName());
-        DecimalFormat df = new DecimalFormat("$#,##0.00");
+        DecimalFormat df = new DecimalFormat("#,##0.00 VND");
         lbPrice.setText(df.format(data.getPrice()));
     }
 
