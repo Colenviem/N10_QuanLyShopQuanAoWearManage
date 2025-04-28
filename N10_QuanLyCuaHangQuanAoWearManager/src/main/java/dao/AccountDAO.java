@@ -4,8 +4,6 @@ import dto.Account;
 import jakarta.persistence.EntityManager;
 import util.JPAUtil;
 
-import java.rmi.RemoteException;
-import java.time.LocalDate;
 import java.util.List;
 
 public class AccountDAO {

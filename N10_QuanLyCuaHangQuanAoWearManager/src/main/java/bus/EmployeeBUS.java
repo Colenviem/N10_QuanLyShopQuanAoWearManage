@@ -51,6 +51,8 @@ public class EmployeeBUS extends UnicastRemoteObject implements IEmployeeService
         return employeeDAO.addEmployee(employee);
     }
 
+
+
     @Override
     public boolean updateEmployee(Employee employee) throws RemoteException {
         return employeeDAO.updateEmployee(employee);
@@ -79,5 +81,10 @@ public class EmployeeBUS extends UnicastRemoteObject implements IEmployeeService
     @Override
     public List<Object[]> getEmployeeProductSalesAndCount() throws RemoteException {
         return new ArrayList<>(employeeDAO.getEmployeeProductSalesAndCount());
+    }
+
+    @Override
+    public Employee getEmployeeByAccount(String user, String pass) throws RemoteException {
+        return employeeDAO.getEmployeeByAccount(user, pass);
     }
 }

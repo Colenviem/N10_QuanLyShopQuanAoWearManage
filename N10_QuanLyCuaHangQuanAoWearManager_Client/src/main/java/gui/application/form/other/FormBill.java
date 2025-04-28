@@ -1,14 +1,14 @@
 package gui.application.form.other;
 
-//import bus.OrderBUS;
-//import bus.OrderDetailBUS;
-//import dao.OrderDetailDAO;
-//import dto.Order;
+import dto.Order;
 import gui.button.ButtonCustom;
 import gui.button.NavButtonCustom;
 import gui.combobox.ComboBoxSuggestion;
 import gui.navbar.Navbar;
 import gui.textfield.TextFieldCustom;
+import interfaces.IOrderDetailService;
+import interfaces.IOrderService;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -22,6 +22,8 @@ import java.io.OutputStreamWriter;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -39,8 +41,11 @@ public class FormBill extends JPanel implements ActionListener, MouseListener {
     private NavButtonCustom btnImport;
     private NavButtonCustom btnExport;
     private NavButtonCustom btnAdd;
-//    private OrderBUS orderBUS;
-//    private OrderDetailBUS orderDetailBUS;
+    private IOrderService orderService;
+    private IOrderDetailService orderDetailService;
+    private static final String HOST = "localhost";
+    private static final int PORT = 9090;
+    private static Context ctx;
 
     public FormBill() {
         try {
@@ -193,7 +198,8 @@ public class FormBill extends JPanel implements ActionListener, MouseListener {
         btnAdd.addActionListener(this);
 
         try {
-//            DocDuLieuOrderrVaoTable();
+            ctx = new InitialContext();
+            DocDuLieuOrderrVaoTable();
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -244,61 +250,60 @@ public class FormBill extends JPanel implements ActionListener, MouseListener {
             }
         }
         if (o.equals(navbar.getBtnSearch())) {
-//            search();
+            search();
         }
     }
 
-//    private void search() {
-//        try {
-//            String valueSearch = navbar.getTxtSearch().getText();
-//            ComboBoxSuggestion<String> comboBox = navbar.getComboBox();
-//            String selectedValue = (String) comboBox.getSelectedItem();
-//
-//            orderBUS = new OrderBUS();
-//
-//            if (selectedValue.equals("Mã hóa đơn")) {
-//                if (valueSearch.matches("\\d+")) {
-//                    int id = Integer.parseInt(valueSearch);
-//                    Order order = orderBUS.getOrderById(id);
-//                    if (order != null) {
-//                        tableModel.setRowCount(0);
-//                        tableModel.addRow(new Object[]{
-//                                order.getId(),
-//                                order.getCustomer().getName(),
-//                                order.getEmployee().getFullName(),
-//                                order.getOrderDate(),
-//                                order.getTotalAmount(),
-//                                order.getStatus()
-//                        });
-//                    } else {
-//                        JOptionPane.showMessageDialog(this, "Không tìm thấy hóa đơn!");
-//                    }
-//                } else {
-//                    JOptionPane.showMessageDialog(this, "Mã hóa đơn phải là số!");
-//                }
-//            } else if (selectedValue.equals("Tên khách hàng")) {
-//                List<Order> orders = orderBUS.getOrdersByCustomerName(valueSearch);
-//                tableModel.setRowCount(0);
-//                if (!orders.isEmpty()) {
-//                    for (Order order : orders) {
-//                        tableModel.addRow(new Object[]{
-//                                order.getId(),
-//                                order.getCustomer().getName(),
-//                                order.getEmployee().getFullName(),
-//                                order.getOrderDate(),
-//                                order.getTotalAmount(),
-//                                order.getStatus()
-//                        });
-//                    }
-//                } else {
-//                    JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng!");
-//                }
-//            }
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//    }
+    private void search() {
+        try {
+            String valueSearch = navbar.getTxtSearch().getText();
+            ComboBoxSuggestion<String> comboBox = navbar.getComboBox();
+            String selectedValue = (String) comboBox.getSelectedItem();
 
+            orderService = (IOrderService) ctx.lookup("rmi://" + HOST + ":" + PORT + "/OrderBUS");
+
+            if (selectedValue.equals("Mã hóa đơn")) {
+                if (valueSearch.matches("\\d+")) {
+                    int id = Integer.parseInt(valueSearch);
+                    Order order = orderService.getOrderById(id);
+                    if (order != null) {
+                        tableModel.setRowCount(0);
+                        tableModel.addRow(new Object[]{
+                                order.getId(),
+                                order.getCustomer().getName(),
+                                order.getEmployee().getFullName(),
+                                order.getOrderDate(),
+                                order.getTotalAmount(),
+                                order.getStatus()
+                        });
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Không tìm thấy hóa đơn!");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Mã hóa đơn phải là số!");
+                }
+            } else if (selectedValue.equals("Tên khách hàng")) {
+                List<Order> orders = orderService.getOrdersByCustomerName(valueSearch);
+                tableModel.setRowCount(0);
+                if (!orders.isEmpty()) {
+                    for (Order order : orders) {
+                        tableModel.addRow(new Object[]{
+                                order.getId(),
+                                order.getCustomer().getName(),
+                                order.getEmployee().getFullName(),
+                                order.getOrderDate(),
+                                order.getTotalAmount(),
+                                order.getStatus()
+                        });
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng!");
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -307,7 +312,7 @@ public class FormBill extends JPanel implements ActionListener, MouseListener {
         if (row != -1) {
             int id = (int) tableOrder.getValueAt(row, 0);
             try {
-//                DocDuLieuOrderDetailVaoTable(id);
+                DocDuLieuOrderDetailVaoTable(id);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -334,34 +339,34 @@ public class FormBill extends JPanel implements ActionListener, MouseListener {
 
     }
 
-//    private void DocDuLieuOrderrVaoTable() throws Exception {
-//        tableModel = (DefaultTableModel) tableOrder.getModel();
-//        orderBUS = new OrderBUS();
-//        orderBUS.getAllOrders()
-//                .stream()
-//                .forEach(order -> tableModel.addRow(new Object[]{
-//                        order.getId(),
-//                        order.getCustomer().getName(),
-//                        order.getEmployee().getFullName(),
-//                        order.getOrderDate(),
-//                        order.getTotalAmount(),
-//                        order.getStatus()
-//                }));
-//    }
+    private void DocDuLieuOrderrVaoTable() throws Exception {
+        tableModel = (DefaultTableModel) tableOrder.getModel();
+        orderService = (IOrderService) ctx.lookup("rmi://" + HOST + ":" + PORT + "/OrderBUS");
+        orderService.getAllOrders()
+                .stream()
+                .forEach(order -> tableModel.addRow(new Object[]{
+                        order.getId(),
+                        order.getCustomer().getName(),
+                        order.getEmployee().getFullName(),
+                        order.getOrderDate(),
+                        order.getTotalAmount(),
+                        order.getStatus()
+                }));
+    }
 
-//    private void DocDuLieuOrderDetailVaoTable(int id) throws Exception {
-//        tableModelOrderDetail = (DefaultTableModel) tableOrderDetail.getModel();
-//        tableModelOrderDetail.setRowCount(0);
-//        orderBUS = new OrderBUS();
-//        orderBUS.getOrderById(id)
-//                .getOrderDetails()
-//                .stream()
-//                .forEach(orderDetail -> tableModelOrderDetail.addRow(new Object[]{
-//                        orderDetail.getProduct().getId(),
-//                        orderDetail.getProduct().getProductName(),
-//                        orderDetail.getProduct().getPrice(),
-//                        orderDetail.getQuantity(),
-//                        orderDetail.getPrice()
-//                }));
-//    }
+    private void DocDuLieuOrderDetailVaoTable(int id) throws Exception {
+        tableModelOrderDetail = (DefaultTableModel) tableOrderDetail.getModel();
+        tableModelOrderDetail.setRowCount(0);
+        orderService = (IOrderService) ctx.lookup("rmi://" + HOST + ":" + PORT + "/OrderBUS");
+        orderService.getOrderById(id)
+                .getOrderDetails()
+                .stream()
+                .forEach(orderDetail -> tableModelOrderDetail.addRow(new Object[]{
+                        orderDetail.getProduct().getId(),
+                        orderDetail.getProduct().getProductName(),
+                        orderDetail.getProduct().getPrice(),
+                        orderDetail.getQuantity(),
+                        orderDetail.getPrice()
+                }));
+    }
 }

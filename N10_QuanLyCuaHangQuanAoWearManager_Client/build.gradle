@@ -33,7 +33,7 @@ dependencies {
   implementation 'net.datafaker:datafaker:2.4.2'
   implementation 'org.mariadb.jdbc:mariadb-java-client:3.5.1'
 
-  implementation(files("libs/Data.jar"))
+  implementation(files("libs/data.jar"))
 
   testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")

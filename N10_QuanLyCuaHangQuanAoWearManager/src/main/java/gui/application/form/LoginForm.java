@@ -1,6 +1,7 @@
 package gui.application.form;
 
 import bus.AccountBUS;
+import bus.EmployeeBUS;
 import gui.application.Application;
 import java.awt.Color;
 import java.rmi.RemoteException;

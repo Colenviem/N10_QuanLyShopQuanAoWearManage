@@ -1,12 +1,10 @@
 package gui.application;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.rmi.RemoteException;
 import javax.swing.*;
 
-//import bus.AccountBUS;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
@@ -21,7 +19,6 @@ public class Application extends javax.swing.JFrame {
     private static Application app;
     private final MainForm mainForm;
     private final LoginForm loginForm;
-//    private AccountBUS accountBUS;
 
     public Application() {
         initComponents();

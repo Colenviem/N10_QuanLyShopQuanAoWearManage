@@ -4,16 +4,24 @@ import gui.application.Application;
 import java.awt.Color;
 import java.rmi.RemoteException;
 
+import interfaces.IAccountService;
+import interfaces.ICustomerService;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
 
 public class LoginForm extends javax.swing.JFrame {
 
     private Animator animatorLogin;
     private Animator animatorBody;
     private boolean signIn;
-//    private AccountBUS accountBUS;
+    private IAccountService accountService;
+    private static final String HOST = "localhost";
+    private static final int PORT = 9090;
+    private static Context ctx;
 
     public LoginForm() {
         initComponents();
@@ -70,7 +78,8 @@ public class LoginForm extends javax.swing.JFrame {
         animatorLogin.setResolution(0);
         animatorBody.setResolution(0);
         try {
-//            accountBUS = new AccountBUS();
+            ctx = new InitialContext();
+            accountService = (IAccountService) ctx.lookup("rmi://" + HOST + ":" + PORT + "/AccountBUS");
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -213,37 +222,37 @@ public class LoginForm extends javax.swing.JFrame {
             String user = txtUser.getText().trim();
             String pass = String.valueOf(txtPass.getPassword());
             boolean action = true;
-//            if (user.equals("")) {
-//                txtUser.setHelperText("Please input user name");
-//                txtUser.grabFocus();
-//                action = false;
-//            }
-//            if (pass.equals("")) {
-//                txtPass.setHelperText("Please input password");
-//                if (action) {
-//                    txtPass.grabFocus();
-//                }
-//                action = false;
-//            }
-//            boolean result = accountBUS.checkAccountExists(user, pass);
-//            System.out.println("Result: " + result);
-//            if (!result){
-//                txtUser.setHelperText("Please input user name");
-//                txtUser.grabFocus();
-//                txtPass.setHelperText("Please input password");
-//                txtPass.grabFocus();
-//                action = false;
-//            }
-//            if (action) {
-//                // Giả lập kiểm tra tài khoản và mật khẩu (thay bằng kiểm tra thực tế nếu có)
-//                if (result) {
-//                    this.dispose(); // Đóng Form_Login
-//                    Application.login();
-//                } else {
-//                    txtUser.setHelperText("Invalid username or password");
-//                    txtPass.setHelperText("Invalid username or password");
-//                }
-//            }
+            if (user.equals("")) {
+                txtUser.setHelperText("Please input user name");
+                txtUser.grabFocus();
+                action = false;
+            }
+            if (pass.equals("")) {
+                txtPass.setHelperText("Please input password");
+                if (action) {
+                    txtPass.grabFocus();
+                }
+                action = false;
+            }
+            boolean result = accountService.checkAccountExists(user, pass);
+            System.out.println("Result: " + result);
+            if (!result){
+                txtUser.setHelperText("Please input user name");
+                txtUser.grabFocus();
+                txtPass.setHelperText("Please input password");
+                txtPass.grabFocus();
+                action = false;
+            }
+            if (action) {
+                // Giả lập kiểm tra tài khoản và mật khẩu (thay bằng kiểm tra thực tế nếu có)
+                if (result) {
+                    this.dispose(); // Đóng Form_Login
+                    Application.login();
+                } else {
+                    txtUser.setHelperText("Invalid username or password");
+                    txtPass.setHelperText("Invalid username or password");
+                }
+            }
         }
         Application.login();
     }//GEN-LAST:event_cmdSignInActionPerformed

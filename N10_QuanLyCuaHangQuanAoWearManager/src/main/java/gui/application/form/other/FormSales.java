@@ -49,12 +49,14 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
     private CustomerBUS customerBUS;
     private ProductBUS productBUS;
 
-    public FormSales() {
+    public FormSales(Employee employee) {
         initComponents();
-        init();
+        init(employee);
     }
 
-    private void init() {
+    private void init(Employee employee) {
+        txtMaNV.setText(String.valueOf(employee.getId()));
+        txtTenNV.setText(employee.getFullName());
         setOpaque(false);
         setPreferredSize(new Dimension(1500, 750));
         setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -528,12 +530,14 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
         add(pnlTop, java.awt.BorderLayout.PAGE_START);
     }// </editor-fold>//GEN-END:initComponents
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         JFrame frame = new JFrame();
         frame.setExtendedState(MAXIMIZED_BOTH);
         frame.setResizable(false);
         frame.setLayout(new FlowLayout());
-        FormSales banHang = new FormSales();
+        EmployeeBUS employeeBUS1 = new EmployeeBUS();
+        Employee employee = employeeBUS1.getEmployeeById(2);
+        FormSales banHang = new FormSales(employee);
         frame.add(banHang);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
@@ -620,7 +624,7 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
 
                     order.setCustomer(customer);
 
-                    order.setEmployee(employeeBUS.getEmployeeById(2));
+                    order.setEmployee(employeeBUS.getEmployeeById(Integer.parseInt(txtMaNV.getText())));
 
                     Set<OrderDetail> orderDetails = new HashSet<>();
 
@@ -709,12 +713,17 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
                             }
 
                             if (!found) {
-                                URL url = new URL(product.getImageUrl());
-                                ImageIcon originalIcon = new ImageIcon(url);
-                                Image scaledImage = originalIcon.getImage().getScaledInstance(70, 70, Image.SCALE_SMOOTH);
-                                ImageIcon scaledIcon = new ImageIcon(scaledImage);
+                                URL imageURL = getClass().getClassLoader().getResource(product.getImageUrl());
+                                ImageIcon imageIcon = null;
+                                if (imageURL != null) {
+                                    ImageIcon originalIcon = new ImageIcon(imageURL);
+                                    Image scaledImage = originalIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+                                    imageIcon = new ImageIcon(scaledImage);
+                                } else {
+                                    System.out.println("Hình ảnh không tìm thấy!");
+                                }
                                 tableModel.addRow(new Object[]{
-                                        scaledIcon,
+                                        imageIcon,
                                         product.getProductName(),
                                         df.format(product.getPrice()),
                                         1,

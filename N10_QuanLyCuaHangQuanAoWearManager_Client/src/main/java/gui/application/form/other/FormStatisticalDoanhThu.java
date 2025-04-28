@@ -1,22 +1,18 @@
 package gui.application.form.other;
 
-//import bus.EmployeeBUS;
-//import bus.OrderBUS;
 import gui.chart.ModelChartLine;
 import gui.chart.ModelChartPie;
-import gui.model.ModelStaff;
+import interfaces.IOrderService;
+
 import java.awt.Color;
 import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.util.Set;
-import javax.swing.ImageIcon;
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
@@ -24,87 +20,89 @@ import javax.swing.table.DefaultTableModel;
 
 public class FormStatisticalDoanhThu extends javax.swing.JPanel {
 
-//    private OrderBUS order_bus;
+    private IOrderService orderService;
+    private static final String HOST = "localhost";
+    private static final int PORT = 9090;
+    private static Context ctx;
 
     public FormStatisticalDoanhThu() throws RemoteException {
         initComponents();
-//        order_bus = new OrderBUS();
-//        initData();
+        initData();
     }
 
-//    private void initData() {
-//        DefaultTableModel model = (DefaultTableModel) table.getModel();
-//        model.setRowCount(0); // Clear existing data
-//        int year = 2025; // Năm cần lấy dữ liệu
-//
-//        try {
-//            // Lấy dữ liệu doanh thu theo tháng từ OrderBUS cho năm 2024
-//            List<Object[]> monthlyRevenueData = order_bus.getOrderSummariesForYear(year);
-//
-//            // Duyệt qua dữ liệu và thêm vào bảng
-//            if (monthlyRevenueData != null) {
-//                for (Object[] row : monthlyRevenueData) {
-//                    // Chuyển đổi kiểu dữ liệu và xử lý nếu có giá trị null
-//                    LocalDate orderDate = (LocalDate) row[1]; // Lấy ngày từ kết quả truy vấn
-//                    double totalAmount = (row[9] != null) ? (double) row[9] : 0.0;
-//
-//                    // Định dạng ngày tháng
-//                    String formattedDate = orderDate.format(DateTimeFormatter.ofPattern("MM/yyyy"));
-//
-//                    model.addRow(new Object[]{
-//                            formattedDate, // Tháng/Năm
-//                            String.format("%.2f VNĐ", totalAmount) // Tổng doanh thu
-//                    });
-//                }
-//            }
-//
-//            // Cấu hình bảng
-//            SwingUtilities.invokeLater(() -> {
-//                try {
-////                    table.fixTable(jScrollPane2);
-//                    table.setRowHeight(150);
-//                    table.getColumnModel().getColumn(0).setPreferredWidth(150); // Tháng/Năm
-//                    table.getColumnModel().getColumn(1).setPreferredWidth(200); // Doanh thu
-//                    table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            });
-//
-//            // Populate chartPie (Tháng và Doanh thu)
-//            List<ModelChartPie> pieData = new ArrayList<>();
-//            Random rand = new Random();
-//            if (monthlyRevenueData != null) {
-//                for (Object[] row : monthlyRevenueData) {
-//                    LocalDate orderDate = (LocalDate) row[1];
-//                    double revenue = (row[9] != null) ? (double) row[9] : 0.0;
-//                    pieData.add(new ModelChartPie(
-//                            orderDate.format(DateTimeFormatter.ofPattern("MM/yyyy")), // Label tháng
-//                            revenue,
-//                            new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256))
-//                    ));
-//                }
-//            }
-//            chartPie.setModel(pieData);
-//
-//            // Populate chartLine (Tháng và Doanh thu)
-//            List<ModelChartLine> lineData = new ArrayList<>();
-//            if (monthlyRevenueData != null) {
-//                for (Object[] row : monthlyRevenueData) {
-//                    LocalDate orderDate = (LocalDate) row[1];
-//                    double revenue = (row[9] != null) ? (double) row[9] : 0.0;
-//                    lineData.add(new ModelChartLine(
-//                            orderDate.format(DateTimeFormatter.ofPattern("MM/yyyy")), // Label tháng
-//                            revenue
-//                    ));
-//                }
-//            }
-//            chartLine.setModel(lineData);
-//
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-//    }
+    private void initData() {
+        try {
+            ctx = new InitialContext();
+            orderService = (IOrderService) ctx.lookup("rmi://" + HOST + ":" + PORT + "/OrderBUS");
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
+            model.setRowCount(0); // Clear existing data
+            int year = 2025; // Năm cần lấy dữ liệu
+            // Lấy dữ liệu doanh thu theo tháng từ OrderBUS cho năm 2024
+            List<Object[]> monthlyRevenueData = orderService.getOrderSummariesForYear(year);
+
+            // Duyệt qua dữ liệu và thêm vào bảng
+            if (monthlyRevenueData != null) {
+                for (Object[] row : monthlyRevenueData) {
+                    // Chuyển đổi kiểu dữ liệu và xử lý nếu có giá trị null
+                    LocalDate orderDate = (LocalDate) row[1]; // Lấy ngày từ kết quả truy vấn
+                    double totalAmount = (row[9] != null) ? (double) row[9] : 0.0;
+
+                    // Định dạng ngày tháng
+                    String formattedDate = orderDate.format(DateTimeFormatter.ofPattern("MM/yyyy"));
+
+                    model.addRow(new Object[]{
+                            formattedDate, // Tháng/Năm
+                            String.format("%.2f VNĐ", totalAmount) // Tổng doanh thu
+                    });
+                }
+            }
+
+            // Cấu hình bảng
+            SwingUtilities.invokeLater(() -> {
+                try {
+//                    table.fixTable(jScrollPane2);
+                    table.setRowHeight(150);
+                    table.getColumnModel().getColumn(0).setPreferredWidth(150); // Tháng/Năm
+                    table.getColumnModel().getColumn(1).setPreferredWidth(200); // Doanh thu
+                    table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
+            // Populate chartPie (Tháng và Doanh thu)
+            List<ModelChartPie> pieData = new ArrayList<>();
+            Random rand = new Random();
+            if (monthlyRevenueData != null) {
+                for (Object[] row : monthlyRevenueData) {
+                    LocalDate orderDate = (LocalDate) row[1];
+                    double revenue = (row[9] != null) ? (double) row[9] : 0.0;
+                    pieData.add(new ModelChartPie(
+                            orderDate.format(DateTimeFormatter.ofPattern("MM/yyyy")), // Label tháng
+                            revenue,
+                            new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256))
+                    ));
+                }
+            }
+            chartPie.setModel(pieData);
+
+            // Populate chartLine (Tháng và Doanh thu)
+            List<ModelChartLine> lineData = new ArrayList<>();
+            if (monthlyRevenueData != null) {
+                for (Object[] row : monthlyRevenueData) {
+                    LocalDate orderDate = (LocalDate) row[1];
+                    double revenue = (row[9] != null) ? (double) row[9] : 0.0;
+                    lineData.add(new ModelChartLine(
+                            orderDate.format(DateTimeFormatter.ofPattern("MM/yyyy")), // Label tháng
+                            revenue
+                    ));
+                }
+            }
+            chartLine.setModel(lineData);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
 
     @SuppressWarnings("unchecked")

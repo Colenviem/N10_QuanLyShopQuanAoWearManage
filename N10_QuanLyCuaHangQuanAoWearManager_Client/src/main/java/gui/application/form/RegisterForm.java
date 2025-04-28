@@ -1,15 +1,17 @@
 package gui.application.form;
 
-//import bus.AccountBUS;
-//import dto.Account;
 import java.awt.Color;
 import java.rmi.RemoteException;
 import java.util.Timer;
 import java.util.TimerTask;
-import javax.swing.JOptionPane;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import dto.Account;
+import interfaces.IAccountService;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
@@ -19,7 +21,10 @@ public class RegisterForm extends javax.swing.JFrame {
     private Animator animatorLogin;
     private Animator animatorBody;
     private boolean signIn;
-//    private AccountBUS accountBUS;
+    private IAccountService accountService;
+    private static final String HOST = "localhost";
+    private static final int PORT = 9090;
+    private static Context ctx;
 
     public RegisterForm() {
         initComponents();
@@ -93,6 +98,12 @@ public class RegisterForm extends javax.swing.JFrame {
         animatorBody = new Animator(500, targetBody);
         animatorLogin.setResolution(0);
         animatorBody.setResolution(0);
+        try {
+            ctx = new InitialContext();
+            accountService = (IAccountService) ctx.lookup("rmi://" + HOST + ":" + PORT + "/AccountBUS");
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void checkPasswordMatch() {
@@ -246,50 +257,49 @@ public class RegisterForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void cmdSignUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdSignUpActionPerformed
-//        String username = txtUser.getText().trim();
-//        String password = new String(txtPass.getPassword()).trim();
-//        String confirmPassword = new String(txtPass1.getPassword()).trim();
-//
-//        if (username.isEmpty() || password.isEmpty()) {
-//            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ tên người dùng và mật khẩu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
-//
-//        if (password.equals(confirmPassword) && cmdSignUp.isEnabled()) {
-//            // 1. Tạo đối tượng Account mới
-//            Account newAccount = new Account();
-//            newAccount.setUsername(username);
-//            newAccount.setPassword(password); // Lưu ý: Cần mã hóa mật khẩu trước khi set
-//
-//            // 2. Tạo instance của AccountDAO
-//            try {
-//                accountBUS = new AccountBUS();
-//                // 3. Gọi phương thức addAccount()
-//                if (accountBUS.addAccount(newAccount)) {
-//                    // 4. Xử lý kết quả thành công
-//                    System.out.println("Đăng ký thành công tài khoản: " + username);
-//                    JOptionPane.showMessageDialog(this, "Đăng ký thành công! Hệ thống sẽ chuyển về trang đăng nhập sau 3 giây.", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-//                    // Lên lịch chuyển về LoginForm sau 3 giây
-//                    Timer timer = new Timer();
-//                    timer.schedule(new TimerTask() {
-//                        @Override
-//                        public void run() {
-//                            RegisterForm.this.dispose();
-//                            new LoginForm().setVisible(true);
-//                        }
-//                    }, 3000);
-//                } else {
-//                    // 5. Xử lý kết quả thất bại
-//                    JOptionPane.showMessageDialog(this, "Đăng ký không thành công. Vui lòng thử lại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-//                }
-//            } catch (RemoteException e) {
-//                throw new RuntimeException(e);
-//            }
-//        } else {
-//            if (!cmdSignUp.isEnabled()) {
-//                JOptionPane.showMessageDialog(this, "Vui lòng nhập mật khẩu khớp.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-//            }
-//        }
+        String username = txtUser.getText().trim();
+        String password = new String(txtPass.getPassword()).trim();
+        String confirmPassword = new String(txtPass1.getPassword()).trim();
+
+        if (username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ tên người dùng và mật khẩu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (password.equals(confirmPassword) && cmdSignUp.isEnabled()) {
+            // 1. Tạo đối tượng Account mới
+            Account newAccount = new Account();
+            newAccount.setUsername(username);
+            newAccount.setPassword(password); // Lưu ý: Cần mã hóa mật khẩu trước khi set
+
+            // 2. Tạo instance của AccountDAO
+            try {
+                // 3. Gọi phương thức addAccount()
+                if (accountService.addAccount(newAccount)) {
+                    // 4. Xử lý kết quả thành công
+                    System.out.println("Đăng ký thành công tài khoản: " + username);
+                    JOptionPane.showMessageDialog(this, "Đăng ký thành công! Hệ thống sẽ chuyển về trang đăng nhập sau 3 giây.", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                    // Lên lịch chuyển về LoginForm sau 3 giây
+                    Timer timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            RegisterForm.this.dispose();
+                            new LoginForm().setVisible(true);
+                        }
+                    }, 3000);
+                } else {
+                    // 5. Xử lý kết quả thất bại
+                    JOptionPane.showMessageDialog(this, "Đăng ký không thành công. Vui lòng thử lại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception e) {
+               e.printStackTrace();
+            }
+        } else {
+            if (!cmdSignUp.isEnabled()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập mật khẩu khớp.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }//GEN-LAST:event_cmdSignUpActionPerformed
 
     private void txtPassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPassActionPerformed

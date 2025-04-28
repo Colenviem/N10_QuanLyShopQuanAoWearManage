@@ -27,8 +27,8 @@ public class Application extends javax.swing.JFrame {
         initComponents();
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null);
-        mainForm = new MainForm();
         loginForm = new LoginForm();
+        mainForm = new MainForm();
         getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
         Notifications.getInstance().setJFrame(this);
     }

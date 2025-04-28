@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-
 public class FormDashboard extends javax.swing.JPanel {
 
     private OrderBUS orderBUS;

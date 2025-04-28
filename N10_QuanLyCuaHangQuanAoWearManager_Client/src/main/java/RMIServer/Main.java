@@ -1,6 +1,7 @@
 package RMIServer;
 
 import bus.CustomerBUS;
+import interfaces.ICustomerService;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -13,9 +14,9 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         ctx = new InitialContext();
-        LocateRegistry.createRegistry(PORT);
-        CustomerBUS customerBUS = new CustomerBUS();
-        ctx.bind("rmi://" + HOST + ":" + PORT + "/CustomerBUS", customerBUS);
-        System.out.println("Server is running...");
+        ICustomerService customerBUS = (ICustomerService) ctx.lookup("rmi://" + HOST + ":" + PORT + "/CustomerBUS");
+        customerBUS.getAllCustomers()
+                .stream()
+                .forEach(System.out::println);
     }
 }

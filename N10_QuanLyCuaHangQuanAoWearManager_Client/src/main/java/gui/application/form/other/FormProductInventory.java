@@ -1,8 +1,6 @@
 package gui.application.form.other;
 
-//import bus.ProductBUS;
-//import dao.ProductDAO;
-//import dto.Product;
+import dto.Product;
 import gui.event.EventItem;
 import com.raven.model.ModelItem;
 import gui.component.Item;
@@ -15,8 +13,11 @@ import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.swing.*;
 
+import interfaces.IProductService;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
 import org.jdesktop.animation.timing.interpolation.PropertySetter;
@@ -27,13 +28,16 @@ public class FormProductInventory extends javax.swing.JPanel {
     private Animator animator;
     private ModelItem itemSelected;
     private Point animatePoint;
-//    private ProductBUS productBUS;
+    private IProductService productService;
+    private static final String HOST = "localhost";
+    private static final int PORT = 9090;
+    private static Context ctx;
 
     public FormProductInventory(EventItem event) {
         this.event = event;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Product Inventory");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -41,23 +45,19 @@ public class FormProductInventory extends javax.swing.JPanel {
             frame.setLocationRelativeTo(null); // Căn giữa màn hình
 
             FormProductInventory formInbox = null;
-            try {
-                formInbox = new FormProductInventory();
-            } catch (RemoteException e) {
-                throw new RuntimeException(e);
-            }
+
+            formInbox = new FormProductInventory();
             frame.add(formInbox);
 
             frame.setVisible(true);
         });
     }
 
-    public FormProductInventory() throws RemoteException {
+    public FormProductInventory() {
         initComponents();
         panelItem.remove(item1);
         panelItem.revalidate();
         panelItem.repaint();
-//        productBUS = new ProductBUS();
 
         this.event = new EventItem() {
             @Override
@@ -138,65 +138,67 @@ public class FormProductInventory extends javax.swing.JPanel {
         });
 
         try {
-//            DocDuLieu();
+            ctx = new InitialContext();
+            productService = (IProductService) ctx.lookup("rmi://" + HOST + ":" + PORT + "/ProductBUS");
+            DocDuLieu();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-//
-//    private void DocDuLieu() throws Exception{
-//        List<Product> products = productBUS.getAllProducts();
-//        for (Product product : products) {
-//            URL imageURL = getClass().getClassLoader().getResource(product.getImageUrl());
-//            ImageIcon imageIcon = null;
-//            if (imageURL != null) {
-//                imageIcon = new ImageIcon(imageURL);
-//            } else {
-//                System.out.println("Hình ảnh không tìm thấy!");
-//            }
-//
-//            ModelItem modelItem = new ModelItem(
-//                    product.getId(),
-//                    product.getProductName(),
-//                    product.getDescription(),
-//                    (double) product.getPrice(),
-//                    product.getColor(),
-//                    imageIcon
-//            );
-//            addItem(modelItem); // Giả sử bạn có phương thức này để thêm item vào giao diện
-//        }
-//    }
-//
-//    private void TimKiemSanPham(String keyword) throws Exception {
-//        panelItem.removeAll(); // Xóa các item hiện có trên panel
-//        List<Product> searchResults = productBUS.getProductByName(keyword);
-//        if (searchResults != null){
-//            for (Product product : searchResults) {
-//                URL imageURL = getClass().getClassLoader().getResource(product.getImageUrl());
-//                ImageIcon imageIcon = null;
-//                if (imageURL != null) {
-//                    imageIcon = new ImageIcon(imageURL);
-//                } else {
-//                    System.out.println("Hình ảnh không tìm thấy!");
-//                }
-//                ModelItem modelItem = new ModelItem(
-//                        product.getId(),
-//                        product.getProductName(),
-//                        product.getDescription(),
-//                        (double) product.getPrice(),
-//                        product.getColor(),
-//                        imageIcon
-//                );
-//                addItem(modelItem);
-//            }
-//            panelItem.revalidate();
-//            panelItem.repaint();
-//        }else {
-//            JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm");
-//            txtSearch.requestFocus();
-//            return;
-//        }
-//    }
+
+    private void DocDuLieu() throws Exception{
+        List<Product> products = productService.getAllProducts();
+        for (Product product : products) {
+            URL imageURL = getClass().getClassLoader().getResource(product.getImageUrl());
+            ImageIcon imageIcon = null;
+            if (imageURL != null) {
+                imageIcon = new ImageIcon(imageURL);
+            } else {
+                System.out.println("Hình ảnh không tìm thấy!");
+            }
+
+            ModelItem modelItem = new ModelItem(
+                    product.getId(),
+                    product.getProductName(),
+                    product.getDescription(),
+                    (double) product.getPrice(),
+                    product.getColor(),
+                    imageIcon
+            );
+            addItem(modelItem); // Giả sử bạn có phương thức này để thêm item vào giao diện
+        }
+    }
+
+    private void TimKiemSanPham(String keyword) throws Exception {
+        panelItem.removeAll(); // Xóa các item hiện có trên panel
+        List<Product> searchResults = productService.getProductByName(keyword);
+        if (searchResults != null){
+            for (Product product : searchResults) {
+                URL imageURL = getClass().getClassLoader().getResource(product.getImageUrl());
+                ImageIcon imageIcon = null;
+                if (imageURL != null) {
+                    imageIcon = new ImageIcon(imageURL);
+                } else {
+                    System.out.println("Hình ảnh không tìm thấy!");
+                }
+                ModelItem modelItem = new ModelItem(
+                        product.getId(),
+                        product.getProductName(),
+                        product.getDescription(),
+                        (double) product.getPrice(),
+                        product.getColor(),
+                        imageIcon
+                );
+                addItem(modelItem);
+            }
+            panelItem.revalidate();
+            panelItem.repaint();
+        }else {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm");
+            txtSearch.requestFocus();
+            return;
+        }
+    }
     
 
     public void addItem(ModelItem data) {

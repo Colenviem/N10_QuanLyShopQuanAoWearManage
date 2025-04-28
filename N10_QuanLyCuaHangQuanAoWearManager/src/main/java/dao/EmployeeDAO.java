@@ -80,6 +80,20 @@ public class EmployeeDAO {
                 "ORDER BY AVG(o.totalAmount) DESC", Object[].class).setMaxResults(7).getResultList();
     }
 
+    public Employee getEmployeeByAccount(String user, String pass) {
+        String query = "select e from Employee e " +
+                "where e.account.username = :user " +
+                "and e.account.password = :pass";
+        return em.createQuery(query, Employee.class)
+                .setParameter("user", user)
+                .setParameter("pass", pass)
+                .getSingleResult();
+    }
+
+    public static void main(String[] args) {
+        EmployeeDAO employeeDAO = new EmployeeDAO();
+        System.out.println(employeeDAO.getEmployeeByAccount("lino.cassin", "r6me33hyp47cm"));
+    }
 
     public List<Object[]> getEmployeeProductSalesAndCount() {
         return em.createQuery("SELECT e.id, e.fullName, SUM(oi.quantity * oi.price), SUM(oi.quantity) " +

@@ -32,4 +32,6 @@ public interface IEmployeeService extends Remote {
     List<Object[]> getEmployeeProductSales() throws RemoteException;
 
     List<Object[]> getEmployeeProductSalesAndCount() throws  RemoteException;
+
+    Employee getEmployeeByAccount(String user, String pass) throws RemoteException;
 }

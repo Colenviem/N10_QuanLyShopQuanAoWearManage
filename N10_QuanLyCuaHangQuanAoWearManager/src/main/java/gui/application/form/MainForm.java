@@ -1,5 +1,6 @@
 package gui.application.form;
 
+import bus.EmployeeBUS;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.UIScale;
@@ -16,6 +17,8 @@ import javax.swing.JButton;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import dto.Employee;
 import gui.application.Application;
 import gui.application.form.other.*;
 import gui.menu.action.Menu;
@@ -70,7 +73,9 @@ public class MainForm extends JLayeredPane {
                 Application.showForm(new FormDashboard());
             } else if (index == 1) {
                 if (subIndex == 1) {
-                    Application.showForm(new FormSales());
+                    EmployeeBUS employeeBUS1 = new EmployeeBUS();
+                    Employee employee = employeeBUS1.getEmployeeById(2);
+                    Application.showForm(new FormSales(employee));
                 } else if (subIndex == 2) {
                     Application.showForm(new FormProductInventory());
                 } else {
