@@ -1,10 +1,8 @@
 package gui.application.form;
 
-import bus.EmployeeBUS;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.UIScale;
-import dto.Employee;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
@@ -14,6 +12,8 @@ import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
@@ -25,6 +25,7 @@ import gui.menu.action.MenuAction;
 
 
 public class MainForm extends JLayeredPane {
+    private Map<Integer, Integer> info;
 
     public MainForm() {
         init();
@@ -49,6 +50,7 @@ public class MainForm extends JLayeredPane {
         add(menuButton);
         add(menu);
         add(panelBody);
+        info = new HashMap<>();
     }
 
     @Override
@@ -69,10 +71,13 @@ public class MainForm extends JLayeredPane {
         menu.addMenuEvent((int index, int subIndex, MenuAction action) -> {
             // Application.mainForm.showForm(new DefaultForm("Form : " + index + " " + subIndex));
             if (index == 0) {
-                Application.showForm(new FormProductInventory());
+                Application.showForm(new FormProductInventory(info));
             }else if (index == 1) {
                 try {
-                    Application.showForm(new FormSales(null));
+                    if (info == null) {
+                        info = new HashMap<>();
+                    }
+                    Application.showForm(new FormSales(info));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

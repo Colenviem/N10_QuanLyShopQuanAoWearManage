@@ -1,4 +1,4 @@
-package com.raven.model;
+package gui.model;
 
 import javax.swing.Icon;
 

@@ -4,9 +4,11 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import javax.naming.InitialContext;
 import javax.swing.*;
 
-import bus.AccountBUS;
+import bus.*;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
@@ -22,6 +24,9 @@ public class Application extends javax.swing.JFrame {
     private final MainForm mainForm;
     private final LoginForm loginForm;
     private AccountBUS accountBUS;
+    private static final String HOST = "localhost";
+    private static final int PORT = 9090;
+    private InitialContext ctx;
 
     public Application() {
         initComponents();
@@ -31,6 +36,26 @@ public class Application extends javax.swing.JFrame {
         mainForm = new MainForm();
         getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
         Notifications.getInstance().setJFrame(this);
+
+        try {
+            ctx = new InitialContext();
+            LocateRegistry.createRegistry(PORT);
+            CustomerBUS customerBUS = new CustomerBUS();
+            AccountBUS accountBUS = new AccountBUS();
+            ProductBUS productBUS = new ProductBUS();
+            OrderBUS orderBUS = new OrderBUS();
+            OrderDetailBUS orderDetailBUS = new OrderDetailBUS();
+            EmployeeBUS employeeBUS = new EmployeeBUS();
+            ctx.bind("rmi://" + HOST + ":" + PORT + "/CustomerBUS", customerBUS);
+            ctx.bind("rmi://" + HOST + ":" + PORT + "/AccountBUS", accountBUS);
+            ctx.bind("rmi://" + HOST + ":" + PORT + "/ProductBUS", productBUS);
+            ctx.bind("rmi://" + HOST + ":" + PORT + "/OrderBUS", orderBUS);
+            ctx.bind("rmi://" + HOST + ":" + PORT + "/OrderDetailBUS", orderDetailBUS);
+            ctx.bind("rmi://" + HOST + ":" + PORT + "/EmployeeBUS", employeeBUS);
+            System.out.println("Server is running...");
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void showForm(Component component) {

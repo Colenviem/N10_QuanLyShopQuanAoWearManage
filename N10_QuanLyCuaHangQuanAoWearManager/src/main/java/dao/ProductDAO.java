@@ -122,6 +122,7 @@ public class ProductDAO {
         try {
             em.getTransaction().begin();
             em.merge(product);
+            em.flush();
             em.getTransaction().commit();
             return true;
         } catch (Exception e) {

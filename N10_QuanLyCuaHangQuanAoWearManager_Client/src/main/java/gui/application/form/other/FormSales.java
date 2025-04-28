@@ -1,13 +1,15 @@
 package gui.application.form.other;
 
-import bus.*;
+
+
 import dto.*;
 import gui.button.ButtonCustom;
 import gui.button.NavButtonCustom;
 import gui.combobox.ComboBoxSuggestion;
-import gui.table.TableProductCellRender;
 import gui.table.TableRemoveCellRender;
 import gui.textfield.TextPay;
+import interfaces.*;
+import lombok.SneakyThrows;
 
 import java.awt.*;
 
@@ -20,12 +22,13 @@ import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -43,28 +46,23 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
     private DecimalFormat df = new DecimalFormat("#,##0 VNĐ");
     private ComboBoxSuggestion comboxDVT;
     private ButtonCustom btnThanhToan;
-    private OrderBUS orderBUS;
-    private OrderDetailBUS orderDetailBUS;
-    private EmployeeBUS employeeBUS;
-    private CustomerBUS customerBUS;
-    private ProductBUS productBUS;
+    private IOrderService orderService;
+    private IOrderDetailService orderDetailService;
+    private ICustomerService customerService;
+    private IProductService productService;
+    private IEmployeeService employeeService;
+    private static final String HOST = "localhost";
+    private static final int PORT = 9090;
+    private static Context ctx;
+    private Map<Integer, Integer> info;
 
-    public FormSales(Employee employee) {
+    public FormSales(Map<Integer, Integer> info) {
         initComponents();
-        init(employee);
+        this.info = this.info = (info != null) ? info : new HashMap<>();
+        init();
     }
 
-    private void init(Employee employee) {
-        if (employee != null) {
-            txtMaNV.setText(String.valueOf(employee.getId()));
-            txtTenNV.setText(employee.getFullName());
-        } else {
-            // Handle the case where employee is null
-            txtMaNV.setText(""); // Or some default value
-            txtTenNV.setText(""); // Or some default value
-            System.out.println("Thông tin nhân viên không có.");
-            // You might want to disable or hide employee-related UI components here
-        }
+    private void init() {
         setOpaque(false);
         setPreferredSize(new Dimension(1500, 750));
         setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -289,14 +287,56 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
         });
 
         try {
-            orderBUS = new OrderBUS();
-            orderDetailBUS = new OrderDetailBUS();
-            employeeBUS = new EmployeeBUS();
-            customerBUS = new CustomerBUS();
-            productBUS = new ProductBUS();
+            ctx = new InitialContext();
+            orderService = (IOrderService) ctx.lookup("rmi://" + HOST + ":" + PORT + "/OrderBUS");
+            orderDetailService = (IOrderDetailService) ctx.lookup("rmi://" + HOST + ":" + PORT + "/OrderDetailBUS");
+            customerService = (ICustomerService) ctx.lookup("rmi://" + HOST + ":" + PORT + "/CustomerBUS");
+            productService = (IProductService) ctx.lookup("rmi://" + HOST + ":" + PORT + "/ProductBUS");
+            employeeService = (IEmployeeService) ctx.lookup("rmi://" + HOST + ":" + PORT + "/EmployeeBUS");
+            themSanPhamVaoBang(info);
         }catch (Exception ex){
             ex.printStackTrace();
         }
+    }
+
+    private void themSanPhamVaoBang(Map<Integer, Integer> info) {
+        info.entrySet()
+                .stream()
+                .forEach(entry -> {
+                    try {
+                        Product product = productService.getProductById(entry.getKey());
+                        URL imageURL = getClass().getClassLoader().getResource(product.getImageUrl());
+                        ImageIcon imageIcon = null;
+                        if (imageURL != null) {
+                            ImageIcon originalIcon = new ImageIcon(imageURL);
+                            Image scaledImage = originalIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+                            imageIcon = new ImageIcon(scaledImage);
+                        } else {
+                            System.out.println("Hình ảnh không tìm thấy!");
+                        }
+
+                        tableModel.addRow(new Object[]{
+                                imageIcon,
+                                product.getProductName(),
+                                df.format(product.getPrice()),
+                                entry.getValue(),
+                                df.format(product.getPrice() * entry.getValue()),
+                                "Xóa"
+                        });
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
+                });
+        SwingUtilities.invokeLater(() -> {
+            tableModel.fireTableDataChanged();
+            tableOrder.revalidate();
+            tableOrder.repaint();
+            JScrollPane scrollPane = (JScrollPane) tableOrder.getParent().getParent();
+            scrollPane.revalidate();
+            scrollPane.repaint();
+        });
+
+        sumAmount();
     }
 
     private void sumAmount() {
@@ -436,15 +476,15 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
         pnlOrder.setLayout(new java.awt.BorderLayout());
 
         tableOrder.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
+                new Object [][] {
 
-            },
-            new String [] {
-                "Ảnh", "Tên sản phẩm", "Đơn vị tính", "Giá bán", "Giá bán khuyễn mãi", "Số lượng", "Tổng giá tiền", "Xóa"
-            }
+                },
+                new String [] {
+                        "Ảnh", "Tên sản phẩm", "Giá bán", "Số lượng", "Tổng giá tiền", "Xóa"
+                }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, true, false, false, true, false, false
+                    false, false, true, false, false, true, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -455,10 +495,6 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
         jScrollPane.setViewportView(tableOrder);
         if (tableOrder.getColumnModel().getColumnCount() > 0) {
             tableOrder.getColumnModel().getColumn(0).setPreferredWidth(100);
-            tableOrder.getColumnModel().getColumn(3).setPreferredWidth(100);
-            tableOrder.getColumnModel().getColumn(4).setPreferredWidth(100);
-            tableOrder.getColumnModel().getColumn(5).setPreferredWidth(50);
-            tableOrder.getColumnModel().getColumn(6).setPreferredWidth(100);
         }
 
         pnlOrder.add(jScrollPane, java.awt.BorderLayout.CENTER);
@@ -478,7 +514,7 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
 
         pnlOrder.add(cmdTT, java.awt.BorderLayout.PAGE_END);
 
-        tabHoaDon.addTab("0001", pnlOrder);
+        tabHoaDon.addTab("Hóa đơn", pnlOrder);
 
         pnlHD.add(tabHoaDon, java.awt.BorderLayout.CENTER);
 
@@ -502,19 +538,6 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
         pnlKH.add(txtSDT);
 
         tabTTKH.addTab("Khách hàng", pnlKH);
-
-        pnlKHMoi.setOpaque(false);
-        pnlKHMoi.setPreferredSize(new java.awt.Dimension(450, 60));
-        pnlKHMoi.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
-
-        lblSDTMoi.setText("Số điện thoại");
-        lblSDTMoi.setPreferredSize(new java.awt.Dimension(80, 40));
-        pnlKHMoi.add(lblSDTMoi);
-
-        txtSDTMoi.setPreferredSize(new java.awt.Dimension(150, 40));
-        pnlKHMoi.add(txtSDTMoi);
-
-        tabTTKH.addTab("Khách hàng mới", pnlKHMoi);
 
         pnlTop.add(tabTTKH, java.awt.BorderLayout.CENTER);
 
@@ -548,6 +571,8 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
         txtSearch.setPreferredSize(new java.awt.Dimension(450, 40));
         pnlHoaDon.add(txtSearch);
 
+        txtTenKH.setEditable(true);
+
         pnlTop.add(pnlHoaDon, java.awt.BorderLayout.PAGE_END);
 
         add(pnlTop, java.awt.BorderLayout.PAGE_START);
@@ -558,9 +583,8 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
         frame.setExtendedState(MAXIMIZED_BOTH);
         frame.setResizable(false);
         frame.setLayout(new FlowLayout());
-        EmployeeBUS employeeBUS1 = new EmployeeBUS();
-        Employee employee = employeeBUS1.getEmployeeById(2);
-        FormSales banHang = new FormSales(employee);
+        Map<Integer, Integer> info = Map.of(1, 1);
+        FormSales banHang = new FormSales(info);
         frame.add(banHang);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
@@ -610,31 +634,282 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Object o = e.getSource();
+        if(o.equals(btnSearch)){
+            timKiemSanPham();
+        }
+        if(o.equals(btnSearch1)){
+            timKiemKhachHang();
+        }
+        if(o.equals(btnThanhToan)){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        // Chờ ngẫu nhiên từ 10 đến 20 giây
+                        int randomWaitTime = 1 + (int)(Math.random() * 3);
+                        System.out.println("Chờ " + randomWaitTime + " giây trước khi thanh toán");
+                        Thread.sleep(randomWaitTime * 1000);
+
+                        // Sau khi thời gian chờ kết thúc, thực hiện thanh toán
+                        thanhToan();  // Gọi phương thức thanh toán trong thread
+
+                        // Sau khi thanh toán xong, thực hiện hành động khác (nếu cần)
+                        System.out.println("Thanh toán xong");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+        }
+    }
+
+    private void thanhToan() {
+        try {
+            if(kiemTra()){
+                if (tinhTienThua()) {
+                    Order order = new Order();
+                    order.setOrderDate(LocalDate.now());
+                    order.setStatus(Status.COMPLETED);
+
+                    List<Customer> customers = customerService.getCustomerByPhone(txtSDT.getText());
+                    Customer customer = (customers != null && !customers.isEmpty()) ? customers.get(0) : null;
+
+                    int point = Integer.parseInt( txtTTHD.getText().replaceAll("[^0-9]", ""));
+                    if (customer != null) {
+                        point += customer.getPoint();
+                        customer.setPoint(point);
+                        customerService.updateCustomer(customer);
+                        customer.getOrders().add(order);
+                    }else{
+                        customer = new Customer();
+                        customer.setName(txtTenKH.getText());
+                        customer.setPhone(txtSDT.getText());
+                        customerService.addCustomer(customer);
+
+                        // Sau khi thêm, lấy lại Customer đã lưu từ database
+                        customers = customerService.getCustomerByPhone(txtSDT.getText());
+                        if (customers != null && !customers.isEmpty()) {
+                            customer = customers.get(0);
+                        }
+                    }
+
+                    order.setCustomer(customer);
+
+                    order.setEmployee(employeeService.getEmployeeById(1));
+
+                    Set<OrderDetail> orderDetails = new HashSet<>();
+
+                    for (int i = 0; i < tableOrder.getRowCount(); i++) {
+                        OrderDetail orderDetail = new OrderDetail();
+                        orderDetail.setQuantity(Integer.parseInt(tableOrder.getValueAt(i, 3).toString()));
+                        orderDetail.setPrice(Double.parseDouble(tableOrder.getValueAt(i, 2).toString().replaceAll("[^0-9]", "")));
+                        Product product = productService.getProductByName(tableOrder.getValueAt(i, 1).toString()).get(0);
+                        int quality = product.getStockQuantity() - Integer.parseInt(tableOrder.getValueAt(i, 3).toString());
+                        System.out.println("Quality: " + quality);
+                        product.setStockQuantity(quality);
+                        if(productService.updateProduct(product)){
+                            System.out.println("Update thành công");
+                        }
+                        product = productService.getProductByName(tableOrder.getValueAt(i, 1).toString()).get(0);
+                        System.out.println(product);
+                        orderDetail.setProduct(product);
+                        orderDetail.setOrder(order);
+                        orderDetails.add(orderDetail);
+                    }
+
+                    order.setOrderDetails(orderDetails);
+
+                    try {
+                        orderService.addOrder(order);
+                        JOptionPane.showMessageDialog(this, "Thanh toán thành công. Bạn có muốn tiếp tục?", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        JOptionPane.showMessageDialog(this, "Thanh toán thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    }
+
+                    tableModel.setRowCount(0);
+                    txtSDT.setText("");
+                    txtTenKH.setText("");
+                    pay1.getTxtTienThua().setText("");
+                    info = null;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Đã xảy ra lỗi trong quá trình thanh toán.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private boolean kiemTra() {
+        if ((!txtSDT.getText().matches("0(1|3|5|7|9)\\d{8}") || txtSDT.getText().isEmpty())) {
+            JOptionPane.showMessageDialog(null, "Vui lòng kiểm tra lại số điện thoại", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            txtSDT.requestFocus();
+            return false;
+        }
+
+        String tienKhachDua = pay1.getTxtKhachDua().getText().replace(" VNĐ", "").replace(",", "");
+        if (!tienKhachDua.matches("\\d+")) {
+            JOptionPane.showMessageDialog(this, "Vui lòng kiểm tra lại số tiền thanh toán");
+            pay1.getTxtKhachDua().requestFocus();
+            return false;
+        }
+        return true;
+    }
+
+    private void timKiemSanPham() {
+        try {
+            String searchText = txtSearch.getText();
+            ArrayList<Product> products = new ArrayList<>();
+
+            if (searchText.matches("\\d+")) {
+                Product product = productService.getProductById(Integer.parseInt(searchText));
+                if (product != null) {
+                    products.add(product);
+                }
+            }
+
+            if (productService.getProductByName(searchText) != null) {
+                products.add(productService.getProductByName(searchText).get(0));
+            }
+
+            products.stream().forEach(product -> {
+                try {
+                    boolean found = false;
+                    int rowIndex = -1;
+                    int currentQuantityInTable = 0;
+
+                    // Kiểm tra sản phẩm đã có trong table chưa
+                    for (int i = 0; i < tableModel.getRowCount(); i++) {
+                        String productNameInTable = tableModel.getValueAt(i, 1).toString();
+                        if (productNameInTable.equals(product.getProductName())) {
+                            found = true;
+                            rowIndex = i;
+                            currentQuantityInTable = (int) tableModel.getValueAt(i, 3);
+                            break;
+                        }
+                    }
+
+                    int quantityInStock = product.getStockQuantity();
+
+                    if (found) {
+                        if (currentQuantityInTable + 1 > quantityInStock) {
+                            JOptionPane.showMessageDialog(null, "Sản phẩm '" + product.getProductName() + "' đã hết hàng!");
+                        } else {
+                            int newQuantity = currentQuantityInTable + 1;
+                            tableModel.setValueAt(newQuantity, rowIndex, 3);
+
+                            double price = Double.parseDouble(
+                                    tableModel.getValueAt(rowIndex, 4).toString().replaceAll("[^0-9]", "")
+                            );
+                            tableModel.setValueAt(df.format(price * newQuantity), rowIndex, 4);
+                        }
+                    } else {
+                        if (quantityInStock <= 0) {
+                            JOptionPane.showMessageDialog(null, "Sản phẩm '" + product.getProductName() + "' đã hết hàng!");
+                        } else {
+                            URL imageURL = getClass().getClassLoader().getResource(product.getImageUrl());
+                            ImageIcon imageIcon = null;
+                            if (imageURL != null) {
+                                ImageIcon originalIcon = new ImageIcon(imageURL);
+                                Image scaledImage = originalIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+                                imageIcon = new ImageIcon(scaledImage);
+                            } else {
+                                System.out.println("Hình ảnh không tìm thấy!");
+                            }
+
+                            tableModel.addRow(new Object[]{
+                                    imageIcon,
+                                    product.getProductName(),
+                                    df.format(product.getPrice()),
+                                    1,
+                                    df.format(product.getPrice()),
+                                    "Xóa"
+                            });
+                        }
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
+            SwingUtilities.invokeLater(() -> {
+                tableModel.fireTableDataChanged();
+                tableOrder.revalidate();
+                tableOrder.repaint();
+                JScrollPane scrollPane = (JScrollPane) tableOrder.getParent().getParent();
+                scrollPane.revalidate();
+                scrollPane.repaint();
+            });
+
+            sumAmount();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void timKiemKhachHang() {
+        try {
+            if ((!txtSDT.getText().matches("0(1|3|5|7|9)\\d{8}") || txtSDT.getText().isEmpty())) {
+                JOptionPane.showMessageDialog(null, "Vui lòng kiểm tra lại số điện thoại", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+                txtSDT.requestFocus();
+                return;
+            }
+            String searchText = txtSDT.getText();
+            if (customerService.getCustomerByPhone(searchText) != null){
+                Customer customer = customerService.getCustomerByPhone(searchText).get(0);
+                if (customer != null) {
+                    txtTenKH.setText(customer.getName());
+                    txtDTL.setText(String.valueOf(customer.getPoint()));
+                    pay1.getTxtDTL().setText(String.valueOf(customer.getPoint()));
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng với số điện thoại này", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        int row = tableOrder.getSelectedRow();
+        if (row != -1){
+            try {
+                Product product = (Product) productService.getProductByName(tableOrder.getValueAt(row , 1).toString()).getFirst();
+                info.remove(product.getId());
+                info.entrySet()
+                                .stream()
+                                .forEach(entry -> {
+                                    System.out.println(entry.getKey());
+                                });
+                sumAmount();
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+
     }
 }

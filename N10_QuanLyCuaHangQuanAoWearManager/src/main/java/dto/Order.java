@@ -45,7 +45,6 @@ public class Order implements Serializable {
     private Set<OrderDetail> orderDetails;
 
     @PrePersist
-    @PreUpdate
     private void calculateTotalAmount() {
         if(this.orderDetails != null){
             this.totalAmount = this.orderDetails.stream()

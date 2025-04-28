@@ -594,7 +594,25 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
             timKiemKhachHang();
         }
         if(o.equals(btnThanhToan)){
-            thanhToan();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        // Chờ ngẫu nhiên từ 10 đến 20 giây
+                        int randomWaitTime = 1 + (int)(Math.random() * 3);  // Random từ 10 đến 20
+                        System.out.println("Chờ " + randomWaitTime + " giây trước khi thanh toán");
+                        Thread.sleep(randomWaitTime * 1000);  // Chuyển đổi giây thành mili giây
+
+                        // Sau khi thời gian chờ kết thúc, thực hiện thanh toán
+                        thanhToan();  // Gọi phương thức thanh toán trong thread
+
+                        // Sau khi thanh toán xong, thực hiện hành động khác (nếu cần)
+                        System.out.println("Thanh toán xong");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
         }
     }
 
@@ -632,9 +650,15 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
                         OrderDetail orderDetail = new OrderDetail();
                         orderDetail.setQuantity(Integer.parseInt(tableOrder.getValueAt(i, 3).toString()));
                         orderDetail.setPrice(Double.parseDouble(tableOrder.getValueAt(i, 2).toString().replaceAll("[^0-9]", "")));
-
                         Product product = productBUS.getProductByName(tableOrder.getValueAt(i, 1).toString()).get(0);
-
+                        int quality = product.getStockQuantity() - Integer.parseInt(tableOrder.getValueAt(i, 3).toString());
+                        System.out.println("Quality: " + quality);
+                        product.setStockQuantity(quality);
+                        if(productBUS.updateProduct(product)){
+                            System.out.println("Update thành công");
+                        }
+                        product = productBUS.getProductByName(tableOrder.getValueAt(i, 1).toString()).get(0);
+                        System.out.println(product);
                         orderDetail.setProduct(product);
                         orderDetail.setOrder(order);
                         orderDetails.add(orderDetail);
@@ -651,11 +675,12 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(this, "Thanh toán thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                     }
+
+                    tableModel.setRowCount(0);
+                    txtSDT.setText("");
+                    txtTenKH.setText("");
                 }
             }
-            tableModel.setRowCount(0);
-            txtSDT.setText("");
-            txtTenKH.setText("");
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Đã xảy ra lỗi trong quá trình thanh toán.", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -682,59 +707,79 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
         try {
             String searchText = txtSearch.getText();
             ArrayList<Product> products = new ArrayList<>();
-            if (searchText.matches("\\d+")){
+
+            if (searchText.matches("\\d+")) {
                 Product product = productBUS.getProductById(Integer.parseInt(searchText));
-                if (product != null){
+                if (product != null) {
                     products.add(product);
                 }
             }
-            if (productBUS.getProductByName(searchText) != null){
+
+            if (productBUS.getProductByName(searchText) != null) {
                 products.add(productBUS.getProductByName(searchText).get(0));
             }
-            products.stream()
-                    .forEach(product -> {
-                        System.out.println(product);
-                    });
-            products.stream()
-                    .forEach(product -> {
-                        try {
-                            boolean found = false;
-                            for (int i = 0; i < tableModel.getRowCount(); i++) {
-                                String productNameInTable = tableModel.getValueAt(i, 1).toString();
-                                if (productNameInTable.equals(product.getProductName())) {
-                                    int currentQuantity = (int) tableModel.getValueAt(i, 3);
-                                    int newQuantity = currentQuantity + 1;
-                                    tableModel.setValueAt(newQuantity, i, 3);
-                                    double price = Double.parseDouble(tableModel.getValueAt(i, 4).toString().replaceAll("[^0-9]", ""));
-                                    tableModel.setValueAt(df.format(price * newQuantity), i, 4);
-                                    found = true;
-                                    break;
-                                }
+
+            products.stream().forEach(product -> {
+                try {
+                    boolean found = false;
+                    int rowIndex = -1;
+                    int currentQuantityInTable = 0;
+
+                    // Kiểm tra sản phẩm đã có trong table chưa
+                    for (int i = 0; i < tableModel.getRowCount(); i++) {
+                        String productNameInTable = tableModel.getValueAt(i, 1).toString();
+                        if (productNameInTable.equals(product.getProductName())) {
+                            found = true;
+                            rowIndex = i;
+                            currentQuantityInTable = (int) tableModel.getValueAt(i, 3);
+                            break;
+                        }
+                    }
+
+                    int quantityInStock = product.getStockQuantity();
+
+                    if (found) {
+                        if (currentQuantityInTable + 1 > quantityInStock) {
+                            JOptionPane.showMessageDialog(null, "Sản phẩm '" + product.getProductName() + "' đã hết hàng!");
+                        } else {
+                            int newQuantity = currentQuantityInTable + 1;
+                            tableModel.setValueAt(newQuantity, rowIndex, 3);
+
+                            double price = Double.parseDouble(
+                                    tableModel.getValueAt(rowIndex, 4).toString().replaceAll("[^0-9]", "")
+                            );
+                            tableModel.setValueAt(df.format(price * newQuantity), rowIndex, 4);
+                        }
+                    } else {
+                        if (quantityInStock <= 0) {
+                            JOptionPane.showMessageDialog(null, "Sản phẩm '" + product.getProductName() + "' đã hết hàng!");
+                        } else {
+                            URL imageURL = getClass().getClassLoader().getResource(product.getImageUrl());
+                            ImageIcon imageIcon = null;
+                            if (imageURL != null) {
+                                ImageIcon originalIcon = new ImageIcon(imageURL);
+                                Image scaledImage = originalIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+                                imageIcon = new ImageIcon(scaledImage);
+                            } else {
+                                System.out.println("Hình ảnh không tìm thấy!");
                             }
 
-                            if (!found) {
-                                URL imageURL = getClass().getClassLoader().getResource(product.getImageUrl());
-                                ImageIcon imageIcon = null;
-                                if (imageURL != null) {
-                                    ImageIcon originalIcon = new ImageIcon(imageURL);
-                                    Image scaledImage = originalIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-                                    imageIcon = new ImageIcon(scaledImage);
-                                } else {
-                                    System.out.println("Hình ảnh không tìm thấy!");
-                                }
-                                tableModel.addRow(new Object[]{
-                                        imageIcon,
-                                        product.getProductName(),
-                                        df.format(product.getPrice()),
-                                        1,
-                                        df.format(product.getPrice()),
-                                        "Xóa"
-                                });
-                            }
-                        }catch (Exception e){
-                            e.printStackTrace();
+                            tableModel.addRow(new Object[]{
+                                    imageIcon,
+                                    product.getProductName(),
+                                    df.format(product.getPrice()),
+                                    1,
+                                    df.format(product.getPrice()),
+                                    "Xóa"
+                            });
                         }
-                    });
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
             SwingUtilities.invokeLater(() -> {
                 tableModel.fireTableDataChanged();
                 tableOrder.revalidate();
@@ -743,8 +788,10 @@ public class FormSales extends JPanel implements ActionListener, MouseListener {
                 scrollPane.revalidate();
                 scrollPane.repaint();
             });
+
             sumAmount();
-        }catch (Exception e){
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

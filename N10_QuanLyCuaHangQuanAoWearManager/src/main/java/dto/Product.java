@@ -58,7 +58,6 @@ public class Product implements Serializable {
     private Set<PurchaseOrderDetail> purchaseOrderDetails;
 
     @PrePersist
-    @PreUpdate
     private void calculatePriceAndStock() {
         if (purchaseOrderDetails != null) {
             this.price = purchaseOrderDetails.stream()

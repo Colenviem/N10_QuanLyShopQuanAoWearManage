@@ -12,7 +12,9 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.swing.*;
@@ -32,6 +34,7 @@ public class FormProductInventory extends javax.swing.JPanel {
     private static final String HOST = "localhost";
     private static final int PORT = 9090;
     private static Context ctx;
+    private Map<Integer, Integer> info;
 
     public FormProductInventory(EventItem event) {
         this.event = event;
@@ -45,16 +48,17 @@ public class FormProductInventory extends javax.swing.JPanel {
             frame.setLocationRelativeTo(null); // Căn giữa màn hình
 
             FormProductInventory formInbox = null;
-
-            formInbox = new FormProductInventory();
+            Map<Integer, Integer> info = new HashMap<>();
+            formInbox = new FormProductInventory(info);
             frame.add(formInbox);
 
             frame.setVisible(true);
         });
     }
 
-    public FormProductInventory() {
+    public FormProductInventory(Map<Integer, Integer> info) {
         initComponents();
+        this.info = info;
         panelItem.remove(item1);
         panelItem.revalidate();
         panelItem.repaint();
@@ -68,6 +72,7 @@ public class FormProductInventory extends javax.swing.JPanel {
                 if (itemSelected != item) {
                     if (!animator.isRunning()) {
                         itemSelected = item;
+                        itemSelected.setBrandName("1");
                         animatePoint = getLocationOf(com);
                         mainPanel.setImage(item.getImage());
                         mainPanel.setImageLocation(animatePoint);
@@ -87,7 +92,7 @@ public class FormProductInventory extends javax.swing.JPanel {
                 String keyword = txtSearch.getText().trim(); // Lấy từ khóa từ text field và loại bỏ khoảng trắng thừa
                 if (!keyword.isEmpty()) {
                     try {
-//                        TimKiemSanPham(keyword);
+                        TimKiemSanPham(keyword);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                         // Xử lý lỗi nếu có
@@ -95,7 +100,7 @@ public class FormProductInventory extends javax.swing.JPanel {
                 } else {
                     // Nếu không có từ khóa, bạn có thể hiển thị lại tất cả sản phẩm hoặc thông báo cho người dùng
                     try {
-//                        DocDuLieu(); // Hiển thị lại tất cả sản phẩm (nếu muốn)
+                        DocDuLieu(); // Hiển thị lại tất cả sản phẩm (nếu muốn)
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -110,13 +115,13 @@ public class FormProductInventory extends javax.swing.JPanel {
                     String keyword = txtSearch.getText().trim();
                     if (!keyword.isEmpty()) {
                         try {
-//                            TimKiemSanPham(keyword);
+                            TimKiemSanPham(keyword);
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
                     } else {
                         try {
-//                            DocDuLieu();
+                            DocDuLieu();
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -124,10 +129,8 @@ public class FormProductInventory extends javax.swing.JPanel {
                 }
             }
         });
-//        btnAddToCart.addActionListener((ActionListener) this);
 
         scroll.setVerticalScrollBar(new ScrollBar());
-        //  Animator start form animatePoint to TagetPoint
         animator = PropertySetter.createAnimator(500, mainPanel, "imageLocation", animatePoint, mainPanel.getTargetLocation());
         animator.addTarget(new PropertySetter(mainPanel, "imageSize", new Dimension(180, 120), mainPanel.getTargetSize()));
         animator.addTarget(new TimingTargetAdapter() {
@@ -148,59 +151,62 @@ public class FormProductInventory extends javax.swing.JPanel {
 
     private void DocDuLieu() throws Exception{
         List<Product> products = productService.getAllProducts();
-        for (Product product : products) {
-            URL imageURL = getClass().getClassLoader().getResource(product.getImageUrl());
-            ImageIcon imageIcon = null;
-            String stockQuantityString = String.valueOf(product.getStockQuantity());
-            if (imageURL != null) {
-                imageIcon = new ImageIcon(imageURL);
-            } else {
-                System.out.println("Hình ảnh không tìm thấy!");
-            }
+        products.stream()
+                .forEach(product -> {
+                    URL imageURL = getClass().getClassLoader().getResource(product.getImageUrl());
+                    ImageIcon imageIcon = null;
+                    String stockQuantityString = String.valueOf(product.getStockQuantity());
+                    if (imageURL != null) {
+                        imageIcon = new ImageIcon(imageURL);
+                    } else {
+                        System.out.println("Hình ảnh không tìm thấy!");
+                    }
 
-            ModelItem modelItem = new ModelItem(
-                    product.getId(),
-                    product.getProductName(),
-                    product.getDescription(),
-                    (double) product.getPrice(),
-                    stockQuantityString,
-                    imageIcon
-            );
-            addItem(modelItem); // Giả sử bạn có phương thức này để thêm item vào giao diện
-        }
+                    ModelItem modelItem = new ModelItem(
+                            product.getId(),
+                            product.getProductName(),
+                            product.getDescription(),
+                            (double) product.getPrice(),
+                            stockQuantityString,
+                            imageIcon
+                    );
+                    addItem(modelItem);
+                });
     }
 
     private void TimKiemSanPham(String keyword) throws Exception {
         panelItem.removeAll(); // Xóa các item hiện có trên panel
         List<Product> searchResults = productService.getProductByName(keyword);
-        if (searchResults != null){
-            for (Product product : searchResults) {
-                URL imageURL = getClass().getClassLoader().getResource(product.getImageUrl());
-                ImageIcon imageIcon = null;
-                if (imageURL != null) {
-                    imageIcon = new ImageIcon(imageURL);
-                } else {
-                    System.out.println("Hình ảnh không tìm thấy!");
-                }
-                ModelItem modelItem = new ModelItem(
-                        product.getId(),
-                        product.getProductName(),
-                        product.getDescription(),
-                        (double) product.getPrice(),
-                        product.getColor(),
-                        imageIcon
-                );
-                addItem(modelItem);
-            }
+        if (searchResults != null) {
+            searchResults.stream()
+                    .forEach(product -> {
+                        URL imageURL = getClass().getClassLoader().getResource(product.getImageUrl());
+                        ImageIcon imageIcon = null;
+                        String stockQuantityString = String.valueOf(product.getStockQuantity());
+                        if (imageURL != null) {
+                            imageIcon = new ImageIcon(imageURL);
+                        } else {
+                            System.out.println("Hình ảnh không tìm thấy!");
+                        }
+
+                        ModelItem modelItem = new ModelItem(
+                                product.getId(),
+                                product.getProductName(),
+                                product.getDescription(),
+                                (double) product.getPrice(),
+                                stockQuantityString,
+                                imageIcon
+                        );
+                        addItem(modelItem);
+                    });
             panelItem.revalidate();
             panelItem.repaint();
-        }else {
+        } else {
             JOptionPane.showMessageDialog(this, "Không tìm thấy sản phẩm");
             txtSearch.requestFocus();
             return;
         }
     }
-    
 
     public void addItem(ModelItem data) {
         Item item = new Item();
@@ -217,7 +223,6 @@ public class FormProductInventory extends javax.swing.JPanel {
                 }
             }
         });
-
         panelItem.add(item);
         panelItem.repaint();
         panelItem.revalidate();
@@ -256,8 +261,6 @@ public class FormProductInventory extends javax.swing.JPanel {
         int top = 35;
         return new Point(x + itemX + left, y + itemY + top);
     }
-    
-    
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -441,8 +444,7 @@ public class FormProductInventory extends javax.swing.JPanel {
 
     private void btnAddToCartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddToCartActionPerformed
         if (itemSelected != null) {
-            // Thực hiện logic thêm sản phẩm vào giỏ hàng ở đây (nếu bạn có)
-
+            info.merge(itemSelected.getItemID(), 1, Integer::sum);
             JOptionPane.showMessageDialog(this, "Đã thêm '" + itemSelected.getItemName() + "' vào giỏ hàng thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn một sản phẩm trước khi thêm vào giỏ hàng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
