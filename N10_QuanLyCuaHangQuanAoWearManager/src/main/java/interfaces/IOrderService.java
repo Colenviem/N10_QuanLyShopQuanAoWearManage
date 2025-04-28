@@ -30,4 +30,9 @@ public interface IOrderService extends Remote {
 
     List<Object[]> getOrderSummariesForYear(int year) throws RemoteException;
 
+    List<Object[]> getStoreRevenueByDayOfWeek(LocalDate startDate, LocalDate endDate) throws RemoteException;
+
+    List<Object[]> getTop5BestSellingProductsThisWeek(LocalDate startDate, LocalDate endDate) throws RemoteException;
+
+    List<Object[]> getAllProductRevenueThisWeek(LocalDate startDate, LocalDate endDate) throws RemoteException;
 }

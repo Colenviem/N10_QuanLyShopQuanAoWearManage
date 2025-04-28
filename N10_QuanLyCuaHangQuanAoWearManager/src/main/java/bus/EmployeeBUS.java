@@ -6,6 +6,7 @@ import interfaces.IEmployeeService;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,5 +87,22 @@ public class EmployeeBUS extends UnicastRemoteObject implements IEmployeeService
     @Override
     public Employee getEmployeeByAccount(String user, String pass) throws RemoteException {
         return employeeDAO.getEmployeeByAccount(user, pass);
+    }
+
+    @Override
+    public List<Object[]> getEmployeeTotalProductStatsThisWeek(LocalDate startDate, LocalDate endDate) throws RemoteException{
+        return employeeDAO.getEmployeeTotalProductStatsThisWeek(startDate, endDate);
+    }
+
+
+
+    @Override
+    public List<Object[]> getTop5BestSellingProductsThisWeek(LocalDate startDate, LocalDate endDate) throws RemoteException{
+        return employeeDAO.getTop5BestSellingProductsThisWeek(startDate, endDate);
+    }
+
+    @Override
+    public List<Object[]> getEmployeeProductSalesCountByDayOfWeek(LocalDate startDate, LocalDate endDate) throws RemoteException{
+        return employeeDAO.getEmployeeProductSalesCountByDayOfWeek(startDate, endDate);
     }
 }

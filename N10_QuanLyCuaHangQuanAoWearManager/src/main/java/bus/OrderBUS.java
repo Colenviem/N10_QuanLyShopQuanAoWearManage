@@ -71,4 +71,19 @@ public class OrderBUS extends UnicastRemoteObject implements IOrderService {
     public List<Object[]> getOrderSummariesForYear(int year) throws RemoteException{
         return new ArrayList<>(orderDAO.getOrderSummariesForYear(year));
     }
+
+    @Override
+    public List<Object[]> getStoreRevenueByDayOfWeek(LocalDate startDate, LocalDate endDate) throws RemoteException{
+        return orderDAO.getStoreRevenueByDayOfWeek(startDate, endDate);
+    }
+
+    @Override
+    public List<Object[]> getTop5BestSellingProductsThisWeek(LocalDate startDate, LocalDate endDate) throws RemoteException{
+        return orderDAO.getTop5BestSellingProductsThisWeek(startDate, endDate);
+    }
+
+    @Override
+    public List<Object[]> getAllProductRevenueThisWeek(LocalDate startDate, LocalDate endDate) throws RemoteException{
+        return orderDAO.getAllProductRevenueThisWeek(startDate, endDate);
+    }
 }

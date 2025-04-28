@@ -7,7 +7,10 @@ import util.JPAUtil;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class OrderDAO {
@@ -256,6 +259,78 @@ public class OrderDAO {
                 .getResultList()
                 .stream()
                 .collect(Collectors.toList());
+    }
+
+    public List<Object[]> getStoreRevenueByDayOfWeek(LocalDate startDate, LocalDate endDate) {
+        List<Object[]> queryResult = em.createQuery(
+                        "SELECT FUNCTION('DAYOFWEEK', o.orderDate), SUM(oi.quantity * oi.price) " +
+                                "FROM Order o " +
+                                "JOIN OrderDetail oi ON o.id = oi.order.id " + // Sử dụng orderId
+                                "WHERE o.orderDate BETWEEN :startDate AND :endDate " +
+                                "GROUP BY FUNCTION('DAYOFWEEK', o.orderDate) " +
+                                "ORDER BY FUNCTION('DAYOFWEEK', o.orderDate)",
+                        Object[].class
+                )
+                .setParameter("startDate", startDate)
+                .setParameter("endDate", endDate)
+                .getResultList();
+
+        // Đưa kết quả vào map
+        Map<Integer, Double> revenueMap = new HashMap<>();
+        for (Object[] row : queryResult) {
+            Integer dayOfWeek = ((Number) row[0]).intValue();
+            Double revenue = (row[1] != null) ? ((Number) row[1]).doubleValue() : 0.0;
+            revenueMap.put(dayOfWeek, revenue);
+        }
+
+        // Tạo danh sách đầy đủ, đưa Chủ Nhật (day 1) vào cuối
+        List<Object[]> fullWeekRevenue = new ArrayList<>();
+
+        // Từ thứ 2 (2) đến thứ 7 (7)
+        for (int day = 2; day <= 7; day++) {
+            Double revenue = revenueMap.getOrDefault(day, 0.0);
+            fullWeekRevenue.add(new Object[]{day, revenue});
+        }
+        // Cuối cùng thêm Chủ Nhật (1)
+        Double sundayRevenue = revenueMap.getOrDefault(1, 0.0);
+        fullWeekRevenue.add(new Object[]{1, sundayRevenue});
+
+        return fullWeekRevenue;
+    }
+
+
+
+    public List<Object[]> getTop5BestSellingProductsThisWeek(LocalDate startDate, LocalDate endDate) {
+        return em.createQuery(
+                        "SELECT p.productName, SUM(oi.quantity * oi.price) AS totalRevenue " +
+                                "FROM Order o " +
+                                "JOIN OrderDetail oi ON o.id = oi.order.id " +
+                                "JOIN Product p ON oi.product.id = p.id " +
+                                "WHERE o.orderDate BETWEEN :startDate AND :endDate " +
+                                "GROUP BY p.productName " +
+                                "ORDER BY totalRevenue DESC",
+                        Object[].class
+                )
+                .setParameter("startDate", startDate)
+                .setParameter("endDate", endDate)
+                .setMaxResults(5)
+                .getResultList();
+    }
+
+    public List<Object[]> getAllProductRevenueThisWeek(LocalDate startDate, LocalDate endDate) {
+        return em.createQuery(
+                        "SELECT p.productName, SUM(oi.quantity * oi.price) AS totalRevenue " +
+                                "FROM Order o " +
+                                "JOIN OrderDetail oi ON o.id = oi.order.id " +
+                                "JOIN Product p ON oi.product.id = p.id " +
+                                "WHERE o.orderDate BETWEEN :startDate AND :endDate " +
+                                "GROUP BY p.productName " +
+                                "ORDER BY totalRevenue DESC",
+                        Object[].class
+                )
+                .setParameter("startDate", startDate)
+                .setParameter("endDate", endDate)
+                .getResultList();
     }
 
 }

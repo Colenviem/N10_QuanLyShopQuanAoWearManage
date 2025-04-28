@@ -4,6 +4,7 @@ import dto.Employee;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface IEmployeeService extends Remote {
@@ -34,4 +35,11 @@ public interface IEmployeeService extends Remote {
     List<Object[]> getEmployeeProductSalesAndCount() throws  RemoteException;
 
     Employee getEmployeeByAccount(String user, String pass) throws RemoteException;
+
+    List<Object[]> getEmployeeTotalProductStatsThisWeek(LocalDate startDate, LocalDate endDate) throws RemoteException;
+
+
+    List<Object[]> getTop5BestSellingProductsThisWeek(LocalDate startDate, LocalDate endDate) throws RemoteException;
+
+    List<Object[]> getEmployeeProductSalesCountByDayOfWeek(LocalDate startDate, LocalDate endDate) throws RemoteException;
 }
